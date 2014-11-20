@@ -1,4 +1,4 @@
 multiple-explorers
 ==================
 
-Implements a multi-agent exploration problem using the Stage simulation. Investigates sensor range as a variable.
+Implements a multi-agent exploration problem in simulation. Investigates sensor range as a variable. Based on papger by Agogino & Tumer (2008).
