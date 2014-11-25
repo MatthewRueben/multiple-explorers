@@ -1,0 +1,152 @@
+#!/usr/bin/env python
+
+'''
+Purpose:
+Class to define FF, single hidden layer, neural network.
+Specifically, the NN will be used with rover domain.
+
+In Evo Part:
+Mutate about 10% of weights.
+1 way to modify (that works) take previous weight then add alpha from
+    normal distribution 0 - 1, decrease 1 over generation/time
+Don't forget bias term :)
+  
+@author Kory Kraft
+@date 11/24/2014
+'''
+
+import math
+
+class NeuralNetwork():
+	''' Creates a NN for a single layer FF NN 
+		The activation function is the same for all the nodes
+	'''
+	def __init__(self, input, hiddenLayer, output):
+		''' Expecting:
+				The numpber of input nodes
+				The numer of hidden layer nodes
+				The number of output nodes
+
+		'''
+		self.numInputNodes = input
+		self.numHiddenLayerNodes = hiddenLayer
+		self.numOutputLayerNodes = output
+		self.weights = {}
+
+	def supplyInputs(self, inputs):
+		''' At this point, I am expecting a list for the inputs
+			The NN doesn't care what order they are in at this point.
+
+		'''
+		self.poiInput = poiInput
+		self.rovInput = rovInput
+
+	def printWeights(self):
+		output = 'Weights\n\n{0}'.format(self.weights)
+		print output
+
+	def __repr__(self):
+		return self.__str__()
+
+	def __str__(self):
+		return '\nNN: \nInput Nodes: {0}\nHidden Layer Nodes: {1}\nOutput Nodes: {2}\n\nWeights:\n{3}\nNum Weights{4})'\
+				.format(self.numInputNodes, self.numHiddenLayerNodes, self.numOutputLayerNodes, self.weights, len(self.weights))
+
+	def activationFunction(self, x):
+		''' Performs the activation function on x.
+			Returns 0 or 1
+			0 means not activated.
+			1 means activated. 
+			Currently uses the sigmoid function.
+		'''
+		activation = 1 / (1 + math.exp(-x))
+		return activation
+
+	def createNodes(self):
+		''' Creates three equivalence classes of nodes:
+				self.inputNodes (includes bias)
+				self.hiddenNodes (includes bias)
+				self.outputNodes 
+			Naming convention is the following (keeping them in order helped sort the keys in the dictionary which made prediction easier)
+						Input-IndexInt or Input-Bias
+						Obscure-IndexInt or Obscure-Bias
+						Output-IndexInt 
+									
+		'''
+		self.inputNodes = ['Input-' + str(x) for x in xrange(self.numInputNodes)]
+		self.inputNodes.append('Input-Bias')
+		self.hiddenNodes = ['Obscure-' + str(x) for x in xrange(self.numHiddenLayerNodes)]
+		self.hiddenNodes.append('Obscure-Bias')
+		self.outputNodes = ['Output-' + str(x) for x in xrange(self.numOutputLayerNodes)]
+
+	def createWeights(self):
+		''' Creates a dictionary of weights between the input nodes + bias and hidden nodes as well as the 
+				hidden nodes + bias and the output nodes.
+			The keys are the the form of 'firstNodeName , secondNodeName'; (e.g. Input-5, Hidden-0)
+			The weights are all initialized to .5
+		'''
+		if (self.weights == None):
+			self.weights = {}
+
+		# add weights between input nodes and hidden nodes
+		for nodeI in self.inputNodes:
+			for nodeH in self.hiddenNodes:
+				if nodeH == 'Obscure-Bias':
+					break # don't connect any inputs to the hidden bias....
+				key = nodeI + ', ' + nodeH
+				# print 'Key: ' + key
+				self.weights[key] = .5
+
+		# add weights between the hidden nodes and output nodes
+		for nodeH in self.hiddenNodes:
+			for nodeO in self.outputNodes:
+				key = nodeH + ', ' + nodeO
+				self.weights[key] = .5
+
+		# print 'total weights: ', len(self.weights)
+
+	def predict(self, inputs):
+		''' Takes the list of inputs and predicts the number of outputs.
+			List should map to number of inputs.
+				For our specific rover domain lets have them in the order of 4 poi vals and 4 rov num vals.
+				Our output will be 2 vals, dx and dy
+		'''
+		# init an empty list of "inputs" for the hidden node corresponding to the index of the list
+		# don't need to include the bias for this hiddenNodeInput list...i think?
+		hiddenNodeInput = [0 for x in xrange(len(self.hiddenNodes) -1)] 
+		for key in sorted(self.weights.keys()):
+			print key
+			if 'Input' in key: 
+				# these are the "input" keys
+				# we can calculate the sum of each ones as it goes to the a given output?
+				node = key.split(',')[1].strip() # get the second named node, as it will be the one the init is attached to in the hidden layer
+				nodeIndex = int(node.split('-')[1].strip())
+				print 'Node:', node, 'Node Index:', nodeIndex
+				print 'Hidden node input: ', hiddenNodeInput
+				print 'Weight: ', self.weights[key]
+				print 'len of input', len(inputs)
+				print 'len of hiddenNodeInput, ', len(hiddenNodeInput)
+				hiddenNodeInput[nodeIndex] += self.weights[key] * inputs[nodeIndex]
+				print '  ', hiddenNodeInput[nodeIndex]
+	
+
+	def getTotalNodes(self):
+		return self.numInputNodes + self.numHiddenLayerNodes + self.numOutputLayerNodes
+
+	def getTotalWeights(self):
+		return len(self.weights)
+
+
+def main():
+	# init a "dummy" nn just to print to make sure setup is correct
+	nn = NeuralNetwork(8, 10, 2)
+	nn.createNodes()
+	nn.createWeights()
+	nn.predict([x for x in range(8)])
+	#print nn
+
+
+if __name__ == '__main__':
+	main()
+
+
