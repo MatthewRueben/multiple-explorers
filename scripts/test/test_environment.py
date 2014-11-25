@@ -29,7 +29,7 @@ if __name__ == "__main__":
         world.reset()
         world.test_plot()
         time.sleep(0.5)
-    reward, rover_closest_list = world.get_rewards()
-    print 'Global reward:', reward
+    rewards, rover_closest_list = world.get_rewards()
+    print 'Rewards:', rewards
     world.test_plot(rover_closest_list)
     input('Press RETURN to quit. ')
