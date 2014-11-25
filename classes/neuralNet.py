@@ -140,7 +140,7 @@ class NeuralNetwork():
 			print 'Node name: ', nodeName
 			# Bias term in hidden layer does not have inputs
 			if nodeName != 'Bias':
-				hiddenNodeInput = self.calculateHiddenNodeInput(nodeName, 'Obscure', inputs, 'Input') # with the way this is set up, this is an n2 operation :(
+				hiddenNodeInput = self.calculateNodeInput(nodeName, 'Obscure', inputs, 'Input') # with the way this is set up, this is an n2 operation :(
 				value = self.activationFunction(hiddenNodeInput)
 				hiddenNodeOutputs[nodeName] = value
 
@@ -153,19 +153,22 @@ class NeuralNetwork():
 		for node in self.outputNodes:
 			nodeName = node.split('-')[1].strip()
 			print 'Node name: ', nodeName
-			hiddenNodeInput = self.calculateHiddenNodeInput(nodeName, 'Output', hiddenNodeOutputList, 'Hidden') # with the way this is set up, this is an n2 operation :(
+			hiddenNodeInput = self.calculateNodeInput(nodeName, 'Output', hiddenNodeOutputList, 'Hidden') # with the way this is set up, this is an n2 operation :(
 			value = self.activationFunction(hiddenNodeInput)
 			print value
 			outputList.append(value)
 
-		return value	
+		return tuple(outputList)	
 
 
-	def calculateHiddenNodeInput(self, nodeName, nodeType, inputs, inputType):
-		''' Calculates the input for the hidden node with the name "nodeName".
+	def calculateNodeInput(self, nodeName, nodeType, inputs, inputType):
+		''' Calculates the input for the node with the name "nodeName".
 			nodeName is expected to be an integer.
 
+			nodeType and inputType are currently only used for testing output.
+
 			This method is by no means optimized as it goes through the entire list of keys in the node dictionary...
+			Inputs are assumed to be mapped to output node
 		'''
 		# Goes through the sorted keys
 		# Checks to see if the key/edge includes the hidden node name as the one which receives the input
@@ -208,8 +211,8 @@ def main():
 	nn.createNodes()
 	nn.createWeights()
 	print nn
-	nn.predict([x for x in range(8)])
-	#print nn
+	print nn.predict([x for x in range(8)]) # inputs are just 0,1,2..7
+	
 
 
 if __name__ == '__main__':
