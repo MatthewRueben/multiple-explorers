@@ -5,36 +5,8 @@
 
 from POI_sensor import POI_Sensor
 from rover_sensor import Rover_Sensor
+from geography import Location
 import math
-
-#TODO: remove Location class and import at some point
-
-class Location:
-    """ A point in 2D Euclidean space. """
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        
-    def __str__(self):
-        return 'Location: (' + str(self.x) + ',' + str(self.y) + ')'
-    
-    def __eq__(self, other):
-        if isinstance(other, Location):
-            if self.x == other.x and self.y == other.y:
-                return True
-            return False
-
-    def __sub__(self, subtrahend):
-        """ Subtraction for Locations = Euclidean distance between the Location and the subtrahend.
-        Only works if the subtrahend class is "Location". """
-        if isinstance(subtrahend, Location):
-            dx = subtrahend.x
-            dy = subtrahend.y
-        else:  # assume the other class has an attribute "location" of class "Location"
-            dx = subtrahend.location.x
-            dy = subtrahend.location.y
-
-        return math.sqrt((self.x - dx) ** 2 + (self.y - dy) ** 2)
 
 
 class Rover():
