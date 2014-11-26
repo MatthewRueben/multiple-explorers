@@ -3,7 +3,7 @@
 @author: Austin Nicolai
 """
 
-import Sensor
+from sensor import Sensor
 import math
 
 class Rover_Sensor(Sensor):

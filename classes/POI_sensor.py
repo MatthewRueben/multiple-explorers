@@ -3,7 +3,7 @@
 @author: Austin Nicolai
 """
 
-import Sensor
+from sensor import Sensor
 import math
 
 class POI_Sensor(Sensor):

@@ -3,10 +3,11 @@
 @author: Austin Nicolai
 """
 
-import POI_Sensor
-import Rover_Sensor
+from POI_sensor import POI_Sensor
+from rover_sensor import Rover_Sensor
 import math
-from random import randint
+
+#TODO: remove Location class and import at some point
 
 class Location:
     """ A point in 2D Euclidean space. """
