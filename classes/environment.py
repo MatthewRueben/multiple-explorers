@@ -23,8 +23,14 @@ class World():
         # Init rovers
         self.rovers = []
         for rover_index in range(N_rovers):
-            rover = DummyRover(self.rover_start.x, 
-                               self.rover_start.y)  # FOR TESTING ONLY!
+            rover = Rover(name='Fred',
+                          x=self.rover_start.x, 
+                          y=self.rover_start.y,
+                          heading=0.0,
+                          num_sensors=4,
+                          sensor_range=1000.0,  # ~infinite
+                          sensor_noise=0.10,  # 10%
+                          num_POI=100)
             self.rovers.append(rover)
         
     def reset(self):
@@ -110,24 +116,3 @@ class World():
                                 [trajectory_y[step_index], self.POIs[poi_index].location.y])
             pyplot.draw()
             time.sleep(1.0)
-
-
-import copy
-
-class DummyRover():
-    def __init__(self, x, y):
-        self.location_history = []  # locations I've been this episode
-        self.reset(x, y)
-
-    def save_location(self):
-        self.location_history.append(copy.deepcopy(self.location))  # save current location to history!
-        
-    def act(self, action=None):
-        choices = range(-15, 15)
-        self.location.x += random.choice(choices)
-        self.location.y += random.choice(choices)
-        self.save_location()  # be sure to save your new location afterwards so you can get a reward
-        
-    def reset(self, x, y):
-        self.location = Location(x, y)
-        self.save_location()

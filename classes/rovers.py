@@ -7,6 +7,7 @@ from POI_sensor import POI_Sensor
 from rover_sensor import Rover_Sensor
 from geography import Location
 import math
+import copy
 
 
 class Rover():
@@ -16,7 +17,8 @@ class Rover():
         
     def __init__(self, name, x, y, heading, num_sensors, sensor_range, sensor_noise, num_POI):
         self.name = name
-        self.location = Location(x, y)
+        self.start = [x, y]
+        self.reset(*self.start)  # reset to starting location
         self.heading = 0 # in radians
         self.sensor_range = sensor_range
         self.sensor_noise = sensor_noise
@@ -36,7 +38,19 @@ class Rover():
         for i in xrange(self.num_sensors):
             self.POI_sensors.append(POI_Sensor(self.sensor_regions[i], self.heading, self.location, sensor_range, sensor_noise))
             self.rover_sensors.append(Rover_Sensor(self.sensor_regions[i], self.heading, self.location, sensor_range, sensor_noise))
+
        
+    def save_location(self):
+        # save current location to history!
+        self.location_history.append(copy.deepcopy(self.location))  
+        
+
+    def reset(self, x, y):
+        # reset to the starting location
+        self.location_history = []  # clear the history. history won't include the starting location
+        self.location = Location(x, y)
+
+
     def takeAction(self, dx, dy):
         # movement noise built into function input
         
@@ -54,6 +68,8 @@ class Rover():
         
         self.location.y += dx_y
         self.location.y += dy_y
+
+        self.save_location()  # save it!
     
         # update orientation/sensor boundaries
         new_heading = math.atan(dy/dx) * 180. / math.pi
@@ -61,7 +77,7 @@ class Rover():
         for i in xrange(self.num_sensors):
             self.POI_sensors[i].updateFieldOfView(self.sensor_regions[i], new_heading)
             self.rover_sensors[i].updateFieldOfView(self.sensor_regions[i], new_heading)
-    
+
     
     def updatePoiTable(self, POI_list):
         # iterate over all POIs

@@ -5,6 +5,7 @@ import sys
 sys.path.append('/nfs/attic/smartw/users/ruebenm/workspaces/exploration/src/classes')  # add location of class files to PYTHONPATH
 
 from environment import Location, Bounds2D, World
+import random
 
 if __name__ == "__main__":
 
@@ -27,7 +28,9 @@ if __name__ == "__main__":
     world.reset()  # randomize POI locations and reset rover locations
     for time_step in range(15):  # for 15 time steps...
         for rover in world.rovers:  # move all the rovers
-            rover.act()
+            dx = random.choose(range(-5,6))
+            dy = random.choose(range(-5,6))
+            rover.takeAction(dx, dy)
     rewards, rover_closest_list = world.get_rewards()
     print 'Rewards:', rewards
     world.test_plot(rover_closest_list)
