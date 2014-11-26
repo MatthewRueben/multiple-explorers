@@ -39,7 +39,7 @@ def createNN():
     nn.createRandomWeights()
     return nn
 
-def createTeams(nns):
+def createTeams(nns, lenOfPool):
     ''' 
     Creates a 'team' of agents.  Can be thought of as creating a team of agents' brains.
     In reality, it selects a previously unselected NN from each agent's NN pool.
@@ -164,21 +164,23 @@ def calcDX(output, maxDist, noise):
         dx = 2maxD(x - .5) * noise ; this came from Tumer's paper
     @author Kory Kraft
     '''
-    dx = 2 * maxDist * (x - .5)
+    dx = 2 * maxDist * (output - .5)
     noiseDist = random.uniform(-noise, noise) * dx
     dx = dx + noiseDist
     return dx
 
 
 def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings):
+
     # reset world
     # init/place rovs
     world.reset(headings)  # randomize POI locations and reset rover locations
     for t in range(timesteps):
         for rov, nn in itertools.izip(world.rovers, team):
             # Do a prediction with the rovs associated nn from the team
-            x,y = nn.fasterPredict(rov.getNNInputs(world.POIs, minDist, world.rovers)) 
-            dy = calcDX(y, maxDist, mvtNoise)
+            o1, o2 = nn.fasterPredict(rov.getNNInputs(world.POIs, minDist, world.rovers)) 
+            dx = calcDX(o1, maxDist, mvtNoise)
+            dy = calcDX(o2, maxDist, mvtNoise)
             
             # take the action with the pred. action
             rov.takeAction(dx, dy)
@@ -231,11 +233,11 @@ def main():
     for i in range(3): # random definition of convergence
 
         # create random team of agent brains for the game
-        teams = createTeams(nns)
+        teams = createTeams(nns, lenOfPool)
 
         for team in teams:         
             # do the episode
-            doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise)
+            doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings)
         
         # select best nn performers
         #   and mutate and replace low performers

@@ -111,7 +111,7 @@ class Rover():
                 output_list.append(0) # if no sensor for the quadrant, return 0
             
             # get count
-            rover_count = self.rover_sensors[i].getRoverCount(rover_list)
+            rover_count = self.rover_sensors[i].getRoverCount(rover_list, min_observation_dist)
             output_list.append(rover_count)
     
         return output_list

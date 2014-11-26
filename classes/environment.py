@@ -115,7 +115,7 @@ class World():
             if rover_index in not_these_rovers:  # if this rover is on the skip list
                 ignored_rover_index = not_these_rovers.index(rover_index)
                 steps_to_skip = not_these_times[ignored_rover_index]  # get the times to skip
-                skip_rover = bool(skip_steps)  # skip this entire rover if no particular time steps are specified
+                skip_rover = bool(steps_to_skip)  # skip this entire rover if no particular time steps are specified
             else:
                 steps_to_skip = []
 

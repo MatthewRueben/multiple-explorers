@@ -3,6 +3,7 @@
 @author: Austin Nicolai
 """
 
+import sys
 from sensor import Sensor
 import math
 
@@ -21,15 +22,17 @@ class Rover_Sensor(Sensor):
         # loop over all rovers
         for rover in rover_list:
             # determine the distance to the rover            
-            distance = self.location - rover_list[rover].location
+            distance = self.location - rover.location
             
             # add sensor noise to the distance
             distance = distance * (1. + self.sensor_noise/100.)
             
             # determine the angle to the rover
-            dx = self.location.x - rover_list[rover].location.x
-            dy = self.location.y - rover_list[rover].location.y
-            angle = math.atan(dy/dx)
+            dx = self.location.x - rover.location.x
+            dy = self.location.y - rover.location.y
+            if dx == 0:  # exception for rovers that are on top of each other (or identical)
+                dx = sys.float_info.min
+            angle = math.atan(dy / dx)
             angle = angle * 180. / math.pi # convert to degrees
             
             # ensure angle in range [0, 360]
@@ -43,7 +46,7 @@ class Rover_Sensor(Sensor):
                 sum_dist = max(distance**2, min_observation_dist**2)
                 rover_count += (1/sum_dist)
             # if angle range straddles 0:
-            elif (distance <= self.senor_range) and (0 <= angle <= self.left_edge) and (360 > angle > self.right_edge):
+            elif (distance <= self.sensor_range) and (0 <= angle <= self.left_edge) and (360 > angle > self.right_edge):
                 sum_dist = max(distance**2, min_observation_dist**2)
                 rover_count += (1/sum_dist)
             # if angle range is typical:
@@ -61,14 +64,16 @@ class Rover_Sensor(Sensor):
         # loop over all rovers
         for rover in rover_list:
             # determine the distance to the rover            
-            distance = self.location - rover_list[rover].location
+            distance = self.location - rover.location
             
             # add sensor noise to the distance
             distance = distance * (1. + self.sensor_noise/100.)
             
             # determine the angle to the rover
-            dx = self.location.x - rover_list[rover].location.x
-            dy = self.location.y - rover_list[rover].location.y
+            dx = self.location.x - rover.location.x
+            dy = self.location.y - rover.location.y
+            if dx == 0:
+                dx = sys.float_info.min
             angle = math.atan(dy/dx)
             angle = angle * 180. / math.pi # convert to degrees
             

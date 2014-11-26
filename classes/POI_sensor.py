@@ -3,6 +3,7 @@
 @author: Austin Nicolai
 """
 
+import sys
 from sensor import Sensor
 import math
 
@@ -19,14 +20,16 @@ class POI_Sensor(Sensor):
         # loop over all rovers
         for poi in POI_list:
             # determine the distance to the rover            
-            distance = self.location - POI_list[poi].location
+            distance = self.location - poi.location
             
             # add sensor noise to the distance
             distance = distance * (1. + self.sensor_noise/100.)
             
             # determine the angle to the rover
-            dx = self.location.x - POI_list[poi].location.x
-            dy = self.location.y - POI_list[poi].location.y
+            dx = self.location.x - poi.location.x
+            dy = self.location.y - poi.location.y
+            if dx == 0:
+                dx = sys.float_info.min
             angle = math.atan(dy/dx)
             angle = angle * 180. / math.pi # convert to degrees
             
@@ -39,10 +42,10 @@ class POI_Sensor(Sensor):
             # if angle range straddles 0:
             if (distance <= self.sensor_range) and (0 <= angle <= self.left_edge) and (360 > angle > self.right_edge):
                 sum_dist = max(distance**2, min_observation_dist**2)
-                POI_count += (POI_list[poi].V/sum_dist)
+                POI_count += (poi.V/sum_dist)
             # if angle range is typical:
             elif (distance <= self.sensor_range) and (angle <= self.left_edge) and (angle > self.right_edge):
                 sum_dist = max(distance**2, min_observation_dist**2)
-                POI_count += (POI_list[poi].V/sum_dist)
+                POI_count += (poi.V/sum_dist)
             
         return POI_count
