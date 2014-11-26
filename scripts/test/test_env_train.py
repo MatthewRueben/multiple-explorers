@@ -223,7 +223,7 @@ def main():
     poi_bounds = Bounds2D((world_center.x-poi_ranges[0]/2, world_center.x+poi_ranges[0]/2), 
                           (world_center.y-poi_ranges[1]/2, world_center.y+poi_ranges[1]/2))  # bounds of where POIs can go
 
-    world = World(world_bounds, 100, poi_bounds, 30, rover_start=world_center)  # make a world
+    world = World(world_bounds, 100, poi_bounds, 30, rover_start=world_center, agentInitHeadings)  # make a world
 
     # Create orientations for the agents outside so they will all be consist for agent i
     for i in range(3): # random definition of convergence
