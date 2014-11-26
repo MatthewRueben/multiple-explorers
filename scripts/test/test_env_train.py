@@ -42,7 +42,9 @@ def createNN():
 def createTeams(nns):
     ''' 
     Creates a 'team' of agents.  Can be thought of as creating a team of agents' brains.
-    In reality, it selects a previously unselected NN from each agent's NN pool.  
+    In reality, it selects a previously unselected NN from each agent's NN pool.
+    
+    @author Kory Kraft  
     '''
     allTeams = [] # list that will hold each team of agents' nns
 
@@ -140,7 +142,7 @@ def selectPerformers(nns, egreedy):
         topHalf[index] = temp
 
     return topHalf, lowHalf
-    
+
 
 def mutateNNs(topHalf, lowHalf):
     ''' Each nn in the low half is replaced by a mutated version of the nn in the topHalf. 
@@ -156,9 +158,14 @@ def mutateNNs(topHalf, lowHalf):
 
 
 
-def doEpisode(headings, team):
-    #print team
-    #print 'Num headings ', len(headings)
+def doEpisode(headings, team, timesteps):
+    # init world
+    # init/place rovs
+    for t in range(timesteps):
+        for rov, nn in itertools.izip(rovers, team):
+            x,y = nn.predict(rov.getNNInputs()) # this takes parameters here that I don't konw how to access....yet!
+            dx = funcX
+            dy = funcY
     pass
 
 if __name__ == "__main__":
@@ -217,11 +224,17 @@ if __name__ == "__main__":
     # Hyperparamters for training
     lenOfPool = 10 # Num of nn's for each agent 
     numAgents = 5 # Num of agents in the system
+    timesteps = 15
     nns = initNNs(lenOfPool, numAgents) # Can be thought of as matrix of NNs, each sublist is an agents pool of nns
-    agentInitHeadings = [(random.randint(0,359) * math.pi /180) for x in range(numAgents)] # random headings for agent that will stay 
-                                                                                          # the same for each agent through the runs and epochs
-                                                                                         #  so that the corresponding agent and nn pool will reflect the 
-                                                                                        #   same initial values/assumptions
+    # random headings for agent that will stay 
+    # the same for each agent through the runs and epochs
+    #  so that the corresponding agent and nn pool will reflect the 
+    #   same initial values/assumptions
+    agentInitHeadings = [(random.randint(0,359) * math.pi /180) for x in range(numAgents)] 
+    egreedy = .2 # number of weights to mutate starting out, this is decreased over time 
+    egreedyDecreaseRate = .9 # rate at which egreedy selection is decreased
+
+                                                                                          
 
     # Create orientations for the agents outside so they will all be consist for agent i
     for i in range(3): # random definition of convergence
@@ -234,7 +247,7 @@ if __name__ == "__main__":
             # init agents, world, etc and do episode
 
             # do the episode, get rovers or just rewards?
-            doEpisode(agentInitHeadings, team)
+            doEpisode(agentInitHeadings, team, timesteps)
 
             # # assign each nn in team a value
             # for nn, rover in team, rovers:
@@ -243,4 +256,4 @@ if __name__ == "__main__":
         
         # select best nn performers
         #   and mutate and replace low performers
-        updateNNS(nns)
+        updateNNS(nns, egreedy * egreedyDecreaseRate)

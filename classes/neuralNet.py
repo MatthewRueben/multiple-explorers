@@ -4,17 +4,16 @@
 Purpose:
 Class to define FF, single hidden layer, neural network.
 Specifically, the NN will be used with rover domain.
-
-
-In Evo Part:
-Mutate about 10% of weights.
-1 way to modify (that works) take previous weight then add random sample for
-    normal distribution
-Don't forget bias term :)
   
 @author Kory Kraft
 @date 11/24/2014
 '''
+
+# In Evo Part:
+# Mutate about 10% of weights.
+# 1 way to modify (that works) take previous weight then add random sample for
+#     normal distribution
+# Don't forget bias term :)
 
 import math
 import copy
