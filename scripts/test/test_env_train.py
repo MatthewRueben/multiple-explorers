@@ -177,7 +177,7 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings):
     for t in range(timesteps):
         for rov, nn in itertools.izip(world.rovers, team):
             # Do a prediction with the rovs associated nn from the team
-            x,y = nn.predict(rov.getNNInputs(world.POIs, minDist, world.rovers)) 
+            x,y = nn.fasterPredict(rov.getNNInputs(world.POIs, minDist, world.rovers)) 
             dy = calcDX(y, maxDist, mvtNoise)
             
             # take the action with the pred. action
@@ -233,18 +233,9 @@ def main():
         # create random team of agent brains for the game
         teams = createTeams(nns)
 
-        for team in teams:            
-
-            # init agents, world, etc and do episode
-
-            # do the episode, get rovers or just rewards?
-            doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings)
-
-            # # assign each nn in team a value
-            ## This can be done in do episode since each nn holds its own value
-            # for nn, rover in team, rovers:
-            #     # nn.value = rover.getReward()
-            #     nn.value = random.randint(0,10)
+        for team in teams:         
+            # do the episode
+            doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise)
         
         # select best nn performers
         #   and mutate and replace low performers
