@@ -184,8 +184,9 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise):
             rov.takeAction(dx, dy)
             
     # Get rewards for nn's which correspond to system rewards   
-    world.getRewards() # two values, only need first which is called rewards which is (dictionary) with keys local global difference
-    # return rewards or assign them to each nn now
+    rewards, rover_closest_list = world.get_rewards()
+    for nn, reward in itertools.izip(team, rewards['DIFFERENCE']):
+        nn.value = reward
     pass
 
 def main():
