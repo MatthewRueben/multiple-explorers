@@ -23,12 +23,11 @@ if __name__ == "__main__":
     poi_bounds = Bounds2D((world_center.x-poi_ranges[0]/2, world_center.x+poi_ranges[0]/2), 
                           (world_center.y-poi_ranges[1]/2, world_center.y+poi_ranges[1]/2))
     print 'Should be ((25, 95), (15, 85)):', poi_bounds
-    world = World(world_bounds, 100, poi_bounds, 30, world_center)
-    import time
-    for i in range(5):
-        world.reset()
-        world.test_plot()
-        time.sleep(0.5)
+    world = World(world_bounds, 100, poi_bounds, 30, rover_start=world_center)  # make a world
+    world.reset()  # randomize POI locations
+    for time_step in range(15):  # for 15 time steps...
+        for rover in world.rovers:  # move all the rovers
+            rover.act()
     rewards, rover_closest_list = world.get_rewards()
     print 'Rewards:', rewards
     world.test_plot(rover_closest_list)

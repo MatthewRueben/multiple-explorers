@@ -43,14 +43,13 @@ class World():
             rover_closest_list.append(rover_closest)
             poi_reward = self.POIs[poi_index].V / delta_min  # the entire reward for this POI
             rewards['POI'].append(poi_reward)  # keep track of the reward for each POI
-            rewards['LOCAL'][rover_closest] += poi_reward  # add to closest rover's local reward
+            rewards['LOCAL'][rover_closest[0]] += poi_reward  # add to closest rover's local reward
             rewards['GLOBAL'] += poi_reward
 
         # Calculate DIFFERENCE reward (with counterfactual c = 0)
         for my_rover_index, rover in enumerate(self.rovers):
             G_without = rewards['GLOBAL']  # Set G(Z_-i) = G(Z)
-            closest_to = [poi_index for poi_index, rover_index in enumerate(rover_closest_list) if rover_index == my_rover_index]  # find which POIs this rover was closest to
-            print my_rover_index, closest_to
+            closest_to = [poi_index for poi_index, (rover_index, step_index) in enumerate(rover_closest_list) if rover_index == my_rover_index]  # find which POIs this rover was closest to
             for poi_index in closest_to:  # for each of those POIs...
                 G_without -= rewards['POI'][poi_index]  # Subtract its old reward
                 delta_min_new, rover_closest_new = self.find_closest(poi_index, my_rover_index)  # Find the next-closest rover to it
@@ -67,35 +66,65 @@ class World():
         poi = self.POIs[poi_index]
         delta_min = 100.0  # start arbitrarily high
         rover_closest = None
+        step_closest = None
         for rover_index, rover in enumerate(self.rovers):
             if rover_index is not not_this_rover:
-                delta = (rover.location - poi)  # observation distance --- WRONG! THIS SHOULD BE THE DISTANCE FROM THE CLOSEST OF ALL 15 ROVER LOCATIONS! IMPLEMENT LATER!
-                if delta < delta_min:  # the closest rover counts, even if it's closer than the minimum observation distance
-                    delta_min = delta
-                    rover_closest = rover_index
+                for step_index, location in enumerate(self.rovers[rover_index].location_history):
+                    delta = (location - poi)  # observation distance
+                    if delta < delta_min:  # the closest rover counts, even if it's closer than the minimum observation distance
+                        delta_min = delta
+                        rover_closest = (rover_index, step_index)
         delta_min = min(delta_min ** 2, poi.d_min ** 2)  # delta is actually the SQUARED Euclidean distance
         return delta_min, rover_closest
 
 
     def test_plot(self, rover_closest_list=[]):
+        import time
         pyplot.ion()
-        pyplot.cla()
-        for poi in self.POIs:
-            pyplot.plot(poi.location.x, poi.location.y, 'k*')
-        for rover in self.rovers:
-            pyplot.plot(rover.location.x, rover.location.y, 'ro')
-        pyplot.axis([self.world_bounds.x_lower, self.world_bounds.x_upper, 
-                     self.world_bounds.y_lower, self.world_bounds.y_upper])
-        if len(rover_closest_list) > 0:
-            for poi_index, rover_closest in enumerate(rover_closest_list):
-                pyplot.plot([self.rovers[rover_closest].location.x, self.POIs[poi_index].location.x],
-                            [self.rovers[rover_closest].location.y, self.POIs[poi_index].location.y])
-        pyplot.draw()
+        
+        # Plot each rover's trajectory, one by one
+        for this_rover_index, rover in enumerate(self.rovers):
 
+            pyplot.cla()  # clear axis
+            pyplot.title('Rover #' + str(this_rover_index + 1))
+
+            # Plot the world, with POIs
+            for poi in self.POIs:
+                pyplot.plot(poi.location.x, poi.location.y, 'k*')
+            pyplot.axis([self.world_bounds.x_lower, self.world_bounds.x_upper, 
+                         self.world_bounds.y_lower, self.world_bounds.y_upper])
+
+            trajectory_x = [step.x for step in rover.location_history]
+            trajectory_y = [step.y for step in rover.location_history]
+            print trajectory_x
+            print trajectory_y
+            pyplot.plot(trajectory_x, trajectory_y, 'ro-')
+
+            # Draw lines to indicate whenever the rover became the closest observer of a POI
+            if rover_closest_list:
+                closest_to = [(poi_index, step_index) for poi_index, (rover_index, step_index) in enumerate(rover_closest_list) if rover_index == this_rover_index]  # find which POIs this rover was closest to
+                for (poi_index, step_index) in closest_to:  # for each of those POIs...
+                    pyplot.plot([trajectory_x[step_index], self.POIs[poi_index].location.x],
+                                [trajectory_y[step_index], self.POIs[poi_index].location.y])
+            pyplot.draw()
+            time.sleep(1.0)
+
+import copy
 
 class DummyRover():
     def __init__(self, x, y):
         self.location = Location(x, y)
+        self.location_history = []  # locations I've been this episode
+        self.save_location()
+
+    def save_location(self):
+        self.location_history.append(copy.deepcopy(self.location))  # save current location to history!
+        
+    def act(self, action=None):
+        choices = range(-15, 15)
+        self.location.x += random.choice(choices)
+        self.location.y += random.choice(choices)
+        self.save_location()  # be sure to save your new location afterwards so you can get a reward
 
 
 import random
@@ -134,6 +163,9 @@ class POI():
         x, y  = bounds.random_within_bounds()
         self.location = Location(x, y)
 
+    def __str__(self):
+        return 'POI: Value: ' + str(self.V) + ', ' + str(self.location)
+    
     def __sub__(self, subtrahend):
         """ Subtraction for POIs = Euclidean distance between the POI and the subtrahend.
         Only works if the subtrahend class has attribute "location" of class "Location". """
