@@ -117,6 +117,32 @@ class NeuralNetwork():
 
 		# print 'total weights: ', len(self.weights)
 
+	def createRandomWeights(self):
+		''' Creates a dictionary of weights between the input nodes + bias and hidden nodes as well as the 
+				hidden nodes + bias and the output nodes.
+			The keys are the the form of 'firstNodeName , secondNodeName'; (e.g. Input-5, Hidden-0)
+			The weights are all initialized to random float between 0 and 1.
+		'''
+		if (self.weights == None):
+			self.weights = {}
+
+		# add weights between input nodes and hidden nodes
+		for nodeI in self.inputNodes:
+			for nodeH in self.hiddenNodes:
+				if nodeH == 'Obscure-Bias':
+					break # don't connect any inputs to the hidden bias....
+				key = nodeI + ', ' + nodeH
+				# print 'Key: ' + key
+				self.weights[key] = random.random()
+
+		# add weights between the hidden nodes and output nodes
+		for nodeH in self.hiddenNodes:
+			for nodeO in self.outputNodes:
+				key = nodeH + ', ' + nodeO
+				self.weights[key] = random.random()
+
+		# print 'total weights: ', len(self.weights)
+
 	def predict(self, inputs):
 		''' Takes the list of inputs and predicts the number of outputs.
 			List should map to number of inputs.

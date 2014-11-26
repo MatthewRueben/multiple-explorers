@@ -36,7 +36,7 @@ def createNN():
     '''
     nn = NeuralNetwork(8, 10, 2)
     nn.createNodes()
-    nn.createWeights()
+    nn.createRandomWeights()
     return nn
 
 def createTeams(nns):
@@ -205,6 +205,7 @@ def main():
     numAgents = 5 # Num of agents in the system
     timesteps = 15
     maxDist = 10 # maximum distance the agent can move in one timestep
+    minDist = 5 # minimum distance 
     mvtNoise = .1 # the noise added to each actions outcome
     nns = initNNs(lenOfPool, numAgents) # Can be thought of as matrix of NNs, each sublist is an agents pool of nns
     # random headings for agent that will stay 
@@ -235,7 +236,7 @@ def main():
             # init agents, world, etc and do episode
 
             # do the episode, get rovers or just rewards?
-            doEpisode(agentInitHeadings, team, timesteps, maxDist, mvtNoise)
+            doEpisode(agentInitHeadings, team, timesteps, maxDist, minDist, world, mvtNoise)
 
             # # assign each nn in team a value
             ## This can be done in do episode since each nn holds its own value
