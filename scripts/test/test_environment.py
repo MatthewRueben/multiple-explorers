@@ -24,7 +24,7 @@ if __name__ == "__main__":
                           (world_center.y-poi_ranges[1]/2, world_center.y+poi_ranges[1]/2))
     print 'Should be ((25, 95), (15, 85)):', poi_bounds
     world = World(world_bounds, 100, poi_bounds, 30, rover_start=world_center)  # make a world
-    world.reset_POIs()  # randomize POI locations
+    world.reset()  # randomize POI locations and reset rover locations
     for time_step in range(15):  # for 15 time steps...
         for rover in world.rovers:  # move all the rovers
             rover.act()

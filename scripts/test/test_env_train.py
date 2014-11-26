@@ -159,8 +159,7 @@ def mutateNNs(topHalf, lowHalf):
 
 
 def doEpisode(headings, team, timesteps):
-    world.reset_POIs()
-    # init/place rovs
+    world.reset()  # randomize POI locations and reset rover locations
     for t in range(timesteps):
         for rov, nn in itertools.izip(rovers, team):
             x,y = nn.predict(rov.getNNInputs()) # this takes parameters here that I don't konw how to access....yet!

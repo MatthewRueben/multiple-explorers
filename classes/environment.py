@@ -9,6 +9,7 @@ class World():
         V_bounds = (0.0, 1.0)  # FIX ME?
         self.world_bounds = world_bounds
         self.poi_bounds = poi_bounds
+        self.rover_start = rover_start
 
         # Init POIs
         self.POIs = []
@@ -20,13 +21,16 @@ class World():
         # Init rovers
         self.rovers = []
         for rover_index in range(N_rovers):
-            rover = DummyRover(rover_start.x, 
-                               rover_start.y)  # FOR TESTING ONLY!
+            rover = DummyRover(self.rover_start.x, 
+                               self.rover_start.y)  # FOR TESTING ONLY!
             self.rovers.append(rover)
         
-    def reset_POIs(self):
+    def reset(self):
         for poi in self.POIs:
             poi.place_randomly(self.poi_bounds)  # assign POI location
+        for rover in self.rovers:
+            rover.reset(self.rover_start.x,
+                        self.rover_start.y)
             
     def get_rewards(self):
         rewards = {'POI': [],
