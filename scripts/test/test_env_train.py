@@ -156,15 +156,35 @@ def mutateNNs(topHalf, lowHalf):
         low.weights = top.mutateWeights(.1).weights
         low.value = sys.float_info.min
 
+def calcDX(output, maxDist, noise):
+    ''' Calculates dx taking into account the noise.
+        The actual noise rate is taking from a uniform distribution between
+            +- noise.
+
+        dx = 2maxD(x - .5) * noise ; this came from Tumer's paper
+    @author Kory Kraft
+    '''
+    dx = 2 * maxDist * (x - .5)
+    noiseDist = random.uniform(-noise, noise) * dx
+    dx = dx + noiseDist
+    return dx
 
 
-def doEpisode(headings, team, timesteps):
+def doEpisode(headings, team, rovers, timesteps, maxDist, mvtNoise):
+    # reset world
+    # init/place rovs
     world.reset()  # randomize POI locations and reset rover locations
     for t in range(timesteps):
         for rov, nn in itertools.izip(rovers, team):
+            # Do a prediction with the rovs associated nn from the team
             x,y = nn.predict(rov.getNNInputs()) # this takes parameters here that I don't konw how to access....yet!
-            dx = funcX
-            dy = funcY
+            dx = calcDX(x, maxDist, mvtNoise)
+            dy = calcDX(y, maxDist, mvtNoise)
+            # take the action with the pred. action
+            rov.takeAction(dx, dy)
+            # get reward for agent
+    # Get rewards for nn's which correspond to system rewards   
+    # return
     pass
 
 if __name__ == "__main__":
@@ -224,6 +244,8 @@ if __name__ == "__main__":
     lenOfPool = 10 # Num of nn's for each agent 
     numAgents = 5 # Num of agents in the system
     timesteps = 15
+    maxDist = 10 # maximum distance the agent can move in one timestep
+    mvtNoise = .1 # the noise added to each actions outcome
     nns = initNNs(lenOfPool, numAgents) # Can be thought of as matrix of NNs, each sublist is an agents pool of nns
     # random headings for agent that will stay 
     # the same for each agent through the runs and epochs
@@ -253,9 +275,10 @@ if __name__ == "__main__":
             # init agents, world, etc and do episode
 
             # do the episode, get rovers or just rewards?
-            doEpisode(agentInitHeadings, team, timesteps)
+            doEpisode(agentInitHeadings, team, timesteps, maxDist, mvtNoise)
 
             # # assign each nn in team a value
+            ## This can be done in do episode since each nn holds its own value
             # for nn, rover in team, rovers:
             #     # nn.value = rover.getReward()
             #     nn.value = random.randint(0,10)
