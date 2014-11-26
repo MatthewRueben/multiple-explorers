@@ -159,7 +159,7 @@ def mutateNNs(topHalf, lowHalf):
 
 
 def doEpisode(headings, team, timesteps):
-    # init world
+    world.reset_POIs()
     # init/place rovs
     for t in range(timesteps):
         for rov, nn in itertools.izip(rovers, team):
@@ -234,7 +234,14 @@ if __name__ == "__main__":
     egreedy = .2 # number of weights to mutate starting out, this is decreased over time 
     egreedyDecreaseRate = .9 # rate at which egreedy selection is decreased
 
-                                                                                          
+    # World parameters
+    world_bounds = Bounds2D((0, 115), (0, 100))  # world borders
+    world_center = Location(60, 50)  # where the agents start at
+    poi_ranges = (70, 70)
+    poi_bounds = Bounds2D((world_center.x-poi_ranges[0]/2, world_center.x+poi_ranges[0]/2), 
+                          (world_center.y-poi_ranges[1]/2, world_center.y+poi_ranges[1]/2))  # bounds of where POIs can go
+
+    world = World(world_bounds, 100, poi_bounds, 30, rover_start=world_center)  # make a world
 
     # Create orientations for the agents outside so they will all be consist for agent i
     for i in range(3): # random definition of convergence

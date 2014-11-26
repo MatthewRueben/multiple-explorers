@@ -20,13 +20,11 @@ class World():
         # Init rovers
         self.rovers = []
         for rover_index in range(N_rovers):
-            dx = random.uniform(-35, 35)  # FOR TESTING ONLY!
-            dy = random.uniform(-35, 35)  # FOR TESTING ONLY
-            rover = DummyRover(rover_start.x + dx, 
-                               rover_start.y + dy)  # FOR TESTING ONLY!
+            rover = DummyRover(rover_start.x, 
+                               rover_start.y)  # FOR TESTING ONLY!
             self.rovers.append(rover)
         
-    def reset(self):
+    def reset_POIs(self):
         for poi in self.POIs:
             poi.place_randomly(self.poi_bounds)  # assign POI location
             
@@ -96,8 +94,6 @@ class World():
 
             trajectory_x = [step.x for step in rover.location_history]
             trajectory_y = [step.y for step in rover.location_history]
-            print trajectory_x
-            print trajectory_y
             pyplot.plot(trajectory_x, trajectory_y, 'ro-')
 
             # Draw lines to indicate whenever the rover became the closest observer of a POI
@@ -109,13 +105,13 @@ class World():
             pyplot.draw()
             time.sleep(1.0)
 
+
 import copy
 
 class DummyRover():
     def __init__(self, x, y):
-        self.location = Location(x, y)
         self.location_history = []  # locations I've been this episode
-        self.save_location()
+        self.reset(x, y)
 
     def save_location(self):
         self.location_history.append(copy.deepcopy(self.location))  # save current location to history!
@@ -125,6 +121,10 @@ class DummyRover():
         self.location.x += random.choice(choices)
         self.location.y += random.choice(choices)
         self.save_location()  # be sure to save your new location afterwards so you can get a reward
+        
+    def reset(self, x, y):
+        self.location = Location(x, y)
+        self.save_location()
 
 
 import random
