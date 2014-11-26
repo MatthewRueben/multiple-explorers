@@ -187,47 +187,7 @@ def doEpisode(headings, team, rovers, timesteps, maxDist, mvtNoise):
     # return
     pass
 
-if __name__ == "__main__":
-
-    # Test Location class
-    # a = Location(x=1, y=-3)
-    # b = Location(x=-1, y=1)
-    # c = Location(x=-1, y=1)
-    # print a
-    # print 'Should be 4.47:', a - b
-    # print 'Should be True:', b == c
-
-    # # Test World class (and POI, 2DBounds classes by extension)
-    # world_bounds = Bounds2D((0, 115), (0, 100))
-    # world_center = Location(60, 50)
-    # poi_ranges = (70, 70)
-    # poi_bounds = Bounds2D((world_center.x-poi_ranges[0]/2, world_center.x+poi_ranges[0]/2), 
-    #                       (world_center.y-poi_ranges[1]/2, world_center.y+poi_ranges[1]/2))
-    # print 'Should be ((25, 95), (15, 85)):', poi_bounds
-    # world = World(world_bounds, 100, poi_bounds, 30, world_center)
-    # import time
-    # for i in range(5):
-    #     world.reset()
-    #     world.test_plot()
-    #     time.sleep(0.5)
-    # rewards, rover_closest_list = world.get_rewards()
-    # print 'Rewards:', rewards
-    # world.test_plot(rover_closest_list)
-    #input('Press RETURN to quit. ')
-
-    # init a "dummy" nn just to print to make sure setup is correct... for testing earlier
-    # nn = NeuralNetwork(8, 10, 2)
-    # nn.createNodes()
-    # nn.createWeights()
-    # print nn
-    # print nn.predict([x for x in range(8)]) # inputs are just 0,1,2..7
-    # print 
-    # print 'Mutating....'
-    # mutatedNN = nn.mutateWeights(.1)
-    # print mutatedNN
-    # print mutatedNN.predict([x for x in range(8)])
-    # print nn.predict([x for x in range(8)]) # inputs are just 0,1,2..7
-
+def main():
     # Evo Training
     # 
     # Until convergence
@@ -286,3 +246,8 @@ if __name__ == "__main__":
         # select best nn performers
         #   and mutate and replace low performers
         updateNNS(nns, egreedy * egreedyDecreaseRate)
+
+
+if __name__ == "__main__":
+    main()
+    
