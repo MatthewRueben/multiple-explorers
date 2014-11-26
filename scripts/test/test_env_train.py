@@ -36,7 +36,7 @@ def createNN():
     '''
     nn = NeuralNetwork(8, 10, 2)
     nn.createNodes()
-    nn.createWeights()
+    nn.createRandomWeights()
     return nn
 
 def createTeams(nns):
@@ -170,16 +170,16 @@ def calcDX(output, maxDist, noise):
     return dx
 
 
-def doEpisode(headings, team, rovers, timesteps, maxDist, mvtNoise):
+def doEpisode(world, team, headings, timesteps, maxDist, minDist, mvtNoise):
     # reset world
     # init/place rovs
-    world.reset()  # randomize POI locations and reset rover locations
+    world.reset(headings)  # randomize POI locations and reset rover locations
     for t in range(timesteps):
-        for rov, nn in itertools.izip(rovers, team):
+        for rov, nn in itertools.izip(world.rovers, team):
             # Do a prediction with the rovs associated nn from the team
-            x,y = nn.predict(rov.getNNInputs()) # this takes parameters here that I don't konw how to access....yet!
-            dx = calcDX(x, maxDist, mvtNoise)
+            x,y = nn.predict(rov.getNNInputs(world.POIs, minDist, world.rovers)) 
             dy = calcDX(y, maxDist, mvtNoise)
+            
             # take the action with the pred. action
             rov.takeAction(dx, dy)
             # get reward for agent
@@ -187,47 +187,7 @@ def doEpisode(headings, team, rovers, timesteps, maxDist, mvtNoise):
     # return
     pass
 
-if __name__ == "__main__":
-
-    # Test Location class
-    # a = Location(x=1, y=-3)
-    # b = Location(x=-1, y=1)
-    # c = Location(x=-1, y=1)
-    # print a
-    # print 'Should be 4.47:', a - b
-    # print 'Should be True:', b == c
-
-    # # Test World class (and POI, 2DBounds classes by extension)
-    # world_bounds = Bounds2D((0, 115), (0, 100))
-    # world_center = Location(60, 50)
-    # poi_ranges = (70, 70)
-    # poi_bounds = Bounds2D((world_center.x-poi_ranges[0]/2, world_center.x+poi_ranges[0]/2), 
-    #                       (world_center.y-poi_ranges[1]/2, world_center.y+poi_ranges[1]/2))
-    # print 'Should be ((25, 95), (15, 85)):', poi_bounds
-    # world = World(world_bounds, 100, poi_bounds, 30, world_center)
-    # import time
-    # for i in range(5):
-    #     world.reset()
-    #     world.test_plot()
-    #     time.sleep(0.5)
-    # rewards, rover_closest_list = world.get_rewards()
-    # print 'Rewards:', rewards
-    # world.test_plot(rover_closest_list)
-    #input('Press RETURN to quit. ')
-
-    # init a "dummy" nn just to print to make sure setup is correct... for testing earlier
-    # nn = NeuralNetwork(8, 10, 2)
-    # nn.createNodes()
-    # nn.createWeights()
-    # print nn
-    # print nn.predict([x for x in range(8)]) # inputs are just 0,1,2..7
-    # print 
-    # print 'Mutating....'
-    # mutatedNN = nn.mutateWeights(.1)
-    # print mutatedNN
-    # print mutatedNN.predict([x for x in range(8)])
-    # print nn.predict([x for x in range(8)]) # inputs are just 0,1,2..7
-
+def main():
     # Evo Training
     # 
     # Until convergence
@@ -245,6 +205,7 @@ if __name__ == "__main__":
     numAgents = 5 # Num of agents in the system
     timesteps = 15
     maxDist = 10 # maximum distance the agent can move in one timestep
+    minDist = 5 # minimum distance 
     mvtNoise = .1 # the noise added to each actions outcome
     nns = initNNs(lenOfPool, numAgents) # Can be thought of as matrix of NNs, each sublist is an agents pool of nns
     # random headings for agent that will stay 
@@ -262,7 +223,7 @@ if __name__ == "__main__":
     poi_bounds = Bounds2D((world_center.x-poi_ranges[0]/2, world_center.x+poi_ranges[0]/2), 
                           (world_center.y-poi_ranges[1]/2, world_center.y+poi_ranges[1]/2))  # bounds of where POIs can go
 
-    world = World(world_bounds, 100, poi_bounds, 30, rover_start=world_center)  # make a world
+    world = World(world_bounds, 100, poi_bounds, 30, rover_start=world_center, agentInitHeadings)  # make a world
 
     # Create orientations for the agents outside so they will all be consist for agent i
     for i in range(3): # random definition of convergence
@@ -275,7 +236,7 @@ if __name__ == "__main__":
             # init agents, world, etc and do episode
 
             # do the episode, get rovers or just rewards?
-            doEpisode(agentInitHeadings, team, timesteps, maxDist, mvtNoise)
+            doEpisode(world, team, agentInitHeadings, timesteps, maxDist, minDist, mvtNoise)
 
             # # assign each nn in team a value
             ## This can be done in do episode since each nn holds its own value
@@ -286,3 +247,8 @@ if __name__ == "__main__":
         # select best nn performers
         #   and mutate and replace low performers
         updateNNS(nns, egreedy * egreedyDecreaseRate)
+
+
+if __name__ == "__main__":
+    main()
+    

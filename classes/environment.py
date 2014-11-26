@@ -3,10 +3,11 @@
 from geography import Bounds2D, Location, POI
 from rovers import Rover
 import random
+import itertools
 from matplotlib import pyplot
 
 class World():
-    def __init__(self, world_bounds, N_poi, poi_bounds, N_rovers, rover_start):
+    def __init__(self, world_bounds, N_poi, poi_bounds, N_rovers, rover_start, rovHeadings):
         """ Inputs "world_bounds" and "poi_bounds" are of class "2DBounds". """
         V_bounds = (0.0, 1.0)  # FIX ME?
         self.world_bounds = world_bounds
@@ -22,23 +23,25 @@ class World():
 
         # Init rovers
         self.rovers = []
-        for rover_index in range(N_rovers):
+        for rover_index, heading in itertools.izip(range(N_rovers), rovHeadings):
             rover = Rover(name='Fred',
                           x=self.rover_start.x, 
                           y=self.rover_start.y,
-                          heading=0.0,
+                          heading=heading,
                           num_sensors=4,
                           sensor_range=1000.0,  # ~infinite
                           sensor_noise=0.10,  # 10%
                           num_POI=100)
             self.rovers.append(rover)
         
-    def reset(self):
+    def reset(self, headings):
         for poi in self.POIs:
             poi.place_randomly(self.poi_bounds)  # assign POI location
-        for rover in self.rovers:
+        for rover in  self.rovers:
+            # reset agents to be center of world
             rover.reset(self.rover_start.x,
                         self.rover_start.y)
+
             
     def get_rewards(self):
         rewards = {'POI': [],
