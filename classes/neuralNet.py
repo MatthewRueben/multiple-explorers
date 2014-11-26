@@ -52,9 +52,11 @@ class NeuralNetwork():
 		self.rovInput = rovInput
 
 	def printWeights(self):
-		output = 'Weights\n\n{0}'.format(self.weights)
-		print output
-
+		# output = 'Weights\n\n{0}'.format(self.weights)
+		print '\n\nWeights:!!!'
+		for key in sorted(self.weights.keys()):
+			print 'Key: {0};   Weight:{1}'.format(key, self.weights[key])
+		
 	def __repr__(self):
 		return self.__str__()
 
@@ -94,7 +96,7 @@ class NeuralNetwork():
 	def createWeights(self):
 		''' Creates a dictionary of weights between the input nodes + bias and hidden nodes as well as the 
 				hidden nodes + bias and the output nodes.
-			The keys are the the form of 'firstNodeName , secondNodeName'; (e.g. Input-5, Hidden-0)
+			The keys are the the form of 'firstNodeName , secondNodeName'; (e.g. Input-5, Obscure-0)
 			The weights are all initialized to .5
 		'''
 		if (self.weights == None):
@@ -144,7 +146,9 @@ class NeuralNetwork():
 		# print 'total weights: ', len(self.weights)
 
 	def predict(self, inputs):
-		''' Takes the list of inputs and predicts the number of outputs.
+		''' slooooooow
+
+			Takes the list of inputs and predicts the number of outputs.
 			List should map to number of inputs.
 				For our specific rover domain lets have them in the order of 4 poi vals and 4 rov num vals.
 				Our output will be 2 vals, dx and dy
@@ -199,11 +203,14 @@ class NeuralNetwork():
 				print value
 			outputList.append(value)
 
-		return tuple(outputList)	
-
+		if self.verbose:
+			print 'Slow prediction: ', outputList
+		return tuple(outputList)
 
 	def calculateNodeInput(self, nodeName, nodeType, inputs, inputType):
-		''' Calculates the input for the node with the name "nodeName".
+		''' This is slooooooow.  Not used in fasterPredict, but it
+
+			Calculates the input for the node with the name "nodeName".
 			nodeName is expected to be an integer.
 
 			nodeType and inputType are currently only used for testing output.
@@ -241,6 +248,109 @@ class NeuralNetwork():
 			print 'Total counted: ', counted
 		return total	
 
+	def fasterPredict(self, inputs):
+		''' Takes the list of inputs and predicts the number of outputs.
+			List should map to number of inputs.
+				For our specific rover domain lets have them in the order of 4 poi vals and 4 rov num vals.
+				Our output will be 2 vals, dx and dy
+		'''
+		# for each of the hidden nodes, calculate their output using the initial inputs and weights
+		hiddenNodeOutput = []
+		for i in range(self.numHiddenLayerNodes):
+			hiddenNodeOutput.append(self.calcHiddenNodeOutput(i, inputs))
+
+		# for each of the output nodes, calculate their output using the hidden layer inputs and weights
+		outputList = []
+		for i in range(self.numOutputLayerNodes):
+			outputList.append(self.calcOutputNodeOutput(i, hiddenNodeOutput))
+
+
+		if self.verbose:
+			print 'Faster Prediction: ', outputList
+		return tuple(outputList)
+
+
+	def calcHiddenNodeInput(self, nodeIndex, inputLayerInputs):
+		''' Cacluates the input total for a given hidden layer node.
+			Utilizes the naming coventions from the createNodes method.
+			Includes the bias input as well.
+
+			11/26/2014
+		'''
+		# running total input for the hidden node
+		total = 0 
+		# for each input node, get the weight from the input node to the hidden layer node
+		for i in range(len(inputLayerInputs)):
+			# construct key
+			# Keys in form 'Input-5, Hidden-0'
+			key = 'Input-{0}, Obscure-{1}'.format(str(i), str(nodeIndex))
+			print key
+			total += inputLayerInputs[i] * self.weights[key]
+
+		# Include bias weight as well
+		key = 'Input-Bias, Obscure-{0}'.format(str(nodeIndex))
+		total += 1 * self.weights[key]
+
+		if self.verbose:
+			print 'Hidden node input for node {0} = {1}'.format(nodeIndex, total)
+
+		return total
+
+	def calcOutputNodeInput(self, nodeIndex, hiddenLayerOutputs):
+		''' Cacluates the input total for a given output node.
+			Utilizes the naming coventions from the createNodes method.
+			Includes the bias input as well.
+
+			11/26/2014
+		'''
+		# keep running total for the output node's inputs
+		total = 0
+		for i in range(len(hiddenLayerOutputs)):
+			# construct key
+			key = 'Obscure-{0}, Output-{1}'.format(i, str(nodeIndex))
+			total += hiddenLayerOutputs[i] * self.weights[key]
+
+			if self.verbose:
+				print '\nAdded Key {0}, weight {1} to total ouput which is now: {2}'.format(key, self.weights[key], total)
+
+		# include bias weight as well
+		key = 'Obscure-Bias, Output-{0}'.format(str(nodeIndex))
+		total += 1 * self.weights[key]
+		if self.verbose:
+			print '\nAdded Key {0}, weight {1} to total ouput which is now: {2}'.format(key, self.weights[key], total)
+
+		if self.verbose:
+			print '\n\nOutput node input for node {0} = {1}'.format(nodeIndex, total)
+
+		return total
+
+	def calcHiddenNodeOutput(self, nodeIndex, inputLayerInputs):
+		''' Calculates the output for a given hidden node and inputs.
+			Returns the output for the hidden node.
+
+			11/26/2014
+		'''
+		inputTotal = self.calcHiddenNodeInput(nodeIndex, inputLayerInputs)
+		output = self.activationFunction(inputTotal)
+
+		if self.verbose:
+			print 'Hidden node output for node {0} = {1}'.format(nodeIndex, output)
+		
+		return output
+
+
+	def calcOutputNodeOutput(self, nodeIndex, hiddenLayerOutputs):
+
+		inputForOutputNode = self.calcOutputNodeInput(nodeIndex, hiddenLayerOutputs)
+		if self.verbose:
+			print '...ouput nodes input, ', inputForOutputNode
+		output = self.activationFunction(inputForOutputNode)
+
+		if self.verbose:
+			print 'Output node output for node {0} = {1}'.format(nodeIndex, output)
+
+		return output
+
 	def getTotalNodes(self):
 		return self.numInputNodes + self.numHiddenLayerNodes + self.numOutputLayerNodes
 
@@ -274,17 +384,21 @@ class NeuralNetwork():
 
 def main():
 	# init a "dummy" nn just to print to make sure setup is correct
-	nn = NeuralNetwork(8, 10, 2)
+	nn = NeuralNetwork(2, 2, 1)
 	nn.createNodes()
 	nn.createWeights()
-	print nn
-	print nn.predict([x for x in range(8)]) # inputs are just 0,1,2..7
+	nn.verbose = True
+	# print nn
+	# print nn.predict([1 for x in range(2)]) # inputs are just 0,1,2..7
 	print 
 	print 'Mutating....'
-	mutatedNN = nn.mutateWeights(.1)
-	print mutatedNN
-	print mutatedNN.predict([x for x in range(8)])
-	print nn.predict([x for x in range(8)]) # inputs are just 0,1,2..7
+	mutatedNN = nn.mutateWeights(.6)
+	nn.printWeights()
+	mutatedNN.printWeights()
+	print 'Predictions....'
+	print mutatedNN.predict([1 for x in range(2)])
+	print nn.predict([1 for x in range(2)]) # inputs are just 0,1,2..7
+	print nn.fasterPredict([1 for x in range(2)])
 
 
 	# NN for estimating x2 + 1 :)
