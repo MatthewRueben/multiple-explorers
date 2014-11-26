@@ -100,7 +100,7 @@ class Rover():
                 self.POI_table[poi] = distance
                 
         
-    def getNNInputs(self, POI_list, rover_list):
+    def getNNInputs(self, POI_list, min_observation_dist, rover_list):
         # return all POI and rover counts in format:
         #   [Q1 POI, Q2 POI, Q3 POI, Q4 POI, Q1 Rover, Q2 Rover, Q3 Rover, Q4 Rover]
         rover_count = 0        
@@ -114,7 +114,7 @@ class Rover():
                 break
             
             # get count
-            poi_count = self.POI_sensors[i].getPoiCount(POI_list)
+            poi_count = self.POI_sensors[i].getPoiCount(POI_list, min_observation_dist)
             output_list.append(poi_count)
             
         for i in xrange(len(self.sensor_regions)):
