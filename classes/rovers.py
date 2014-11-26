@@ -35,8 +35,8 @@ class Rover():
             self.num_sensors = self.max_sensors
             
         for i in xrange(self.num_sensors):
-            self.POI_sensors.append(POI_Sensor(self.sensor_regions[i], self.heading, self.location, sensor_range, sensor_noise))
-            self.rover_sensors.append(Rover_Sensor(self.sensor_regions[i], self.heading, self.location, observation_range, sensor_range, sensor_noise))
+            self.POI_sensors.append(POI_Sensor(self.sensor_regions[i], self.location, self.heading, sensor_range, sensor_noise))
+            self.rover_sensors.append(Rover_Sensor(self.sensor_regions[i], self.location, self.heading, observation_range, sensor_range, sensor_noise))
 
        
     def save_location(self):

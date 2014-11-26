@@ -29,6 +29,7 @@ class World():
                           y=self.rover_start.y,
                           heading=heading,
                           num_sensors=4,
+                          observation_range=10,
                           sensor_range=1000.0,  # ~infinite
                           sensor_noise=0.10,  # 10%
                           num_POI=100)
