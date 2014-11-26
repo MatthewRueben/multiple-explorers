@@ -28,8 +28,8 @@ if __name__ == "__main__":
     world.reset()  # randomize POI locations and reset rover locations
     for time_step in range(15):  # for 15 time steps...
         for rover in world.rovers:  # move all the rovers
-            dx = random.choose(range(-5,6))
-            dy = random.choose(range(-5,6))
+            dx = random.choose(range(-5,6))  # INSERT NEURAL NETWORK HERE
+            dy = random.choose(range(-5,6))  # INSERT NEURAL NETWORK HERE
             rover.takeAction(dx, dy)
     rewards, rover_closest_list = world.get_rewards()
     print 'Rewards:', rewards
