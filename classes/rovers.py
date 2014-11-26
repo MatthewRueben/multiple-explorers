@@ -15,7 +15,7 @@ class Rover():
     max_sensors = 4
     sensor_regions = ['Front', 'Left', 'Right', 'Back']        
         
-    def __init__(self, name, x, y, heading, num_sensors, sensor_range, sensor_noise, num_POI):
+    def __init__(self, name, x, y, heading, num_sensors, observation_range, sensor_range, sensor_noise, num_POI):
         self.name = name
         self.reset(x, y, heading)  # reset to starting location
         self.heading = 0 # in radians
@@ -36,7 +36,7 @@ class Rover():
             
         for i in xrange(self.num_sensors):
             self.POI_sensors.append(POI_Sensor(self.sensor_regions[i], self.heading, self.location, sensor_range, sensor_noise))
-            self.rover_sensors.append(Rover_Sensor(self.sensor_regions[i], self.heading, self.location, sensor_range, sensor_noise))
+            self.rover_sensors.append(Rover_Sensor(self.sensor_regions[i], self.heading, self.location, observation_range, sensor_range, sensor_noise))
 
        
     def save_location(self):
@@ -115,3 +115,19 @@ class Rover():
             output_list.append(rover_count)
     
         return output_list
+
+
+    def getObservableRovers(self, rover_list):
+        # return a list of indices for rovers visibile
+        observable_rovers = []
+        
+        for i in xrange(len(self.sensor_regions)):
+            # check if valid quadrant
+            if i <= self.num_sensors:
+                temp_rovers = self.rover_sensors[i].getObservableRovers(rover_list)
+                
+                # append all returned indices                
+                for j in temp_rovers:
+                    observable_rovers.append(temp_rovers[j])
+                    
+        return obersable_rovers
