@@ -134,7 +134,7 @@ def selectPerformers(nns, egreedy):
     lowHalf = nns[:midPointIndex]
     
     # take egreedy high performers (minus the highest), and swap out with the lower half
-    for i in xrange(int(len(nns) * egreedy))
+    for i in xrange(int(len(nns) * egreedy)):
         # randomly insert switch one high performer with low performer (don't want to just assign low performer to high otherwise we might get weird linking errors)
         index = random.randint(0,midPointIndex-2) # <- prevent from indexing out of bounds and ensures that highest one is excluded (i.e. kept in top half)
         temp = lowHalf[index]
@@ -170,10 +170,10 @@ def calcDX(output, maxDist, noise):
     return dx
 
 
-def doEpisode(world, team, headings, timesteps, maxDist, minDist, mvtNoise):
+def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise):
     # reset world
     # init/place rovs
-    world.reset(headings)  # randomize POI locations and reset rover locations
+    world.reset()  # randomize POI locations and reset rover locations
     for t in range(timesteps):
         for rov, nn in itertools.izip(world.rovers, team):
             # Do a prediction with the rovs associated nn from the team
@@ -182,9 +182,10 @@ def doEpisode(world, team, headings, timesteps, maxDist, minDist, mvtNoise):
             
             # take the action with the pred. action
             rov.takeAction(dx, dy)
-            # get reward for agent
+            
     # Get rewards for nn's which correspond to system rewards   
-    # return
+    world.getRewards() # two values, only need first which is called rewards which is (dictionary) with keys local global difference
+    # return rewards or assign them to each nn now
     pass
 
 def main():
@@ -223,7 +224,7 @@ def main():
     poi_bounds = Bounds2D((world_center.x-poi_ranges[0]/2, world_center.x+poi_ranges[0]/2), 
                           (world_center.y-poi_ranges[1]/2, world_center.y+poi_ranges[1]/2))  # bounds of where POIs can go
 
-    world = World(world_bounds, 100, poi_bounds, 30, rover_start=world_center, agentInitHeadings)  # make a world
+    world = World(world_bounds, 100, poi_bounds, 30, rover_start=world_center, rovHeadings=agentInitHeadings)  # make a world
 
     # Create orientations for the agents outside so they will all be consist for agent i
     for i in range(3): # random definition of convergence
@@ -236,7 +237,7 @@ def main():
             # init agents, world, etc and do episode
 
             # do the episode, get rovers or just rewards?
-            doEpisode(world, team, agentInitHeadings, timesteps, maxDist, minDist, mvtNoise)
+            doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise)
 
             # # assign each nn in team a value
             ## This can be done in do episode since each nn holds its own value
