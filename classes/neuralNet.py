@@ -227,18 +227,22 @@ class NeuralNetwork():
 		'''
 		self.weights[key] = newValue
 
-	def mutateWeights(self):
-		''' Mutates a random 10% of the given weights by adding in
+	def mutateWeights(self, mutateRate):
+		''' Mutates a random mutateRate% of the given weights by adding in
 			some random number from a normalized distribution with mean of 0 and std deviation of 1.
-			Returns a deep copy of the neural net with the mutated weights.
+			mutateRate is expected to be float value from 0 to 1
+
+			Returns a deep copy of the neural net with the mutated weights and a value of float min.
 		'''
 		# make a deep copy of the NN.
 		mutatedNN = copy.deepcopy(self)
-		# take a random sample of 10% of the keys
-		keysToMutate = random.sample(self.weights.keys(), int(len(self.weights)/10))
+		# take a random sample of mutateRate of the keys
+		keysToMutate = random.sample(self.weights.keys(), int(len(self.weights)*mutateRate))
 		for key in keysToMutate:
 			mutatedNN.weights[key] = self.weights[key] + random.gauss(0,1)
 
+		# the new value should be the minimum possible, since we haven't tested it out yet
+		mutatedNN.value = sys.float_info.min
 
 		return mutatedNN
 
@@ -252,7 +256,7 @@ def main():
 	print nn.predict([x for x in range(8)]) # inputs are just 0,1,2..7
 	print 
 	print 'Mutating....'
-	mutatedNN = nn.mutateWeights()
+	mutatedNN = nn.mutateWeights(.1)
 	print mutatedNN
 	print mutatedNN.predict([x for x in range(8)])
 	print nn.predict([x for x in range(8)]) # inputs are just 0,1,2..7
@@ -266,7 +270,7 @@ def main():
 	# print nn.predict([x for x in range(1)]) # inputs are just 0,1,2..7
 	# print 
 	# print 'Mutating....'
-	# mutatedNN = nn.mutateWeights()
+	# mutatedNN = nn.mutateWeights(.1)
 	# print mutatedNN
 	# print mutatedNN.predict([1])
 	# print nn

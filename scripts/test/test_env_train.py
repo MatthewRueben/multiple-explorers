@@ -100,15 +100,20 @@ def createTeams(nns):
     return allTeams
 
 def updateNNS(nns, egreedy):
-    ''' Selects the top performers of nns for each agent '''
+    ''' Selects the top performers of nns for each agent
+        Mutates these and replaces the lower performers.
+
+        Note: Keeps the same neural networks in memory, but with different weights.
+    '''
 
     for agentNNs in nns:        
-        
-        topHalfNNs, lowHalfNNs = selectPerformers(agentNNs)
+        # Divide out the agent's nns in the the high performers and low performers
+        topHalfNNs, lowHalfNNs = selectPerformers(agentNNs, egreedy)
+        # mutate the top performers and replace the lowHalfNN's with these mutate weights
+        mutateNNs(topHalfNNs, lowHalfNNs)
 
-        mutateTopHalfNNs()
 
-def selectPerformers(nns):
+def selectPerformers(nns, egreedy):
     ''' Given a list a nueral networks,
          this method selects the top half performers, 
          always keeping the highest performer,
@@ -128,12 +133,27 @@ def selectPerformers(nns):
     
     # take egreedy high performers (minus the highest), and swap out with the lower half
     for i in xrange(int(len(nns) * egreedy))
-        # randomly insert one from low half with the high half
+        # randomly insert switch one high performer with low performer (don't want to just assign low performer to high otherwise we might get weird linking errors)
         index = random.randint(0,midPointIndex-2) # <- prevent from indexing out of bounds and ensures that highest one is excluded (i.e. kept in top half)
-        topHalf[index] = lowHalf[index]
+        temp = lowHalf[index]
+        lowHalf[index] = topHalf[index]
+        topHalf[index] = temp
 
     return topHalf, lowHalf
-        
+    
+
+def mutateNNs(topHalf, lowHalf):
+    ''' Each nn in the low half is replaced by a mutated version of the nn in the topHalf. 
+        Leaves the low nn in the same memory address (for the sake of the larger nns matrix.
+        Instead, does a deep copy of the weights in the mutated nn.
+
+        @author: Kory Kraft
+        '''
+
+    for low, top in zip(lowHalf, topHalf):
+        low.weights = top.mutateWeights(.1).weights
+        low.value = sys.float_info.min
+
 
 
 def doEpisode(headings, team):
@@ -177,7 +197,7 @@ if __name__ == "__main__":
     # print nn.predict([x for x in range(8)]) # inputs are just 0,1,2..7
     # print 
     # print 'Mutating....'
-    # mutatedNN = nn.mutateWeights()
+    # mutatedNN = nn.mutateWeights(.1)
     # print mutatedNN
     # print mutatedNN.predict([x for x in range(8)])
     # print nn.predict([x for x in range(8)]) # inputs are just 0,1,2..7
@@ -216,10 +236,10 @@ if __name__ == "__main__":
             # do the episode, get rovers or just rewards?
             doEpisode(agentInitHeadings, team)
 
-            # assign each nn in team a value
-            for nn, rover in team, rovers:
-                # nn.value = rover.getReward()
-                nn.value = random.randint(0,10)
+            # # assign each nn in team a value
+            # for nn, rover in team, rovers:
+            #     # nn.value = rover.getReward()
+            #     nn.value = random.randint(0,10)
         
         # select best nn performers
         #   and mutate and replace low performers
