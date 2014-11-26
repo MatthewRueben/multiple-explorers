@@ -10,7 +10,8 @@ class POI_Sensor(Sensor):
     
     def __init__(self, sector, location, rover_heading, sensor_range, sensor_noise):
         super(POI_Sensor, self).__init__(sector, location, rover_heading, sensor_range, sensor_noise)
-
+        
+        
     def getPoiCount(self, POI_list, min_observation_dist):
         # determine the total rovers seen
         POI_count = 0

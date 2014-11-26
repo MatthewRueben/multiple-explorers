@@ -11,6 +11,7 @@ class Rover_Sensor(Sensor):
     def __init__(self, sector, location, rover_heading, sensor_range, sensor_noise):
         super(Rover_Sensor, self).__init__(sector, location, rover_heading, sensor_range, sensor_noise)
         
+        
     def getRoverCount(self, rover_list, min_observation_dist):
         # determine the total rovers seen
         rover_count = 0
