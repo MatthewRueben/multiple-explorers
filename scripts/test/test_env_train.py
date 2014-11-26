@@ -173,7 +173,7 @@ def calcDX(output, maxDist, noise):
 def doEpisode(world, team, headings, timesteps, maxDist, minDist, mvtNoise):
     # reset world
     # init/place rovs
-    world.reset(headings)  # randomize POI locations and reset rover locations
+    world.reset()  # randomize POI locations and reset rover locations
     for t in range(timesteps):
         for rov, nn in itertools.izip(world.rovers, team):
             # Do a prediction with the rovs associated nn from the team
@@ -184,6 +184,9 @@ def doEpisode(world, team, headings, timesteps, maxDist, minDist, mvtNoise):
             rov.takeAction(dx, dy)
             # get reward for agent
     # Get rewards for nn's which correspond to system rewards   
+    rewards, rover_closest_list = world.get_rewards()
+    for nn, reward in zip(team, rewards['DIFFERENCE']):
+        nn.value = reward
     # return
     pass
 
