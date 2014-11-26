@@ -36,7 +36,7 @@ class POI_Sensor(Sensor):
             # angle range is: [left_edge, right_edge)
             
             # if angle range straddles 0:
-            if (distance <= self.senor_range) and (0 <= angle <= self.left_edge) and (360 > angle > self.right_edge):
+            if (distance <= self.sensor_range) and (0 <= angle <= self.left_edge) and (360 > angle > self.right_edge):
                 sum_dist = max(distance**2, min_observation_dist**2)
                 POI_count += (POI_list[poi].V/sum_dist)
             # if angle range is typical:
