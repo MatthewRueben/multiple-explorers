@@ -3,10 +3,11 @@
 @author: Austin Nicolai
 """
 
-import POI_Sensor
-import Rover_Sensor
+from POI_sensor import POI_Sensor
+from rover_sensor import Rover_Sensor
 import math
-from random import randint
+
+#TODO: remove Location class and import at some point
 
 class Location:
     """ A point in 2D Euclidean space. """
@@ -100,7 +101,7 @@ class Rover():
                 self.POI_table[poi] = distance
                 
         
-    def getNNInputs(self, POI_list, rover_list):
+    def getNNInputs(self, POI_list, min_observation_dist, rover_list):
         # return all POI and rover counts in format:
         #   [Q1 POI, Q2 POI, Q3 POI, Q4 POI, Q1 Rover, Q2 Rover, Q3 Rover, Q4 Rover]
         rover_count = 0        
@@ -111,17 +112,15 @@ class Rover():
             # check if valid quadrant            
             if i > self.num_sensors:
                 output_list.append(0) # if no sensor for the quadrant, return 0
-                break
             
             # get count
-            poi_count = self.POI_sensors[i].getPoiCount(POI_list)
+            poi_count = self.POI_sensors[i].getPoiCount(POI_list, min_observation_dist)
             output_list.append(poi_count)
             
         for i in xrange(len(self.sensor_regions)):
             # check if valid quadrant
             if i > self.num_sensors:
                 output_list.append(0) # if no sensor for the quadrant, return 0
-                break
             
             # get count
             rover_count = self.rover_sensors[i].getRoverCount(rover_list)

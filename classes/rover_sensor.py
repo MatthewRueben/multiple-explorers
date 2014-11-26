@@ -3,7 +3,7 @@
 @author: Austin Nicolai
 """
 
-import Sensor
+from sensor import Sensor
 import math
 
 class Rover_Sensor(Sensor):
@@ -11,7 +11,7 @@ class Rover_Sensor(Sensor):
     def __init__(self, sector, location, rover_heading, sensor_range, sensor_noise):
         super(Rover_Sensor, self).__init__(sector, location, rover_heading, sensor_range, sensor_noise)
         
-    def getRoverCount(self, rover_list):
+    def getRoverCount(self, rover_list, min_observation_dist):
         # determine the total rovers seen
         rover_count = 0
         
@@ -37,9 +37,11 @@ class Rover_Sensor(Sensor):
             
             # if angle range straddles 0:
             if (distance <= self.senor_range) and (0 <= angle <= self.left_edge) and (360 > angle > self.right_edge):
-                rover_count += 1
+                sum_dist = max(distance**2, min_observation_dist**2)
+                rover_count += (1/sum_dist)
             # if angle range is typical:
             elif (distance <= self.sensor_range) and (angle <= self.left_edge) and (angle > self.right_edge):
-                rover_count += 1
+                sum_dist = max(distance**2, min_observation_dist**2)
+                rover_count += (1/sum_dist)
             
         return rover_count
