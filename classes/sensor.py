@@ -3,7 +3,7 @@
 @author: Austin Nicolai
 """
 
-class Sensor():
+class Sensor(object):
     
     # quadrant axes at 45 degree angle
     regions = {'Front': 0,
@@ -16,7 +16,7 @@ class Sensor():
         self.location = location
 
         # define quadrant edges in terms of degrees
-        global_heading = rover_heading + self.regions[sector]
+        global_heading = rover_heading + self.regions['Front']
         self.left_edge = global_heading + 45
         self.right_edge = global_heading - 45
         

@@ -10,7 +10,8 @@ class POI_Sensor(Sensor):
     
     def __init__(self, sector, location, rover_heading, sensor_range, sensor_noise):
         super(POI_Sensor, self).__init__(sector, location, rover_heading, sensor_range, sensor_noise)
-
+        
+        
     def getPoiCount(self, POI_list, min_observation_dist):
         # determine the total rovers seen
         POI_count = 0
@@ -21,7 +22,7 @@ class POI_Sensor(Sensor):
             distance = self.location - POI_list[poi].location
             
             # add sensor noise to the distance
-            distance = distance * (1 + self.sensor_noise)
+            distance = distance * (1. + self.sensor_noise/100.)
             
             # determine the angle to the rover
             dx = self.location.x - POI_list[poi].location.x
