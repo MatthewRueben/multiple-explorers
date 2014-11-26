@@ -5,10 +5,11 @@ Purpose:
 Class to define FF, single hidden layer, neural network.
 Specifically, the NN will be used with rover domain.
 
+
 In Evo Part:
 Mutate about 10% of weights.
-1 way to modify (that works) take previous weight then add alpha from
-    normal distribution 0 - 1, decrease 1 over generation/time
+1 way to modify (that works) take previous weight then add random sample for
+    normal distribution
 Don't forget bias term :)
   
 @author Kory Kraft
@@ -16,12 +17,15 @@ Don't forget bias term :)
 '''
 
 import math
+import copy
+import random
+import sys
 
 class NeuralNetwork():
 	''' Creates a NN for a single layer FF NN 
 		The activation function is the same for all the nodes
 	'''
-	def __init__(self, input, hiddenLayer, output):
+	def __init__(self, input, hiddenLayer, output, weights = {}, verbose = False):
 		''' Expecting:
 				The numpber of input nodes
 				The numer of hidden layer nodes
@@ -31,7 +35,14 @@ class NeuralNetwork():
 		self.numInputNodes = input
 		self.numHiddenLayerNodes = hiddenLayer
 		self.numOutputLayerNodes = output
-		self.weights = {}
+		self.weights = weights
+
+		# used to train the network using evo
+		self.selected = False
+		self.value = sys.float_info.min
+
+		# for error checking
+		self.verbose = verbose
 
 	def supplyInputs(self, inputs):
 		''' At this point, I am expecting a list for the inputs
@@ -49,8 +60,10 @@ class NeuralNetwork():
 		return self.__str__()
 
 	def __str__(self):
-		return '\nNN: \nInput Nodes: {0}\nHidden Layer Nodes: {1}\nOutput Nodes: {2}\n\nWeights:\n{3}\nNum Weights{4})'\
-				.format(self.numInputNodes, self.numHiddenLayerNodes, self.numOutputLayerNodes, self.weights, len(self.weights))
+		# return '\nNN: \nInput Nodes: {0}\nHidden Layer Nodes: {1}\nOutput Nodes: {2}\n\nWeights:\n{3}\nNum Weights: {4}'\
+		# 		.format(self.numInputNodes, self.numHiddenLayerNodes, self.numOutputLayerNodes, self.weights, len(self.weights))
+		return '\nNN: \nInput Nodes: {0}\nHidden Layer Nodes: {1}\nOutput Nodes: {2}\n\nWeights:\n{3}\nNum Weights: {4}'\
+				.format(self.numInputNodes, self.numHiddenLayerNodes, self.numOutputLayerNodes, 'Not printing', len(self.weights))
 
 	def activationFunction(self, x):
 		''' Performs the activation function on x.
@@ -137,7 +150,8 @@ class NeuralNetwork():
 		hiddenNodeOutputs = {}
 		for node in self.hiddenNodes:
 			nodeName = node.split('-')[1].strip()
-			print 'Node name: ', nodeName
+			if self.verbose:
+				print 'Node name: ', nodeName
 			# Bias term in hidden layer does not have inputs
 			if nodeName != 'Bias':
 				hiddenNodeInput = self.calculateNodeInput(nodeName, 'Obscure', inputs, 'Input') # with the way this is set up, this is an n2 operation :(
@@ -152,10 +166,12 @@ class NeuralNetwork():
 		outputList = []
 		for node in self.outputNodes:
 			nodeName = node.split('-')[1].strip()
-			print 'Node name: ', nodeName
+			if self.verbose:
+				print 'Node name: ', nodeName
 			hiddenNodeInput = self.calculateNodeInput(nodeName, 'Output', hiddenNodeOutputList, 'Hidden') # with the way this is set up, this is an n2 operation :(
 			value = self.activationFunction(hiddenNodeInput)
-			print value
+			if self.verbose:
+				print value
 			outputList.append(value)
 
 		return tuple(outputList)	
@@ -194,8 +210,10 @@ class NeuralNetwork():
 					increment = self.weights[key] * inputs[inputIndex]
 				total += self.weights[key] * increment
 				counted += 1
-				print '{0} node {1} connected to {2} {3}.     Adding: {4}'.format(inputType, inputIndex, nodeType, nodeName, increment)
-		print 'Total counted: ', counted
+				if self.verbose:
+					print '{0} node {1} connected to {2} {3}.     Adding: {4}'.format(inputType, inputIndex, nodeType, nodeName, increment)
+		if self.verbose:
+			print 'Total counted: ', counted
 		return total	
 
 	def getTotalNodes(self):
@@ -203,6 +221,26 @@ class NeuralNetwork():
 
 	def getTotalWeights(self):
 		return len(self.weights)
+
+	def changeWeight(self, key, newValue):
+		''' Changes the weight for key to the newValue
+		'''
+		self.weights[key] = newValue
+
+	def mutateWeights(self):
+		''' Mutates a random 10% of the given weights by adding in
+			some random number from a normalized distribution with mean of 0 and std deviation of 1.
+			Returns a deep copy of the neural net with the mutated weights.
+		'''
+		# make a deep copy of the NN.
+		mutatedNN = copy.deepcopy(self)
+		# take a random sample of 10% of the keys
+		keysToMutate = random.sample(self.weights.keys(), int(len(self.weights)/10))
+		for key in keysToMutate:
+			mutatedNN.weights[key] = self.weights[key] + random.gauss(0,1)
+
+
+		return mutatedNN
 
 
 def main():
@@ -212,6 +250,26 @@ def main():
 	nn.createWeights()
 	print nn
 	print nn.predict([x for x in range(8)]) # inputs are just 0,1,2..7
+	print 
+	print 'Mutating....'
+	mutatedNN = nn.mutateWeights()
+	print mutatedNN
+	print mutatedNN.predict([x for x in range(8)])
+	print nn.predict([x for x in range(8)]) # inputs are just 0,1,2..7
+
+
+	# NN for estimating x2 + 1 :)
+	# nn = NeuralNetwork(1, 5, 1)
+	# nn.createNodes()
+	# nn.createWeights()
+	# print nn
+	# print nn.predict([x for x in range(1)]) # inputs are just 0,1,2..7
+	# print 
+	# print 'Mutating....'
+	# mutatedNN = nn.mutateWeights()
+	# print mutatedNN
+	# print mutatedNN.predict([1])
+	# print nn
 	
 
 
