@@ -45,10 +45,11 @@ class Rover():
         self.location_history.append(copy.deepcopy(self.location))  
         
 
-    def reset(self, x, y):
+    def reset(self, x, y, heading):
         # reset to the starting location
         self.location_history = []  # clear the history. history won't include the starting location
         self.location = Location(x, y)
+        self.heading = heading
 
 
     def takeAction(self, dx, dy):

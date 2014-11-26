@@ -37,10 +37,11 @@ class World():
     def reset(self, headings):
         for poi in self.POIs:
             poi.place_randomly(self.poi_bounds)  # assign POI location
-        for rover in  self.rovers:
+        for rover, heading in itertools.izip(self.rovers, headings):
             # reset agents to be center of world
             rover.reset(self.rover_start.x,
-                        self.rover_start.y)
+                        self.rover_start.y,
+                        heading)
 
             
     def get_rewards(self):

@@ -170,10 +170,10 @@ def calcDX(output, maxDist, noise):
     return dx
 
 
-def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise):
+def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings):
     # reset world
     # init/place rovs
-    world.reset()  # randomize POI locations and reset rover locations
+    world.reset(headings)  # randomize POI locations and reset rover locations
     for t in range(timesteps):
         for rov, nn in itertools.izip(world.rovers, team):
             # Do a prediction with the rovs associated nn from the team
@@ -238,7 +238,7 @@ def main():
             # init agents, world, etc and do episode
 
             # do the episode, get rovers or just rewards?
-            doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise)
+            doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings)
 
             # # assign each nn in team a value
             ## This can be done in do episode since each nn holds its own value
