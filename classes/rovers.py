@@ -17,8 +17,7 @@ class Rover():
         
     def __init__(self, name, x, y, heading, num_sensors, sensor_range, sensor_noise, num_POI):
         self.name = name
-        self.start = [x, y]
-        self.reset(*self.start)  # reset to starting location
+        self.reset(x, y, heading)  # reset to starting location
         self.heading = 0 # in radians
         self.sensor_range = sensor_range
         self.sensor_noise = sensor_noise
