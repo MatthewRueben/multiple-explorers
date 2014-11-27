@@ -188,8 +188,9 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings):
     # Get rewards for nn's which correspond to system rewards   
     rewards, rover_closest_list = world.get_rewards()
     for nn, reward in itertools.izip(team, rewards['DIFFERENCE']):
-        nn.value = reward
-    pass
+        # nn.value = reward  # SAVE ME!
+        nn.value = rewards['GLOBAL']  # HACK in the Global reward
+    return rewards['GLOBAL']
 
 def main():
     # Evo Training
@@ -205,8 +206,8 @@ def main():
     #     Replace the unselected onces 
 
     # Hyperparamters for training
-    lenOfPool = 10 # Num of nn's for each agent 
-    numAgents = 5 # Num of agents in the system
+    lenOfPool = 20 # Num of nn's for each agent 
+    numAgents = 3 # Num of agents in the system
     timesteps = 15
     maxDist = 10 # maximum distance the agent can move in one timestep
     minDist = 5 # minimum distance 
@@ -230,18 +231,33 @@ def main():
     world = World(world_bounds, 100, poi_bounds, 30, rover_start=world_center, rovHeadings=agentInitHeadings)  # make a world
 
     # Create orientations for the agents outside so they will all be consist for agent i
-    for i in range(3): # random definition of convergence
+    import timeit
+    start_time = timeit.default_timer()
+    rewards_list = []
+    for i in range(500): # random definition of convergence
 
         # create random team of agent brains for the game
         teams = createTeams(nns, lenOfPool)
 
+        team_rewards = []
         for team in teams:         
             # do the episode
-            doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings)
+            reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings)
+            team_rewards.append(reward)
+
+        # Calc average reward over team combos
+        rewards_list.append(max(team_rewards))
         
         # select best nn performers
         #   and mutate and replace low performers
         updateNNS(nns, egreedy * egreedyDecreaseRate)
+
+    elapsed_time = timeit.default_timer() - start_time
+    print str(int(elapsed_time)) + ' seconds'
+
+    from matplotlib import pyplot
+    pyplot.plot(rewards_list)
+    pyplot.show()
 
 
 if __name__ == "__main__":

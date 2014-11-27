@@ -284,7 +284,8 @@ class NeuralNetwork():
 			# construct key
 			# Keys in form 'Input-5, Hidden-0'
 			key = 'Input-{0}, Obscure-{1}'.format(str(i), str(nodeIndex))
-			print key
+			if self.verbose: 
+				print key
 			total += inputLayerInputs[i] * self.weights[key]
 
 		# Include bias weight as well
