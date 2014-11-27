@@ -183,7 +183,7 @@ def calcDX(output, maxDist, noise):
     return dx
 
 
-def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings):
+def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewardType, moveRandomly=False):
 
     # reset world
     # init/place rovs
@@ -192,21 +192,28 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings):
         for rov, nn in itertools.izip(world.rovers, team):
             # Do a prediction with the rovs associated nn from the team
             o1, o2 = nn.fasterPredict(rov.getNNInputs(world.POIs, minDist, world.rovers)) 
-            dx = calcDX(o1, maxDist, mvtNoise)
-            dy = calcDX(o2, maxDist, mvtNoise)
+            if moveRandomly:
+                dx = random.uniform(-maxDist, maxDist)  # pick random actions
+                dy = random.uniform(-maxDist, maxDist)
+            else:
+                dx = calcDX(o1, maxDist, mvtNoise)  # use the neural network's actions
+                dy = calcDX(o2, maxDist, mvtNoise)
             
-            # take the action with the pred. action
+            # take the action with the chosen action
             rov.takeAction(dx, dy)
             
     # Get rewards for nn's which correspond to system rewards   
-    rewards, rover_closest_list = world.get_rewards()
-    for nn, reward in itertools.izip(team, rewards['DIFFERENCE']):
-        # nn.value = reward  # SAVE ME!
-        nn.value = rewards['GLOBAL']  # HACK in the Global reward
+    rewards, rover_closest_list = world.get_rewards()  # get all the different reward types
+    rewards_chosen = rewards[rewardType]  # pick the reward type
+    if rewardType == 'GLOBAL':  # the global reward is length 1 and needs to be tiled
+        rewards_chosen = [rewards_chosen]*len(team)  
+    for nn, reward in itertools.izip(team, rewards_chosen):  # assign rewards to NN's
+        nn.value = reward
+
     return rewards['GLOBAL']
 
 
-def main():
+def main(rewardType, moveRandomly=False):
     # Evo Training
     # 
     # Until convergence
@@ -256,7 +263,7 @@ def main():
         team_rewards = []
         for team in teams:         
             # do the episode
-            reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings)
+            reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings, rewardType, moveRandomly)
             team_rewards.append(reward)
 
         # Calc average reward over team combos
@@ -275,5 +282,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+#    main(rewardType='DIFFERENCE', moveRandomly=True)  # random!
+    main(rewardType='DIFFERENCE', moveRandomly=False)  # learning!
     
