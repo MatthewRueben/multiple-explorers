@@ -255,7 +255,7 @@ def main(rewardType, moveRandomly=False):
     import timeit
     start_time = timeit.default_timer()
     rewards_list = []
-    for i in range(500): # random definition of convergence
+    for i in range(200): # random definition of convergence
 
         # create random team of agent brains for the game
         teams = createTeams(nns, lenOfPool)
@@ -266,8 +266,9 @@ def main(rewardType, moveRandomly=False):
             reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings, rewardType, moveRandomly)
             team_rewards.append(reward)
 
-        # Calc average reward over team combos
-        rewards_list.append(max(team_rewards))
+        # Save max reward over team combos
+        #rewards_list.append(max(team_rewards))
+        rewards_list.append(team_rewards)  # NOT MAX! CHANGE ME BACK!
         
         # select best nn performers
         #   and mutate and replace low performers
