@@ -73,7 +73,10 @@ class NeuralNetwork():
 			1 means activated. 
 			Currently uses the sigmoid function.
 		'''
-		activation = 1 / (1 + math.exp(-x))
+		try:
+			activation = 1 / (1 + math.exp(-x))
+		except:
+			activation = sys.float_info.max
 		return activation
 
 	def createNodes(self):
@@ -308,6 +311,7 @@ class NeuralNetwork():
 		total = 0
 		for i in range(len(hiddenLayerOutputs)):
 			# construct key
+			
 			key = 'Obscure-{0}, Output-{1}'.format(i, str(nodeIndex))
 			total += hiddenLayerOutputs[i] * self.weights[key]
 
@@ -373,7 +377,7 @@ class NeuralNetwork():
 		# make a deep copy of the NN.
 		mutatedNN = copy.deepcopy(self)
 		# take a random sample of mutateRate of the keys
-		keysToMutate = random.sample(self.weights.keys(), int(len(self.weights)*mutateRate))
+		keysToMutate = random.sample(self.weights.keys(), int(len(self.weights)*mutateRate) + 1)
 		for key in keysToMutate:
 			mutatedNN.weights[key] = self.weights[key] + random.gauss(0,1)
 
