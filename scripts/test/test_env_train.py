@@ -21,12 +21,25 @@ def initNNs(lenOfPool, numAgents):
 
         @author Kory Kraft
     '''
+    # Ask Dr. Smart about this section.  Have to deep copy both the list and the nn.
+    # Cannot even just createNN() inside the append.
+    # Whats up?
+    # Kory Kraft 11/26/2014 
+    # nnList = []
+    # for agent in range(numAgents):
+    #     agentsNNList = []
+    #     for i in range(lenOfPool):
+    #         agentsNNList.append(createNN())
+    #     nnList.append(agentsNNList)
+    # return nnList
+
     nnList = []
     for agent in range(numAgents):
         agentsNNList = []
         for i in range(lenOfPool):
-            agentsNNList.append(createNN())
-        nnList.append(agentsNNList)
+            nn = createNN()
+            agentsNNList.append(copy.deepcopy(nn))
+        nnList.append(copy.deepcopy(agentsNNList) )
     return nnList
 
 
@@ -125,16 +138,16 @@ def selectPerformers(nns, egreedy):
     @ author Kory Kraft
     '''
     # sort the agent's nns according to value from low to high
-    sorted(nns, key=lambda nn: nn.value)
+    sortedNNS = sorted(nns, key=lambda nn: nn.value)
 
     # keep the highest, and e-greedy time swap out a low performer with a high performer
     # get the top half of the list (those are the highest performers)
-    midPointIndex = int(len(nns)/2)
-    topHalf = nns[midPointIndex:] 
-    lowHalf = nns[:midPointIndex]
+    midPointIndex = int(len(sortedNNS)/2)
+    topHalf = sortedNNS[midPointIndex:] 
+    lowHalf = sortedNNS[:midPointIndex]
     
     # take egreedy high performers (minus the highest), and swap out with the lower half
-    for i in xrange(int(len(nns) * egreedy)):
+    for i in xrange(int(len(sortedNNS) * egreedy)):
         # randomly insert switch one high performer with low performer (don't want to just assign low performer to high otherwise we might get weird linking errors)
         index = random.randint(0,midPointIndex-2) # <- prevent from indexing out of bounds and ensures that highest one is excluded (i.e. kept in top half)
         temp = lowHalf[index]
@@ -190,6 +203,7 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings):
     for nn, reward in itertools.izip(team, rewards['DIFFERENCE']):
         nn.value = reward
     pass
+
 
 def main():
     # Evo Training
