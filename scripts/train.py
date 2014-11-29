@@ -391,7 +391,7 @@ def getResults():
 
     # baseDifferenceSettings = copy.deepcopy(baseSettings)
     # baseDifferenceSettings.type = 'DIFFERENCE'
-    # baseDifferenceSettings.rewardType = 'GLOBAL'
+    # baseDifferenceSettings.rewardType = 'DIFFERENCE'
 
     # baseRandomSettings = copy.deepcopy(baseSettings)
     # baseRandomSettings.type = 'RANDOM'
