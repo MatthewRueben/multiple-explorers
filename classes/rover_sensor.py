@@ -6,6 +6,7 @@
 import sys
 from sensor import Sensor
 import math
+from random import randint
 
 class Rover_Sensor(Sensor):
     
@@ -25,7 +26,8 @@ class Rover_Sensor(Sensor):
             distance = self.location - rover.location
             
             # add sensor noise to the distance
-            distance = distance * (1. + self.sensor_noise/100.)
+            random_noise = randint(-self.sensor_noise, self.sensor_noise)
+            distance = distance * (1. + random_noise/100.)
             
             # determine the angle to the rover
             dx = self.location.x - rover.location.x
