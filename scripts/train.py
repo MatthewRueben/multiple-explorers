@@ -213,6 +213,7 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewa
     return rewards['GLOBAL']
 
 def main(rewardType, moveRandomly=False, numAgents = 30, episodes = 200):
+    ''' Returns reward list for the system at each episode. '''
     # Evo Training
     # 
     # Until convergence
@@ -284,12 +285,14 @@ def main(rewardType, moveRandomly=False, numAgents = 30, episodes = 200):
         print 'Best NN Weights:'
         bestNN.printWeights()
 
+    return rewards_list
+
 
 if __name__ == "__main__":
     import timeit
     start_time = timeit.default_timer()
 #   main(rewardType='DIFFERENCE', moveRandomly=True)  # random!
-    main(rewardType='DIFFERENCE', moveRandomly=False, numAgents = 30, episodes = 300)  # learning!
+    rewards_list = main(rewardType='DIFFERENCE', moveRandomly=False, numAgents = 2, episodes = 2)  # learning!
     elapsed_time = timeit.default_timer() - start_time
     print str(int(elapsed_time)) + ' seconds'
 
