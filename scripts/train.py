@@ -324,8 +324,8 @@ def getResults():
 
     import timeit
     start_time = timeit.default_timer()
-    numStatRuns = 50
-    epochs = 2
+    numStatRuns = 500
+    epochs = 200
 
     # runs all four reward types with 30 agents for 200 episodes
     # runBaseline()
@@ -377,28 +377,28 @@ def getResults():
     sensorNoise50.type = 'SN_50'
 
 
-    # settings = [sensorRangeUnlimitedSettings, sensorRangeLimitedSettings, sensorRangeMediumSettings]
-    # settings.extend([sensorFOV360, sensorFOV270, sensorFOV90])
-    # settings.extend([sensorNoiseNone, sensorNoise10, sensorNoise50])
+    settings = [sensorRangeUnlimitedSettings, sensorRangeLimitedSettings, sensorRangeMediumSettings]
+    # settings = [sensorFOV360, sensorFOV270, sensorFOV90]
+    # settings = [sensorNoiseNone, sensorNoise10, sensorNoise50]
 
-    baseGlobalSettings = copy.deepcopy(baseSettings)
-    baseGlobalSettings.type = 'GLOBAL'
-    baseGlobalSettings.rewardType = 'GLOBAL'
+    # baseGlobalSettings = copy.deepcopy(baseSettings)
+    # baseGlobalSettings.type = 'GLOBAL'
+    # baseGlobalSettings.rewardType = 'GLOBAL'
 
-    baseLocalSettings = copy.deepcopy(baseSettings)
-    baseLocalSettings.type = 'LOCAL'
-    baseLocalSettings.rewardType = 'LOCAL'
+    # baseLocalSettings = copy.deepcopy(baseSettings)
+    # baseLocalSettings.type = 'LOCAL'
+    # baseLocalSettings.rewardType = 'LOCAL'
 
-    baseDifferenceSettings = copy.deepcopy(baseSettings)
-    baseDifferenceSettings.type = 'DIFFERENCE'
-    baseDifferenceSettings.rewardType = 'GLOBAL'
+    # baseDifferenceSettings = copy.deepcopy(baseSettings)
+    # baseDifferenceSettings.type = 'DIFFERENCE'
+    # baseDifferenceSettings.rewardType = 'GLOBAL'
 
-    baseRandomSettings = copy.deepcopy(baseSettings)
-    baseRandomSettings.type = 'RANDOM'
-    baseRandomSettings.rewardType = 'DIFFERENCE'
-    baseRandomSettings.moveRandomly = True
+    # baseRandomSettings = copy.deepcopy(baseSettings)
+    # baseRandomSettings.type = 'RANDOM'
+    # baseRandomSettings.rewardType = 'DIFFERENCE'
+    # baseRandomSettings.moveRandomly = True
 
-    settings = [baseGlobalSettings, baseLocalSettings, baseDifferenceSettings, baseRandomSettings]
+    # settings = [baseGlobalSettings, baseLocalSettings, baseDifferenceSettings, baseRandomSettings]
     
     for i in range(numStatRuns):
         for numAgents in [10, 30, 70]:
