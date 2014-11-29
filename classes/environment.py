@@ -5,7 +5,7 @@ from rovers import Rover
 from roverSettingsStruct import RoverSettings
 import random
 import itertools
-from matplotlib import pyplot
+#from matplotlib import pyplot
 
 class World():
     def __init__(self, world_bounds, N_poi, poi_bounds, rover_settings, rover_start, rovHeadings):
@@ -140,7 +140,7 @@ class World():
                             delta_min = delta
                             rover_closest = (rover_index, step_index)
 
-        delta_min = min(delta_min ** 2, poi.d_min ** 2)  # delta is actually the SQUARED Euclidean distance
+        delta_min = max(delta_min ** 2, poi.d_min ** 2)  # delta is actually the SQUARED Euclidean distance
         return delta_min, rover_closest
 
 

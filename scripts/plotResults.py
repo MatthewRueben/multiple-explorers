@@ -32,11 +32,11 @@ def plotRewards(rewards):
 	# for filename in os.listdir('dirname'):
 	#      callthecommandhere(blablahbla, filename, foo)
 	# 
-	font = {'family' : 'normal',
-            'weight' : 'bold',
-            'size'   : 16}
+	# font = {'family' : 'normal',
+ #            'weight' : 'bold',
+ #            'size'   : 16}
 
-    rc('font', **font)
+ #    rc('font', **font)
 
     pyplot.plot(rewards)
     pyplot.show()
@@ -70,9 +70,11 @@ def main(directory):
 
 if __name__ == '__main__':
 	
-	for directory in os.listdir(os.getcwd + '/results/')
-		main(directory)
-
+	# for directory in os.listdir(os.getcwd + '/results/')
+	# 	main(directory)
+    fname = '/nfs/attic/smartw/users/kraftko/Fall2014/ME538MultiAgent/TermProj/multiple-explorers/results/SR_Unlimited/10agents/0statRun-RT-DIFFERENCE_Eps-200.results'
+    rewards = getRewards(fname)
+    plotRewards(rewards)
 
     
     

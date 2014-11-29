@@ -7,7 +7,7 @@ import copy
 import random
 import itertools
 import timeit
-from matplotlib import pyplot
+#from matplotlib import pyplot
 
 locationOfFiles = os.getcwd() + '/classes'  # add location of class files to PYTHONPATH
 print 'File loc: ', locationOfFiles
@@ -377,8 +377,8 @@ def getResults():
     sensorNoise50.type = 'SN_50'
 
 
-    settings = [sensorRangeUnlimitedSettings, sensorRangeLimitedSettings, sensorRangeMediumSettings]
-    # settings = [sensorFOV360, sensorFOV270, sensorFOV90]
+    # settings = [sensorRangeUnlimitedSettings, sensorRangeLimitedSettings, sensorRangeMediumSettings]
+    settings = [sensorFOV360, sensorFOV270, sensorFOV90]
     # settings = [sensorNoiseNone, sensorNoise10, sensorNoise50]
 
     # baseGlobalSettings = copy.deepcopy(baseSettings)
@@ -399,13 +399,13 @@ def getResults():
     # baseRandomSettings.moveRandomly = True
 
     # settings = [baseGlobalSettings, baseLocalSettings, baseDifferenceSettings, baseRandomSettings]
-    
+
     for i in range(numStatRuns):
         for numAgents in [10, 30, 70]:
             for x in settings:
                 x.numAgents = numAgents
                 rewardList = main(x, epochs)
-                fname = os.getcwd() + '/results/{0}/{1}agents/{2}statRun-RT-{3}_Eps-{4}.results'.format(x.type, numAgents, i, x.rewardType, epochs)
+                fname = os.getcwd() + '/results2/{0}/{1}agents/{2}statRun-RT-{3}_Eps-{4}.results'.format(x.type, numAgents, i, x.rewardType, epochs)
                 print 
                 print fname
                 saveReward(fname, rewardList)    
