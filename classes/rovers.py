@@ -98,21 +98,23 @@ class Rover():
         
         for i in xrange(len(self.sensor_regions)):
             # check if valid quadrant            
-            if i > self.num_sensors:
+            if i >= self.num_sensors:
+                #print i
                 output_list.append(0) # if no sensor for the quadrant, return 0
-            
-            # get count
-            poi_count = self.POI_sensors[i].getPoiCount(POI_list, min_observation_dist)
-            output_list.append(poi_count)
+
+            else:
+                # get count
+                poi_count = self.POI_sensors[i].getPoiCount(POI_list, min_observation_dist)
+                output_list.append(poi_count)
             
         for i in xrange(len(self.sensor_regions)):
             # check if valid quadrant
-            if i > self.num_sensors:
+            if i >= self.num_sensors:
                 output_list.append(0) # if no sensor for the quadrant, return 0
-            
-            # get count
-            rover_count = self.rover_sensors[i].getRoverCount(rover_list, min_observation_dist)
-            output_list.append(rover_count)
+            else:
+                # get count
+                rover_count = self.rover_sensors[i].getRoverCount(rover_list, min_observation_dist)
+                output_list.append(rover_count)
     
         return output_list
 

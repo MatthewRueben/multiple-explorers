@@ -2,13 +2,24 @@
 
 from geography import Bounds2D, Location, POI
 from rovers import Rover
+from roverSettingsStruct import RoverSettings
 import random
 import itertools
 from matplotlib import pyplot
 
 class World():
-    def __init__(self, world_bounds, N_poi, poi_bounds, N_rovers, rover_start, rovHeadings):
+    def __init__(self, world_bounds, N_poi, poi_bounds, rover_settings, rover_start, rovHeadings):
         """ Inputs "world_bounds" and "poi_bounds" are of class "2DBounds". """
+        # Rover settings attributes:
+        # .rewardType 
+        # .moveRandomly 
+        # .numAgents 
+        # .sensorRange
+        # .sensorFov 
+        # .sensorNoiseInt 
+        N_rovers = rover_settings.numAgents
+
+
         V_bounds = (0.0, 1.0)  # FIX ME?
         self.world_bounds = world_bounds
         self.poi_bounds = poi_bounds
@@ -28,10 +39,10 @@ class World():
                           x=self.rover_start.x, 
                           y=self.rover_start.y,
                           heading=heading,
-                          num_sensors=4,
+                          num_sensors=rover_settings.sensorFov,
                           observation_range=10,
-                          sensor_range=1000.0,  # ~infinite
-                          sensor_noise=0.10,  # 10%
+                          sensor_range=rover_settings.sensorRange,  
+                          sensor_noise=rover_settings.sensorNoiseInt,  
                           num_POI=100)
             self.rovers.append(rover)
         

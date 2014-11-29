@@ -6,12 +6,15 @@ import os
 import copy
 import random
 import itertools
+import timeit
+from matplotlib import pyplot
 
 locationOfFiles = os.getcwd() + '/classes'  # add location of class files to PYTHONPATH
 print 'File loc: ', locationOfFiles
 sys.path.append(locationOfFiles)
 
 from environment import Location, Bounds2D, World
+from roverSettingsStruct import RoverSettings
 from neuralNet import *
 
 def initNNs(lenOfPool, numAgents):
@@ -212,7 +215,7 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewa
 
     return rewards['GLOBAL']
 
-def main(rewardType, moveRandomly=False, numAgents = 30, episodes = 200):
+def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40):
     ''' Returns reward list for the system at each episode. '''
     # Evo Training
     # 
@@ -226,19 +229,26 @@ def main(rewardType, moveRandomly=False, numAgents = 30, episodes = 200):
     #     Mutate the above
     #     Replace the unselected onces 
 
-    # Hyperparamters for training
-    lenOfPool = 30 # Num of nn's for each agent 
-    numAgents = numAgents # Num of agents in the system
+    # Gridworld Domain variables 
+    rewardType = roverSettings.rewardType
+    lenOfPool = lengthOfPool # Num of nn's for each agent 
+    numAgents = roverSettings.numAgents # Num of agents in the system
+    moveRandomly = roverSettings.moveRandomly
+    numPoi = 100
     timesteps = 15
     maxDist = 10 # maximum distance the agent can move in one timestep
     minDist = 5 # minimum distance 
     mvtNoise = .1 # the noise added to each actions outcome
+
+    # matrix of nns for each agent in system 
     nns = initNNs(lenOfPool, numAgents) # Can be thought of as matrix of NNs, each sublist is an agents pool of nns
     # random headings for agent that will stay 
     # the same for each agent through the runs and epochs
     #  so that the corresponding agent and nn pool will reflect the 
     #   same initial values/assumptions
     agentInitHeadings = [(random.randint(0,359) * math.pi /180) for x in range(numAgents)] 
+    
+    # Hyperparamters for training
     egreedy = .2 # number of weights to mutate starting out, this is decreased over time 
     egreedyDecreaseRate = .9 # rate at which egreedy selection is decreased
 
@@ -249,12 +259,14 @@ def main(rewardType, moveRandomly=False, numAgents = 30, episodes = 200):
     poi_bounds = Bounds2D((world_center.x-poi_ranges[0]/2, world_center.x+poi_ranges[0]/2), 
                           (world_center.y-poi_ranges[1]/2, world_center.y+poi_ranges[1]/2))  # bounds of where POIs can go
 
-    world = World(world_bounds, 100, poi_bounds, 30, rover_start=world_center, rovHeadings=agentInitHeadings)  # make a world
+    
+    # self, world_bounds, N_poi, poi_bounds, roverSettings, rover_start, rovHeadings
+    world = World(world_bounds, numPoi, poi_bounds, roverSettings, rover_start=world_center, rovHeadings=agentInitHeadings)  # make a world
 
     # Create orientations for the agents outside so they will all be consist for agent i
     rewards_list = []
     for i in range(episodes): # random definition of convergence
-
+        print 'Perfoming epidsode {0} for {1} agents...'.format(i, numAgents)
         # create random team of agent brains for the game
         teams = createTeams(nns, lenOfPool)
 
@@ -265,8 +277,8 @@ def main(rewardType, moveRandomly=False, numAgents = 30, episodes = 200):
             team_rewards.append(reward)
 
         # Save max reward over team combos
-        #rewards_list.append(max(team_rewards))
-        rewards_list.append(team_rewards)  # NOT MAX! CHANGE ME BACK!
+        rewards_list.append(max(team_rewards))
+       # rewards_list.append(team_rewards)  # NOT MAX! CHANGE ME BACK!
         
         # select best nn performers
         #   and mutate and replace low performers
@@ -274,31 +286,158 @@ def main(rewardType, moveRandomly=False, numAgents = 30, episodes = 200):
 
     # outputing results
     # Find out which nns for each agent was the best
-    for row in nns:
-        bestNN = createNN()
-        bestNN.value = -1000000
-        for nn in row:
-            if nn.value > bestNN:
-                bestNN = copy.deepcopy(nn)
+    # for row in nns:
+    #     bestNN = createNN()
+    #     bestNN.value = -1000000
+    #     for nn in row:
+    #         if nn.value > bestNN:
+    #             bestNN = copy.deepcopy(nn)
 
-        # For that agent, print out the weights
-        print 'Best NN Weights:'
-        bestNN.printWeights()
+    #     # For that agent, print out the weights
+    #     print 'Best NN Weights:'
+    #     bestNN.printWeights()
 
     return rewards_list
 
 
-if __name__ == "__main__":
+def getResults():
+    ''' Runs the rover domain setup using the different sensor types:
+
+                Sensor range: 3 types ()
+                Sensor fov: 3 types (1,2,3,4) - expecting 1, 3 or 4
+                Sensor noise: 3 types 
+            name, xy, heading, numSens, obsRange (ignored), range - float, noise - int (0,10,50)  
+            With the reward types:
+
+                    Random, Global, Local, Difference
+
+                With the following numbers of agents:
+
+                        10 agents, 30 agents, 70 agents
+    '''
+    # .rewardType 
+    # .moveRandomly 
+    # .numAgents 
+    # .sensorRange
+    # .sensorFov 
+    # .sensorNoiseInt 
+
     import timeit
     start_time = timeit.default_timer()
-#   main(rewardType='DIFFERENCE', moveRandomly=True)  # random!
-    rewards_list = main(rewardType='DIFFERENCE', moveRandomly=False, numAgents = 2, episodes = 2)  # learning!
+    numStatRuns = 50
+    epochs = 100
+
+    # runs all four reward types with 30 agents for 200 episodes
+    # runBaseline()
+
+    # now just select difference reward type
+    baseSettings = RoverSettings(rewardType = 'DIFFERENCE',
+                                  moveRandomly = False,
+                                  numAgents = 5,
+                                  sensorRange = 10000, # essentially inf for our world size :)
+                                  sensorFov = 4, # 360 degrees
+                                  sensorNoiseInt = 0 # no noise)
+                                  )
+
+    # tweaking sensor range
+    sensorRangeUnlimitedSettings = copy.deepcopy(baseSettings)
+    sensorRangeUnlimitedSettings.type = 'SR_Unlimited'
+
+    sensorRangeLimitedSettings = copy.deepcopy(baseSettings)
+    sensorRangeLimitedSettings.sensorRange = 10 # roughtly 10 percent of world dist
+    sensorRangeLimitedSettings.type = 'SR_Limited'
+    
+    sensorRangeMediumSettings = copy.deepcopy(baseSettings)
+    sensorRangeMediumSettings.sensorRange = 60 # over half the world dist
+    sensorRangeMediumSettings.type = 'SR_Medium'
+
+    # tweaking sensor fov
+    sensorFOV360 = copy.deepcopy(baseSettings)
+    sensorFOV360.type = 'SF_360'
+    
+    sensorFOV270 = copy.deepcopy(sensorFOV360)
+    sensorFOV270.sensorFov = 3 # only 3 sensors turned on for 270deg
+    sensorFOV270.type = 'SF_270'
+    
+    sensorFOV90 = copy.deepcopy(sensorFOV360)
+    sensorFOV90.sensorFov = 1 # only sees 90 deg
+    sensorFOV90.type = 'SF_90'
+
+
+    # tweaking sensor noise
+    sensorNoiseNone = copy.deepcopy(baseSettings)
+    sensorNoiseNone.type = 'SN_0'
+
+    sensorNoise10 = copy.deepcopy(baseSettings)
+    sensorNoise10.sensorNoiseInt = 10
+    sensorNoise10.type = 'SN_10'
+
+    sensorNoise50 = copy.deepcopy(baseSettings)
+    sensorNoise50.sensorNoiseInt = 50
+    sensorNoise50.type = 'SN_50'
+
+
+    settings = [sensorRangeUnlimitedSettings, sensorRangeLimitedSettings, sensorRangeMediumSettings]
+    settings.extend([sensorFOV360, sensorFOV270, sensorFOV90])
+    settings.extend([sensorNoiseNone, sensorNoise10, sensorNoise50])
+    
+    for i in range(numStatRuns):
+        for numAgents in [10, 30, 70]:
+            for x in settings:
+                x.numAgents = numAgents
+                rewardList = main(x, epochs)
+                fname = os.getcwd() + '/results/{0}/{1}agents/{2}statRun-RT-{3}_Eps-{4}.results'.format(x.type, numAgents, i, x.rewardType, epochs)
+                #print fname
+                saveReward(fname, rewardList)    
+
+
     elapsed_time = timeit.default_timer() - start_time
     print str(int(elapsed_time)) + ' seconds'
 
-    from matplotlib import pyplot
-    pyplot.plot(rewards_list)
-    pyplot.show()
+def saveReward(fname, rewardList):
+    d = os.path.dirname(fname)
+    if not os.path.exists(d):
+        os.makedirs(d)
+
+    with open(fname, 'w') as f:
+        for reward in rewardList:
+            f.write(str(reward))
+        
+        f.close()
+
+
+def runBaseline():
+    ''' Runs random, global, local, and difference with 30 agents and 200 episodes
+
+        Returns a tuple of the lists for each analogous reward. 
+    '''
+    # Use random, with combinations....
+    rewards_list_rand = main(RoverSettings(), episodes = 200)
+
+    # Use global, with combinations....
+    rewards_list_global = main(RoverSettings(), episodes = 200)
+
+    # Use local, with combinations....
+    rewards_list_local = main(RoverSettings(), episodes = 200)
+
+    # Use difference, with combinations
+    rewards_list_diff = main(RoverSettings(), episodes = 200)
+
+    return (rewards_list_rand, rewards_list_global, rewards_list_local, rewards_list_diff)
+
+
+if __name__ == "__main__":
+
+    getResults()
+    
+#     start_time = timeit.default_timer()
+# #   main(rewardType='DIFFERENCE', moveRandomly=True)  # random!
+#     rewards_list = main(RoverSettings(), 10)  # learning!
+#     elapsed_time = timeit.default_timer() - start_time
+#     print str(int(elapsed_time)) + ' seconds'
+   
+#     pyplot.plot(rewards_list)
+#     pyplot.show()
     # main(10, 50)
     # main(30, 50)
     # main(50, 50)
