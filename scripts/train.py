@@ -325,7 +325,7 @@ def getResults():
     import timeit
     start_time = timeit.default_timer()
     numStatRuns = 50
-    epochs = 200
+    epochs = 2
 
     # runs all four reward types with 30 agents for 200 episodes
     # runBaseline()
@@ -380,7 +380,7 @@ def getResults():
     # settings = [sensorRangeUnlimitedSettings, sensorRangeLimitedSettings, sensorRangeMediumSettings]
     # settings.extend([sensorFOV360, sensorFOV270, sensorFOV90])
     # settings.extend([sensorNoiseNone, sensorNoise10, sensorNoise50])
-    
+
     baseGlobalSettings = copy.deepcopy(baseSettings)
     baseGlobalSettings.type = 'GLOBAL'
     baseGlobalSettings.rewardType = 'GLOBAL'
@@ -421,7 +421,7 @@ def saveReward(fname, rewardList):
 
     with open(fname, 'w') as f:
         for reward in rewardList:
-            f.write(str(reward))
+            f.write(str(reward) + '\n')
         
         f.close()
 
