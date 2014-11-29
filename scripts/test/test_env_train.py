@@ -205,7 +205,7 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings):
     pass
 
 
-def main():
+def main(numAgents = 30, episodes = 200, rewardType = None):
     # Evo Training
     # 
     # Until convergence
@@ -219,8 +219,8 @@ def main():
     #     Replace the unselected onces 
 
     # Hyperparamters for training
-    lenOfPool = 10 # Num of nn's for each agent 
-    numAgents = 5 # Num of agents in the system
+    lenOfPool = 30 # Num of nn's for each agent 
+    numAgents = numAgents # Num of agents in the system
     timesteps = 15
     maxDist = 10 # maximum distance the agent can move in one timestep
     minDist = 5 # minimum distance 
@@ -244,7 +244,7 @@ def main():
     world = World(world_bounds, 100, poi_bounds, 30, rover_start=world_center, rovHeadings=agentInitHeadings)  # make a world
 
     # Create orientations for the agents outside so they will all be consist for agent i
-    for i in range(3): # random definition of convergence
+    for i in range(episodes): # random definition of convergence
 
         # create random team of agent brains for the game
         teams = createTeams(nns, lenOfPool)
@@ -257,7 +257,22 @@ def main():
         #   and mutate and replace low performers
         updateNNS(nns, egreedy * egreedyDecreaseRate)
 
+    # outputing results
+    # Find out which nns for each agent was the best
+    for row in nns:
+        bestNN = createNN()
+        bestNN.value = -1000000
+        for nn in row:
+            if nn.value > bestNN:
+                bestNN = copy.deepcopy(nn)
+
+        # For that agent, print out the weights
+        print 'Best NN Weights:'
+        bestNN.printWeights()
+
 
 if __name__ == "__main__":
-    main()
     
+    main(10, 50)
+    main(30, 50)
+    main(50, 50)
