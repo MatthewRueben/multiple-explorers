@@ -183,7 +183,7 @@ def calcDX(output, maxDist, noise):
     return dx
 
 
-def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings):
+def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewardType, moveRandomly=False):
 
     # reset world
     # init/place rovs
@@ -192,20 +192,27 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings):
         for rov, nn in itertools.izip(world.rovers, team):
             # Do a prediction with the rovs associated nn from the team
             o1, o2 = nn.fasterPredict(rov.getNNInputs(world.POIs, minDist, world.rovers)) 
-            dx = calcDX(o1, maxDist, mvtNoise)
-            dy = calcDX(o2, maxDist, mvtNoise)
+            if moveRandomly:
+                dx = random.uniform(-maxDist, maxDist)  # pick random actions
+                dy = random.uniform(-maxDist, maxDist)
+            else:
+                dx = calcDX(o1, maxDist, mvtNoise)  # use the neural network's actions
+                dy = calcDX(o2, maxDist, mvtNoise)
             
-            # take the action with the pred. action
+            # take the action with the chosen action
             rov.takeAction(dx, dy)
             
     # Get rewards for nn's which correspond to system rewards   
-    rewards, rover_closest_list = world.get_rewards()
-    for nn, reward in itertools.izip(team, rewards['DIFFERENCE']):
+    rewards, rover_closest_list = world.get_rewards()  # get all the different reward types
+    rewards_chosen = rewards[rewardType]  # pick the reward type
+    if rewardType == 'GLOBAL':  # the global reward is length 1 and needs to be tiled
+        rewards_chosen = [rewards_chosen]*len(team)  
+    for nn, reward in itertools.izip(team, rewards_chosen):  # assign rewards to NN's
         nn.value = reward
-    pass
 
+    return rewards['GLOBAL']
 
-def main(numAgents = 30, episodes = 200, rewardType = None):
+def main(rewardType, moveRandomly=False, numAgents = 30, episodes = 200):
     # Evo Training
     # 
     # Until convergence
@@ -244,14 +251,23 @@ def main(numAgents = 30, episodes = 200, rewardType = None):
     world = World(world_bounds, 100, poi_bounds, 30, rover_start=world_center, rovHeadings=agentInitHeadings)  # make a world
 
     # Create orientations for the agents outside so they will all be consist for agent i
+    import timeit
+    start_time = timeit.default_timer()
+    rewards_list = []
     for i in range(episodes): # random definition of convergence
 
         # create random team of agent brains for the game
         teams = createTeams(nns, lenOfPool)
 
+        team_rewards = []
         for team in teams:         
             # do the episode
-            doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings)
+            reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings, rewardType, moveRandomly)
+            team_rewards.append(reward)
+
+        # Save max reward over team combos
+        #rewards_list.append(max(team_rewards))
+        rewards_list.append(team_rewards)  # NOT MAX! CHANGE ME BACK!
         
         # select best nn performers
         #   and mutate and replace low performers
@@ -272,7 +288,14 @@ def main(numAgents = 30, episodes = 200, rewardType = None):
 
 
 if __name__ == "__main__":
-    
+#    main(rewardType='DIFFERENCE', moveRandomly=True)  # random!
+    main(rewardType='DIFFERENCE', moveRandomly=False, numAgents = 30, episodes = 300)  # learning!
+    elapsed_time = timeit.default_timer() - start_time
+    print str(int(elapsed_time)) + ' seconds'
+
+    from matplotlib import pyplot
+    pyplot.plot(rewards_list)
+    pyplot.show()
     main(10, 50)
     main(30, 50)
     main(50, 50)
