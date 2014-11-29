@@ -325,7 +325,7 @@ def getResults():
     import timeit
     start_time = timeit.default_timer()
     numStatRuns = 50
-    epochs = 100
+    epochs = 200
 
     # runs all four reward types with 30 agents for 200 episodes
     # runBaseline()
@@ -377,9 +377,28 @@ def getResults():
     sensorNoise50.type = 'SN_50'
 
 
-    settings = [sensorRangeUnlimitedSettings, sensorRangeLimitedSettings, sensorRangeMediumSettings]
-    settings.extend([sensorFOV360, sensorFOV270, sensorFOV90])
-    settings.extend([sensorNoiseNone, sensorNoise10, sensorNoise50])
+    # settings = [sensorRangeUnlimitedSettings, sensorRangeLimitedSettings, sensorRangeMediumSettings]
+    # settings.extend([sensorFOV360, sensorFOV270, sensorFOV90])
+    # settings.extend([sensorNoiseNone, sensorNoise10, sensorNoise50])
+    
+    baseGlobalSettings = copy.deepcopy(baseSettings)
+    baseGlobalSettings.type = 'GLOBAL'
+    baseGlobalSettings.rewardType = 'GLOBAL'
+
+    baseLocalSettings = copy.deepcopy(baseSettings)
+    baseLocalSettings.type = 'LOCAL'
+    baseLocalSettings.rewardType = 'LOCAL'
+
+    baseDifferenceSettings = copy.deepcopy(baseSettings)
+    baseDifferenceSettings.type = 'DIFFERENCE'
+    baseDifferenceSettings.rewardType = 'GLOBAL'
+
+    baseRandomSettings = copy.deepcopy(baseSettings)
+    baseRandomSettings.type = 'RANDOM'
+    baseRandomSettings.rewardType = 'DIFFERENCE'
+    baseRandomSettings.moveRandomly = True
+
+    settings = [baseGlobalSettings, baseLocalSettings, baseDifferenceSettings, baseRandomSettings]
     
     for i in range(numStatRuns):
         for numAgents in [10, 30, 70]:
@@ -387,7 +406,8 @@ def getResults():
                 x.numAgents = numAgents
                 rewardList = main(x, epochs)
                 fname = os.getcwd() + '/results/{0}/{1}agents/{2}statRun-RT-{3}_Eps-{4}.results'.format(x.type, numAgents, i, x.rewardType, epochs)
-                #print fname
+                print 
+                print fname
                 saveReward(fname, rewardList)    
 
 
