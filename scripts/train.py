@@ -251,8 +251,6 @@ def main(rewardType, moveRandomly=False, numAgents = 30, episodes = 200):
     world = World(world_bounds, 100, poi_bounds, 30, rover_start=world_center, rovHeadings=agentInitHeadings)  # make a world
 
     # Create orientations for the agents outside so they will all be consist for agent i
-    import timeit
-    start_time = timeit.default_timer()
     rewards_list = []
     for i in range(episodes): # random definition of convergence
 
@@ -288,7 +286,9 @@ def main(rewardType, moveRandomly=False, numAgents = 30, episodes = 200):
 
 
 if __name__ == "__main__":
-#    main(rewardType='DIFFERENCE', moveRandomly=True)  # random!
+    import timeit
+    start_time = timeit.default_timer()
+#   main(rewardType='DIFFERENCE', moveRandomly=True)  # random!
     main(rewardType='DIFFERENCE', moveRandomly=False, numAgents = 30, episodes = 300)  # learning!
     elapsed_time = timeit.default_timer() - start_time
     print str(int(elapsed_time)) + ' seconds'
@@ -296,6 +296,6 @@ if __name__ == "__main__":
     from matplotlib import pyplot
     pyplot.plot(rewards_list)
     pyplot.show()
-    main(10, 50)
-    main(30, 50)
-    main(50, 50)
+    # main(10, 50)
+    # main(30, 50)
+    # main(50, 50)
