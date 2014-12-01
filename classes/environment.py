@@ -5,7 +5,7 @@ from rovers import Rover
 from roverSettingsStruct import RoverSettings
 import random
 import itertools
-#from matplotlib import pyplot
+from matplotlib import pyplot
 
 class World():
     def __init__(self, world_bounds, N_poi, poi_bounds, rover_settings, rover_start, rovHeadings):
@@ -20,7 +20,6 @@ class World():
         N_rovers = rover_settings.numAgents
 
 
-        V_bounds = (0.0, 1.0)  # FIX ME?
         self.world_bounds = world_bounds
         self.poi_bounds = poi_bounds
         self.rover_start = rover_start
@@ -176,3 +175,47 @@ class World():
                                 [trajectory_y[step_index], self.POIs[poi_index].location.y])
             pyplot.draw()
             time.sleep(1.0)
+
+    def plot_all(self, rover_closest_list=[]):
+        pyplot.ion()
+    
+        # Which step are we at?
+        step = str(len(self.rovers[0].location_history))
+        if int(step) < 10:
+            step = '0' + step
+        
+        # Get the rewards thus far.
+        rewards, rover_closest_list = self.get_rewards()
+
+        # Plot each rover's trajectory, one by one
+        pyplot.cla()  # clear axis
+        pyplot.title('Step #' + str(step) + ', System Reward = ' + str(rewards['GLOBAL']))
+        for this_rover_index, rover in enumerate(self.rovers):
+
+            # Plot the world
+            fig = pyplot.gcf()
+            pyplot.axis([self.world_bounds.x_lower, self.world_bounds.x_upper, 
+                         self.world_bounds.y_lower, self.world_bounds.y_upper])
+
+            # Plot rovers
+            trajectory_x = [point.x for point in rover.location_history]
+            trajectory_y = [point.y for point in rover.location_history]
+            pyplot.plot(trajectory_x, trajectory_y, 'r.-')
+            pyplot.plot(trajectory_x[-1], trajectory_y[-1], 'ro')
+
+            for poi_index, poi in enumerate(self.POIs):
+                pyplot.plot(poi.location.x, poi.location.y, 'k*')
+
+                # Check if a rover has been within the minimum observation distance of this POI
+                delta_min, rover_closest = self.find_closest(poi_index)
+                if delta_min < 1.05 * (poi.d_min ** 2):  # if within 5% of min. obs. distance (since an == relation might fail due to float math)
+                    color_choice = 'g'
+                else: 
+                    color_choice = '0.5'  # lightish gray
+
+                circle1 = pyplot.Circle((poi.location.x, poi.location.y), 5, color=color_choice, fill=False)
+                fig.gca().add_artist(circle1)
+
+        pyplot.draw()
+        fig.savefig('Learned00Step' + str(step) + '.png')
+

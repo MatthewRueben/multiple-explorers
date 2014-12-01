@@ -186,7 +186,12 @@ def calcDX(output, maxDist, noise):
     return dx
 
 
+<<<<<<< HEAD
 def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewardType, moveRandomly=False):
+=======
+def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewardType, moveRandomly=False, plotPlease=False):
+
+>>>>>>> 82ae856031545462c996eddd5fc0c91d01a80e4e
     # reset world
     # init/place rovs
     world.reset(headings)  # randomize POI locations and reset rover locations
@@ -203,6 +208,10 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewa
             
             # take the action with the chosen action
             rov.takeAction(dx, dy)
+
+        if plotPlease:
+            world.plot_all()
+            
             
     # Get rewards for nn's which correspond to system rewards   
     rewards, rover_closest_list = world.get_rewards()  # get all the different reward types
@@ -214,7 +223,7 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewa
 
     return rewards['GLOBAL']
 
-def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40):
+def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plotPlease = False):
     ''' Returns reward list for the system at each episode. '''
     # Evo Training
     # 
@@ -264,6 +273,13 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40):
 
     # Create orientations for the agents outside so they will all be consist for agent i
     rewards_list = []
+
+    if plotPlease == 'last':
+        plotPlease = False
+        plotLast = True
+    else:
+        plotLast = False
+
     for i in range(episodes): # random definition of convergence
         print 'Perfoming epidsode {0} for {1} agents...'.format(i, numAgents)
         # create random team of agent brains for the game
@@ -272,7 +288,7 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40):
         team_rewards = []
         for team in teams:         
             # do the episode
-            reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings, rewardType, moveRandomly)
+            reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings, rewardType, moveRandomly, plotPlease)
             team_rewards.append(reward)
 
         # Save max reward over team combos
@@ -296,9 +312,14 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40):
     #     print 'Best NN Weights:'
     #     bestNN.printWeights()
 
+<<<<<<< HEAD
     # pyplot.plot(rewards_list)
     # pyplot.show()
 
+=======
+    if plotLast:
+        reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings, rewardType, moveRandomly, plotPlease=True)
+>>>>>>> 82ae856031545462c996eddd5fc0c91d01a80e4e
     return rewards_list
 
 
@@ -451,9 +472,23 @@ def runBaseline():
     return (rewards_list_rand, rewards_list_global, rewards_list_local, rewards_list_diff)
 
 
+def visualizeDomain():
+    """ Run the simplest case with random policy; visualize the domain to see how it looks. """
+    plotSettings = RoverSettings(rewardType = 'DIFFERENCE',
+                                 moveRandomly = False,
+                                 numAgents = 30,
+                                 sensorRange = 10000, # essentially inf for our world size :)
+                                 sensorFov = 4, # 360 degrees
+                                 sensorNoiseInt = 0 # no noise)
+                                 )
+    main(roverSettings = plotSettings, episodes = 50, lengthOfPool = 40, plotPlease = 'last')
+    
+
+
 if __name__ == "__main__":
 
-    getResults()
+    #getResults()
+    visualizeDomain()
     
 #     start_time = timeit.default_timer()
 # #   main(rewardType='DIFFERENCE', moveRandomly=True)  # random!
