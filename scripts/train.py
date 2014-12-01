@@ -7,7 +7,7 @@ import copy
 import random
 import itertools
 import timeit
-#from matplotlib import pyplot
+from matplotlib import pyplot
 
 locationOfFiles = os.getcwd() + '/classes'  # add location of class files to PYTHONPATH
 print 'File loc: ', locationOfFiles
@@ -187,18 +187,17 @@ def calcDX(output, maxDist, noise):
 
 
 def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewardType, moveRandomly=False):
-
     # reset world
     # init/place rovs
     world.reset(headings)  # randomize POI locations and reset rover locations
     for t in range(timesteps):
         for rov, nn in itertools.izip(world.rovers, team):
-            # Do a prediction with the rovs associated nn from the team
-            o1, o2 = nn.fasterPredict(rov.getNNInputs(world.POIs, minDist, world.rovers)) 
             if moveRandomly:
                 dx = random.uniform(-maxDist, maxDist)  # pick random actions
                 dy = random.uniform(-maxDist, maxDist)
             else:
+                # Do a prediction with the rovs associated nn from the team
+                o1, o2 = nn.fasterPredict(rov.getNNInputs(world.POIs, minDist, world.rovers)) 
                 dx = calcDX(o1, maxDist, mvtNoise)  # use the neural network's actions
                 dy = calcDX(o2, maxDist, mvtNoise)
             
@@ -234,8 +233,8 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40):
     lenOfPool = lengthOfPool # Num of nn's for each agent 
     numAgents = roverSettings.numAgents # Num of agents in the system
     moveRandomly = roverSettings.moveRandomly
-    numPoi = 100
-    timesteps = 15
+    numPoi = 1
+    timesteps = 1
     maxDist = 10 # maximum distance the agent can move in one timestep
     minDist = 5 # minimum distance 
     mvtNoise = .1 # the noise added to each actions outcome
@@ -297,6 +296,9 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40):
     #     print 'Best NN Weights:'
     #     bestNN.printWeights()
 
+    pyplot.plot(rewards_list)
+    pyplot.show()
+
     return rewards_list
 
 
@@ -324,8 +326,8 @@ def getResults():
 
     import timeit
     start_time = timeit.default_timer()
-    numStatRuns = 500
-    epochs = 200
+    numStatRuns = 1
+    epochs = 3
 
     # runs all four reward types with 30 agents for 200 episodes
     # runBaseline()
@@ -333,7 +335,7 @@ def getResults():
     # now just select difference reward type
     baseSettings = RoverSettings(rewardType = 'DIFFERENCE',
                                   moveRandomly = False,
-                                  numAgents = 5,
+                                  numAgents = 2,
                                   sensorRange = 10000, # essentially inf for our world size :)
                                   sensorFov = 4, # 360 degrees
                                   sensorNoiseInt = 0 # no noise)
@@ -376,9 +378,11 @@ def getResults():
     sensorNoise50.sensorNoiseInt = 50
     sensorNoise50.type = 'SN_50'
 
-
-    # settings = [sensorRangeUnlimitedSettings, sensorRangeLimitedSettings, sensorRangeMediumSettings]
-    settings = [sensorFOV360, sensorFOV270, sensorFOV90]
+    baseSettings.rewardType = 'GLOBAL'
+    baseSettings.moveRandomly = True
+    settings = [baseSettings]
+    #settings = [sensorRangeUnlimitedSettings, sensorRangeLimitedSettings, sensorRangeMediumSettings]
+    # settings = [sensorFOV360, sensorFOV270, sensorFOV90]
     # settings = [sensorNoiseNone, sensorNoise10, sensorNoise50]
 
     # baseGlobalSettings = copy.deepcopy(baseSettings)
@@ -395,17 +399,17 @@ def getResults():
 
     # baseRandomSettings = copy.deepcopy(baseSettings)
     # baseRandomSettings.type = 'RANDOM'
-    # baseRandomSettings.rewardType = 'DIFFERENCE'
+    # baseRandomSettings.rewardType = 'GLOBAL'
     # baseRandomSettings.moveRandomly = True
 
     # settings = [baseGlobalSettings, baseLocalSettings, baseDifferenceSettings, baseRandomSettings]
 
     for i in range(numStatRuns):
-        for numAgents in [10, 30, 70]:
+        for numAgents in [30]:
             for x in settings:
                 x.numAgents = numAgents
                 rewardList = main(x, epochs)
-                fname = os.getcwd() + '/results2/{0}/{1}agents/{2}statRun-RT-{3}_Eps-{4}.results'.format(x.type, numAgents, i, x.rewardType, epochs)
+                fname = os.getcwd() + '/TestingResults/{0}/{1}agents/{2}statRun-RT-{3}_Eps-{4}.results'.format(x.type, numAgents, i, x.rewardType, epochs)
                 print 
                 print fname
                 saveReward(fname, rewardList)    

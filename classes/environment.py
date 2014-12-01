@@ -29,7 +29,7 @@ class World():
         self.POIs = []
         for poi_index in range(N_poi):
             # V_choice = random.uniform(V_bounds[0], V_bounds[1])
-            V_choice = 5 # somewhat arbitrary choice for poi...
+            V_choice = 5.0 # somewhat arbitrary choice for poi...
             poi = POI(V_choice, d_min=5.0)  # assign POI value & minimum observation distance
             self.POIs.append(poi)
 
@@ -68,11 +68,15 @@ class World():
         # Calculate GLOBAL and LOCAL rewards
         for poi_index in range(len(self.POIs)):  # for each POI, figure out which rover is closest and get the appropriate reward
             delta_min, rover_closest = self.find_closest(poi_index)
+            # print 'Closest rover: ', rover_closest
             rover_closest_list.append(rover_closest)
             poi_reward = self.POIs[poi_index].V / delta_min  # the entire reward for this POI
+            # print '  Poi reward: ', poi_reward
+            # print
             rewards['POI'].append(poi_reward)  # keep track of the reward for each POI
             rewards['LOCAL'][rover_closest[0]] += poi_reward  # add to closest rover's local reward
             rewards['GLOBAL'] += poi_reward
+
 
         # Calculate DIFFERENCE reward (with counterfactual c = 0)
         for my_rover_index, rover in enumerate(self.rovers):
