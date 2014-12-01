@@ -235,7 +235,7 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewa
         nn.value = reward
         # print 'NN value set to: ', nn.value
 
-    return rewards['LOCAL']
+    return rewards['GLOBAL']
 
 def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plotPlease = False):
     ''' Returns reward list for the system at each episode. '''
@@ -438,7 +438,7 @@ def getResults():
     baseRandomSettings.moveRandomly = True
 
     #settings = [baseGlobalSettings, baseLocalSettings, baseDifferenceSettings, baseRandomSettings]
-    settings = [baseGlobalSettings]
+    settings = [baseRandomSettings]
     
     for i in range(numStatRuns):
         for numAgents in [30]:
