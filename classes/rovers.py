@@ -8,6 +8,7 @@ from rover_sensor import Rover_Sensor
 from geography import Location
 import math
 import copy
+import sys
 
 
 class Rover():
@@ -72,6 +73,8 @@ class Rover():
         self.save_location()  # save it!
     
         # update orientation/sensor boundaries
+        if dx == 0:  # don't divide by zero!
+            dx = sys.float_info.min
         new_heading = math.atan(dy/dx) * 180. / math.pi
         
         for i in xrange(self.num_sensors):
