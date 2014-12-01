@@ -51,7 +51,7 @@ def plotRewards(rewards, directory):
 #     # axis_bounds = [0.5, 3.5, 0, 300]
 #     # figureItOut(x_lists, y_lists, axis_bounds)
 
-def getRewards(fname):
+def readInRewards(fname):
     rewards = []
     with open(fname, 'r') as f:
         for line in f:
@@ -61,7 +61,9 @@ def getRewards(fname):
 
     return rewards
 
-def main(directory):
+def statRunsDirAvg(directory):
+    ''' Averages all the float list files in the directory into one
+    '''
     print 'Working on filepath..' + directory
     # Get each reward list from the directory
     rewardList = []
@@ -69,7 +71,7 @@ def main(directory):
         fnamePath = directory + '/' + fname
         print 'Filepath: ', fnamePath
         try:
-            rewards = getRewards(fnamePath)
+            rewards = readInRewards(fnamePath)
             print 'Got rewards'
             rewardList.append(rewards)
         except:
@@ -116,9 +118,7 @@ def saveReward(fname, rewardList):
         
         f.close()
 
-
-if __name__ == '__main__':
-    
+def averageStatRuns():
     directory = '/nfs/attic/smartw/users/kraftko/Fall2014/ME538MultiAgent/TermProj/multiple-explorers/savedResults/'
     # for directory in os.listdir(os.getcwd + '/results/'):
     for direct in os.listdir(directory):
@@ -130,12 +130,18 @@ if __name__ == '__main__':
                 filePath = '{0}/{1}/{2}'.format(directory, direct, subDir)
                 # print '   SubDir: ', subDir
                 # print  '     filepath: ', filePath
-                main(filePath)
+                statRunsDirAvg(filePath)
         except:
             pass
-    # fname 
-    # rewards = getRewards(fname)
-    # plotRewards(rewards)
+
+def plotTypes():
+    pass
+
+if __name__ == '__main__':
+    averageStatRuns()
+    plotTypes()
+
+    
 
     
     

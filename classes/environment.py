@@ -217,5 +217,5 @@ class World():
                 fig.gca().add_artist(circle1)
 
         pyplot.draw()
-        fig.savefig('Learned00Step' + str(step) + '.png')
+        fig.savefig('Learned01Step' + str(step) + '.png')
 

@@ -41,6 +41,7 @@ def initNNs(lenOfPool, numAgents):
         agentsNNList = []
         for i in range(lenOfPool):
             nn = createNN()
+            nn.name = i
             agentsNNList.append(copy.deepcopy(nn))
         nnList.append(copy.deepcopy(agentsNNList) )
     return nnList
@@ -186,16 +187,16 @@ def calcDX(output, maxDist, noise):
     return dx
 
 
-<<<<<<< HEAD
-def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewardType, moveRandomly=False):
-=======
-def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewardType, moveRandomly=False, plotPlease=False):
 
->>>>>>> 82ae856031545462c996eddd5fc0c91d01a80e4e
+def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewardType, moveRandomly=False, plotPlease=False):
     # reset world
     # init/place rovs
     world.reset(headings)  # randomize POI locations and reset rover locations
+
+    # print 'Reward type: ', rewardType
+
     for t in range(timesteps):
+        actionList = []
         for rov, nn in itertools.izip(world.rovers, team):
             if moveRandomly:
                 dx = random.uniform(-maxDist, maxDist)  # pick random actions
@@ -206,8 +207,13 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewa
                 dx = calcDX(o1, maxDist, mvtNoise)  # use the neural network's actions
                 dy = calcDX(o2, maxDist, mvtNoise)
             
-            # take the action with the chosen action
-            rov.takeAction(dx, dy)
+            # put action in action list so that all rovers take action simultaneously
+            action = (dx, dy)
+            actionList.append(action)
+        
+        # Take actions all at the same time
+        for rov, action in itertools.izip(world.rovers, actionList):
+            rov.takeAction(action[0], action[1])
 
         if plotPlease:
             world.plot_all()
@@ -218,10 +224,14 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewa
     rewards_chosen = rewards[rewardType]  # pick the reward type
     if rewardType == 'GLOBAL':  # the global reward is length 1 and needs to be tiled
         rewards_chosen = [rewards_chosen]*len(team)  
+        # for reward in rewards_chosen:
+        #     print 'Reward in reward chosen ', reward
     for nn, reward in itertools.izip(team, rewards_chosen):  # assign rewards to NN's
+        # print 'Reward: ', reward
         nn.value = reward
+        # print 'NN value set to: ', nn.value
 
-    return rewards['GLOBAL']
+    return rewards['LOCAL']
 
 def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plotPlease = False):
     ''' Returns reward list for the system at each episode. '''
@@ -290,6 +300,7 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plo
             # do the episode
             reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings, rewardType, moveRandomly, plotPlease)
             team_rewards.append(reward)
+            printTeamRewards(team)
 
         # Save max reward over team combos
         rewards_list.append(max(team_rewards))
@@ -297,6 +308,8 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plo
         
         # select best nn performers
         #   and mutate and replace low performers
+        # print 'For episode: ', i
+        # printNNS(nns)
         updateNNS(nns, egreedy * egreedyDecreaseRate)
 
     # outputing results
@@ -311,15 +324,11 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plo
     #     # For that agent, print out the weights
     #     print 'Best NN Weights:'
     #     bestNN.printWeights()
+    # if plotLast:
+    #     reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings, rewardType, moveRandomly, plotPlease=True)
 
-<<<<<<< HEAD
-    # pyplot.plot(rewards_list)
-    # pyplot.show()
 
-=======
-    if plotLast:
-        reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings, rewardType, moveRandomly, plotPlease=True)
->>>>>>> 82ae856031545462c996eddd5fc0c91d01a80e4e
+    
     return rewards_list
 
 
@@ -348,7 +357,7 @@ def getResults():
     import timeit
     start_time = timeit.default_timer()
     numStatRuns = 1
-    epochs = 15
+    epochs = 25
 
     # runs all four reward types with 30 agents for 200 episodes
     # runBaseline()
@@ -424,14 +433,15 @@ def getResults():
     baseRandomSettings.rewardType = 'GLOBAL'
     baseRandomSettings.moveRandomly = True
 
-    settings = [baseGlobalSettings, baseLocalSettings, baseDifferenceSettings, baseRandomSettings]
-
+    #settings = [baseGlobalSettings, baseLocalSettings, baseDifferenceSettings, baseRandomSettings]
+    settings = [baseGlobalSettings]
+    
     for i in range(numStatRuns):
         for numAgents in [30]:
             for x in settings:
                 x.numAgents = numAgents
                 rewardList = main(x, epochs)
-                fname = os.getcwd() + '/TestingResults/{0}/{1}agents/{2}statRun-RT-{3}_Eps-{4}.results'.format(x.type, numAgents, i, x.rewardType, epochs)
+                fname = os.getcwd() + '/results/{0}/{1}agents/{2}statRun-RT-{3}_Eps-{4}.results'.format(x.type, numAgents, i, x.rewardType, epochs)
                 print 
                 print fname
                 saveReward(fname, rewardList)    
@@ -474,21 +484,42 @@ def runBaseline():
 
 def visualizeDomain():
     """ Run the simplest case with random policy; visualize the domain to see how it looks. """
-    plotSettings = RoverSettings(rewardType = 'DIFFERENCE',
+    print 'in visualizeDomain'
+    plotSettings = RoverSettings(rewardType = 'GLOBAL',
                                  moveRandomly = False,
                                  numAgents = 30,
                                  sensorRange = 10000, # essentially inf for our world size :)
                                  sensorFov = 4, # 360 degrees
                                  sensorNoiseInt = 0 # no noise)
                                  )
-    main(roverSettings = plotSettings, episodes = 50, lengthOfPool = 40, plotPlease = 'last')
-    
+    print 'reward type in visualizeDomain: ', plotSettings.rewardType
+    main(plotSettings, episodes = 5, lengthOfPool = 10, plotPlease = 'last')
+
+
+def printNNS(nns):
+    print 'printing nns....'
+    i = 0
+    for agent in nns:
+        print 'Agent ', i
+        for nn in agent:
+            print '  NN value: ', nn.value
+            print '  NN name: ', nn.name
+        i += 1
+
+def printTeamRewards(team):
+    print 'Printing team rewards...'
+    i = 0
+    for nn in team:
+        print 'Agent ', i
+        print '  NN value: ', nn.value
+        print '  NN name: ', nn.name
+        i += 1
 
 
 if __name__ == "__main__":
 
-    #getResults()
-    visualizeDomain()
+    getResults()
+    # visualizeDomain()
     
 #     start_time = timeit.default_timer()
 # #   main(rewardType='DIFFERENCE', moveRandomly=True)  # random!
