@@ -269,6 +269,13 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plo
 
     # Create orientations for the agents outside so they will all be consist for agent i
     rewards_list = []
+
+    if plotPlease == 'last':
+        plotPlease = False
+        plotLast = True
+    else:
+        plotLast = False
+
     for i in range(episodes): # random definition of convergence
         print 'Perfoming epidsode {0} for {1} agents...'.format(i, numAgents)
         # create random team of agent brains for the game
@@ -301,6 +308,8 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plo
     #     print 'Best NN Weights:'
     #     bestNN.printWeights()
 
+    if plotLast:
+        reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings, rewardType, moveRandomly, plotPlease=True)
     return rewards_list
 
 
@@ -459,7 +468,7 @@ def visualizeDomain():
                                  sensorFov = 4, # 360 degrees
                                  sensorNoiseInt = 0 # no noise)
                                  )
-    main(roverSettings = plotSettings, episodes = 1, lengthOfPool = 1, plotPlease = True)
+    main(roverSettings = plotSettings, episodes = 50, lengthOfPool = 40, plotPlease = 'last')
     
 
 

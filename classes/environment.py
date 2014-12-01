@@ -196,7 +196,7 @@ class World():
             # Plot rovers
             trajectory_x = [point.x for point in rover.location_history]
             trajectory_y = [point.y for point in rover.location_history]
-            #pyplot.plot(trajectory_x, trajectory_y, 'r.-')
+            pyplot.plot(trajectory_x, trajectory_y, 'r.-')
             pyplot.plot(trajectory_x[-1], trajectory_y[-1], 'ro')
 
             for poi_index, poi in enumerate(self.POIs):
@@ -213,5 +213,5 @@ class World():
                 fig.gca().add_artist(circle1)
 
         pyplot.draw()
-        fig.savefig('Trial00Step' + str(step) + '.png')
+        fig.savefig('Learned00Step' + str(step) + '.png')
 
