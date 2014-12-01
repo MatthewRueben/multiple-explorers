@@ -233,8 +233,8 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40):
     lenOfPool = lengthOfPool # Num of nn's for each agent 
     numAgents = roverSettings.numAgents # Num of agents in the system
     moveRandomly = roverSettings.moveRandomly
-    numPoi = 1
-    timesteps = 1
+    numPoi = 100
+    timesteps = 15
     maxDist = 10 # maximum distance the agent can move in one timestep
     minDist = 5 # minimum distance 
     mvtNoise = .1 # the noise added to each actions outcome
@@ -296,8 +296,8 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40):
     #     print 'Best NN Weights:'
     #     bestNN.printWeights()
 
-    pyplot.plot(rewards_list)
-    pyplot.show()
+    # pyplot.plot(rewards_list)
+    # pyplot.show()
 
     return rewards_list
 
@@ -327,7 +327,7 @@ def getResults():
     import timeit
     start_time = timeit.default_timer()
     numStatRuns = 1
-    epochs = 3
+    epochs = 15
 
     # runs all four reward types with 30 agents for 200 episodes
     # runBaseline()
@@ -378,31 +378,32 @@ def getResults():
     sensorNoise50.sensorNoiseInt = 50
     sensorNoise50.type = 'SN_50'
 
-    baseSettings.rewardType = 'GLOBAL'
-    baseSettings.moveRandomly = True
-    settings = [baseSettings]
+    # baseSettings.rewardType = 'GLOBAL'
+    # baseSettings.moveRandomly = True
+    # settings = [baseSettings]
+
     #settings = [sensorRangeUnlimitedSettings, sensorRangeLimitedSettings, sensorRangeMediumSettings]
     # settings = [sensorFOV360, sensorFOV270, sensorFOV90]
     # settings = [sensorNoiseNone, sensorNoise10, sensorNoise50]
 
-    # baseGlobalSettings = copy.deepcopy(baseSettings)
-    # baseGlobalSettings.type = 'GLOBAL'
-    # baseGlobalSettings.rewardType = 'GLOBAL'
+    baseGlobalSettings = copy.deepcopy(baseSettings)
+    baseGlobalSettings.type = 'GLOBAL'
+    baseGlobalSettings.rewardType = 'GLOBAL'
 
-    # baseLocalSettings = copy.deepcopy(baseSettings)
-    # baseLocalSettings.type = 'LOCAL'
-    # baseLocalSettings.rewardType = 'LOCAL'
+    baseLocalSettings = copy.deepcopy(baseSettings)
+    baseLocalSettings.type = 'LOCAL'
+    baseLocalSettings.rewardType = 'LOCAL'
 
-    # baseDifferenceSettings = copy.deepcopy(baseSettings)
-    # baseDifferenceSettings.type = 'DIFFERENCE'
-    # baseDifferenceSettings.rewardType = 'DIFFERENCE'
+    baseDifferenceSettings = copy.deepcopy(baseSettings)
+    baseDifferenceSettings.type = 'DIFFERENCE'
+    baseDifferenceSettings.rewardType = 'DIFFERENCE'
 
-    # baseRandomSettings = copy.deepcopy(baseSettings)
-    # baseRandomSettings.type = 'RANDOM'
-    # baseRandomSettings.rewardType = 'GLOBAL'
-    # baseRandomSettings.moveRandomly = True
+    baseRandomSettings = copy.deepcopy(baseSettings)
+    baseRandomSettings.type = 'RANDOM'
+    baseRandomSettings.rewardType = 'GLOBAL'
+    baseRandomSettings.moveRandomly = True
 
-    # settings = [baseGlobalSettings, baseLocalSettings, baseDifferenceSettings, baseRandomSettings]
+    settings = [baseGlobalSettings, baseLocalSettings, baseDifferenceSettings, baseRandomSettings]
 
     for i in range(numStatRuns):
         for numAgents in [30]:

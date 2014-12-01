@@ -11,11 +11,11 @@ class Bounds2D():
         self.y_upper = y_upper
 
     def random_within_bounds(self):
-        # x_choice = random.uniform(self.x_lower, self.x_upper)
-        # y_choice = random.uniform(self.y_lower, self.y_upper)
+        x_choice = random.uniform(self.x_lower, self.x_upper)
+        y_choice = random.uniform(self.y_lower, self.y_upper)
         # total hack below for testing purposes, puts them all in a corner
-        x_choice = self.x_lower
-        y_choice = self.y_lower
+        # x_choice = self.x_lower
+        # y_choice = self.y_lower
         return (x_choice, y_choice)
 
     def get_center(self):
