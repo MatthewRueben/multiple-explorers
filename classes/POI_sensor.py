@@ -40,9 +40,13 @@ class POI_Sensor(Sensor):
                 angle += 360
 
             # angle range is: [left_edge, right_edge)
-            
+
+            # if distance is 0, the POI is on top of the rover and can be seen:
+            if distance == 0:
+                sum_dist = max(distance**2, min_observation_dist**2)
+                POI_count += (poi.V/sum_dist)          
             # if angle range straddles 0:
-            if (distance <= self.sensor_range) and (0 <= angle <= self.left_edge) and (360 > angle > self.right_edge):
+            elif (distance <= self.sensor_range) and ((0 <= angle <= self.left_edge) or (360 > angle > self.right_edge)):
                 sum_dist = max(distance**2, min_observation_dist**2)
                 POI_count += (poi.V/sum_dist)
             # if angle range is typical:
