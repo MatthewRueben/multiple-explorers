@@ -48,7 +48,7 @@ class Rover_Sensor(Sensor):
                 sum_dist = max(distance**2, min_observation_dist**2)
                 rover_count += (1/sum_dist)
             # if angle range straddles 0:
-            elif (distance <= self.sensor_range) and (0 <= angle <= self.left_edge) and (360 > angle > self.right_edge):
+            elif (distance <= self.sensor_range) and ((0 <= angle <= self.left_edge) or (360 > angle > self.right_edge)):
                 sum_dist = max(distance**2, min_observation_dist**2)
                 rover_count += (1/sum_dist)
             # if angle range is typical:
