@@ -101,8 +101,8 @@ class World():
                 G_without += poi_reward_new   # Add it back in (G_without should be getting smaller)
             rewards['DIFFERENCE'][my_rover_index] = rewards['GLOBAL'] - G_without # Calculate D = G(Z) - G(Z_-i)
 
-        print rewards['DIFFERENCE']
-        print 'Any DIFFERENCE rewards less than zero?', any([el < 0 for el in rewards['DIFFERENCE']])
+        # print rewards['DIFFERENCE']
+        # print 'Any DIFFERENCE rewards less than zero?', any([el < 0 for el in rewards['DIFFERENCE']])
             
         # Calculate DIFFERENCE reward with PARTIAL OBSERVABILITY (and c = 0)
         """

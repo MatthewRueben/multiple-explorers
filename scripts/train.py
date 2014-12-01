@@ -304,7 +304,7 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plo
             # do the episode
             reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings, rewardType, moveRandomly, plotPlease)
             team_rewards.append(reward)
-            printTeamRewards(team)
+            # printTeamRewards(team)
 
         # Save max reward over team combos
         rewards_list.append(max(team_rewards))
