@@ -36,6 +36,7 @@ class Rover():
             self.num_sensors = self.max_sensors
             
         for i in xrange(self.num_sensors):
+            #print "Sensor Region: ", self.sensor_regions[i]
             self.POI_sensors.append(POI_Sensor(self.sensor_regions[i], self.location, self.heading, sensor_range, sensor_noise))
             self.rover_sensors.append(Rover_Sensor(self.sensor_regions[i], self.location, self.heading, observation_range, sensor_range, sensor_noise))
 
@@ -100,17 +101,22 @@ class Rover():
         output_list = []
         
         for i in xrange(len(self.sensor_regions)):
-            # check if valid quadrant            
+            # reset value
+            poi_count = 0
+
+            # check if valid quadrant
             if i >= self.num_sensors:
-                #print i
                 output_list.append(0) # if no sensor for the quadrant, return 0
 
             else:
                 # get count
                 poi_count = self.POI_sensors[i].getPoiCount(POI_list, min_observation_dist)
                 output_list.append(poi_count)
-            
+        
         for i in xrange(len(self.sensor_regions)):
+            # reset value
+            rover_count = 0
+
             # check if valid quadrant
             if i >= self.num_sensors:
                 output_list.append(0) # if no sensor for the quadrant, return 0

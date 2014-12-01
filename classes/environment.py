@@ -6,6 +6,7 @@ from roverSettingsStruct import RoverSettings
 import random
 import itertools
 from matplotlib import pyplot
+import copy
 
 class World():
     def __init__(self, world_bounds, N_poi, poi_bounds, rover_settings, rover_start, rovHeadings):
@@ -64,7 +65,7 @@ class World():
                    'DIFFERENCE_PO': [0]*len(self.rovers)}
         rover_closest_list = []
 
-        # Calculate GLOBAL and LOCAL rewards
+        # Calculate GLOBAL reward
         for poi_index in range(len(self.POIs)):  # for each POI, figure out which rover is closest and get the appropriate reward
             delta_min, rover_closest = self.find_closest(poi_index)
             # print 'Closest rover: ', rover_closest
@@ -73,9 +74,20 @@ class World():
             # print '  Poi reward: ', poi_reward
             # print
             rewards['POI'].append(poi_reward)  # keep track of the reward for each POI
-            rewards['LOCAL'][rover_closest[0]] += poi_reward  # add to closest rover's local reward
             rewards['GLOBAL'] += poi_reward
 
+        # Calculate LOCAL reward
+        for rover_index, rover in enumerate(self.rovers):
+            rewards['LOCAL'][rover_index] = 0
+            for poi_index, poi in enumerate(self.POIs):  # for each POI...
+                delta_min = 100.0  # start arbitrarily high
+                for step_index, location in enumerate(rover.location_history):  # check each of the rover's steps
+                    delta = (location - poi)  # observation distance
+                    if delta < delta_min:  # the closest distance counts, even if it's closer than the minimum observation distance
+                        delta_min = delta
+                delta_min = max(delta_min ** 2, poi.d_min ** 2)  # delta is actually the SQUARED Euclidean distance
+                poi_reward = poi.V / delta_min  # the entire reward for this POI (for this rover only)
+                rewards['LOCAL'][rover_index] += poi_reward
 
         # Calculate DIFFERENCE reward (with counterfactual c = 0)
         for my_rover_index, rover in enumerate(self.rovers):
@@ -84,10 +96,13 @@ class World():
             for poi_index in closest_to:  # for each of those POIs...
                 G_without -= rewards['POI'][poi_index]  # Subtract its old reward
                 delta_min_new, rover_closest_new = self.find_closest(poi_index, [my_rover_index])  # Find the next-closest rover to it
+                #print (rover_closest_list[poi_index], rover_closest_new)
                 poi_reward_new = self.POIs[poi_index].V / delta_min_new  # Calculate its new reward
                 G_without += poi_reward_new   # Add it back in (G_without should be getting smaller)
             rewards['DIFFERENCE'][my_rover_index] = rewards['GLOBAL'] - G_without # Calculate D = G(Z) - G(Z_-i)
 
+        print rewards['DIFFERENCE']
+        print 'Any DIFFERENCE rewards less than zero?', any([el < 0 for el in rewards['DIFFERENCE']])
             
         # Calculate DIFFERENCE reward with PARTIAL OBSERVABILITY (and c = 0)
         """
@@ -114,34 +129,22 @@ class World():
         return rewards, rover_closest_list
 
 
-    def find_closest(self, poi_index, not_these_rovers=[], not_these_times=[]):
+    def find_closest(self, poi_index, not_these_rovers=[]):
         """ Finds closest rover to the specified POI. 
         Returns that rover's index as well as the distance metric. """
-        if not not_these_times:  # if no time restrictions are provided
-            not_these_times = [[]]*len(not_these_rovers)
         poi = self.POIs[poi_index]
         delta_min = 100.0  # start arbitrarily high
         rover_closest = None
         step_closest = None
         for rover_index, rover in enumerate(self.rovers):
 
-            # Decide what to skip
-            skip_rover = False
-            if rover_index in not_these_rovers:  # if this rover is on the skip list
-                ignored_rover_index = not_these_rovers.index(rover_index)
-                steps_to_skip = not_these_times[ignored_rover_index]  # get the times to skip
-                skip_rover = bool(steps_to_skip)  # skip this entire rover if no particular time steps are specified
-            else:
-                steps_to_skip = []
-
             # Check observation distances for the rover locations we aren't skipping
-            if not skip_rover:
+            if rover_index not in not_these_rovers:
                 for step_index, location in enumerate(self.rovers[rover_index].location_history):
-                    if step_index not in steps_to_skip:
-                        delta = (location - poi)  # observation distance
-                        if delta < delta_min:  # the closest rover counts, even if it's closer than the minimum observation distance
-                            delta_min = delta
-                            rover_closest = (rover_index, step_index)
+                    delta = (location - poi)  # observation distance
+                    if delta < delta_min:  # the closest rover counts, even if it's closer than the minimum observation distance
+                        delta_min = delta
+                        rover_closest = (rover_index, step_index)
 
         delta_min = max(delta_min ** 2, poi.d_min ** 2)  # delta is actually the SQUARED Euclidean distance
         return delta_min, rover_closest

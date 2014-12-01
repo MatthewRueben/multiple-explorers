@@ -217,6 +217,10 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewa
 
         if plotPlease:
             world.plot_all()
+
+        #if t == 0:  # first step
+        #    rewards, rover_closest_list = world.get_rewards()  # get all the different reward types
+        #    1/0
             
             
     # Get rewards for nn's which correspond to system rewards   
