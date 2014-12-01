@@ -186,7 +186,7 @@ def calcDX(output, maxDist, noise):
     return dx
 
 
-def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewardType, moveRandomly=False):
+def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewardType, moveRandomly=False, plotPlease=False):
 
     # reset world
     # init/place rovs
@@ -204,6 +204,10 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewa
             
             # take the action with the chosen action
             rov.takeAction(dx, dy)
+
+        if plotPlease:
+            world.plot_all()
+            
             
     # Get rewards for nn's which correspond to system rewards   
     rewards, rover_closest_list = world.get_rewards()  # get all the different reward types
@@ -215,7 +219,7 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewa
 
     return rewards['GLOBAL']
 
-def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40):
+def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plotPlease = False):
     ''' Returns reward list for the system at each episode. '''
     # Evo Training
     # 
@@ -273,7 +277,7 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40):
         team_rewards = []
         for team in teams:         
             # do the episode
-            reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings, rewardType, moveRandomly)
+            reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings, rewardType, moveRandomly, plotPlease)
             team_rewards.append(reward)
 
         # Save max reward over team combos
@@ -446,9 +450,23 @@ def runBaseline():
     return (rewards_list_rand, rewards_list_global, rewards_list_local, rewards_list_diff)
 
 
+def visualizeDomain():
+    """ Run the simplest case with random policy; visualize the domain to see how it looks. """
+    plotSettings = RoverSettings(rewardType = 'DIFFERENCE',
+                                 moveRandomly = False,
+                                 numAgents = 30,
+                                 sensorRange = 10000, # essentially inf for our world size :)
+                                 sensorFov = 4, # 360 degrees
+                                 sensorNoiseInt = 0 # no noise)
+                                 )
+    main(roverSettings = plotSettings, episodes = 1, lengthOfPool = 1, plotPlease = True)
+    
+
+
 if __name__ == "__main__":
 
-    getResults()
+    #getResults()
+    visualizeDomain()
     
 #     start_time = timeit.default_timer()
 # #   main(rewardType='DIFFERENCE', moveRandomly=True)  # random!
