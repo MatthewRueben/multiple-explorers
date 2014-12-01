@@ -245,7 +245,7 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40):
     # the same for each agent through the runs and epochs
     #  so that the corresponding agent and nn pool will reflect the 
     #   same initial values/assumptions
-    agentInitHeadings = [(random.randint(0,359) * math.pi /180) for x in range(numAgents)] 
+    agentInitHeadings = [random.randint(0,359) for x in range(numAgents)] 
     
     # Hyperparamters for training
     egreedy = .2 # number of weights to mutate starting out, this is decreased over time 
