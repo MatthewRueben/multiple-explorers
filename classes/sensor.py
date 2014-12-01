@@ -16,7 +16,7 @@ class Sensor(object):
         self.location = location
 
         # define quadrant edges in terms of degrees
-        global_heading = rover_heading + self.regions['Front']
+        global_heading = rover_heading + self.regions[sector]
         self.left_edge = global_heading + 45
         self.right_edge = global_heading - 45
         

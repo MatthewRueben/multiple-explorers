@@ -34,7 +34,7 @@ class Rover_Sensor(Sensor):
             dy = self.location.y - rover.location.y
             if dx == 0:  # exception for rovers that are on top of each other (or identical)
                 dx = sys.float_info.min
-            angle = math.atan(dy / dx)
+            angle = math.atan2(dy, dx)
             angle = angle * 180. / math.pi # convert to degrees
             
             # ensure angle in range [0, 360]
@@ -46,15 +46,16 @@ class Rover_Sensor(Sensor):
             # if distance is 0, the rovers are on top of eachother and can be seen:
             if distance == 0:
                 sum_dist = max(distance**2, min_observation_dist**2)
-                rover_count += (1/sum_dist)
+                rover_count += (1./sum_dist)
             # if angle range straddles 0:
-            elif (distance <= self.sensor_range) and ((0 <= angle <= self.left_edge) or (360 > angle > self.right_edge)):
-                sum_dist = max(distance**2, min_observation_dist**2)
-                rover_count += (1/sum_dist)
+            elif (self.left_edge < 90) and (self.right_edge > 270):
+                if (distance <= self.sensor_range) and ((0 <= angle <= self.left_edge) or (360 > angle > self.right_edge)):
+                    sum_dist = max(distance**2, min_observation_dist**2)
+                    rover_count += (1./sum_dist)
             # if angle range is typical:
-            elif (distance <= self.sensor_range) and (angle <= self.left_edge) and (angle > self.right_edge):
+            elif (distance <= self.sensor_range) and (self.right_edge < angle <= self.left_edge):
                 sum_dist = max(distance**2, min_observation_dist**2)
-                rover_count += (1/sum_dist)
+                rover_count += (1./sum_dist)
             
         return rover_count
         

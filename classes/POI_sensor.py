@@ -32,26 +32,27 @@ class POI_Sensor(Sensor):
             dy = self.location.y - poi.location.y
             if dx == 0:
                 dx = sys.float_info.min
-            angle = math.atan(dy/dx)
+            angle = math.atan2(dy, dx)
             angle = angle * 180. / math.pi # convert to degrees
             
             # ensure angle in range [0, 360]
             if angle < 0:
                 angle += 360
-
+                
             # angle range is: [left_edge, right_edge)
 
             # if distance is 0, the POI is on top of the rover and can be seen:
             if distance == 0:
                 sum_dist = max(distance**2, min_observation_dist**2)
-                POI_count += (poi.V/sum_dist)          
+                POI_count += (poi.V/sum_dist)
             # if angle range straddles 0:
-            elif (distance <= self.sensor_range) and ((0 <= angle <= self.left_edge) or (360 > angle > self.right_edge)):
-                sum_dist = max(distance**2, min_observation_dist**2)
-                POI_count += (poi.V/sum_dist)
+            elif (self.left_edge < 90) and (self.right_edge > 270):
+                if (distance <= self.sensor_range) and ((0 <= angle <= self.left_edge) or (360 > angle > self.right_edge)):
+                    sum_dist = max(distance**2, min_observation_dist**2)
+                    POI_count += (poi.V/sum_dist)
             # if angle range is typical:
-            elif (distance <= self.sensor_range) and (angle <= self.left_edge) and (angle > self.right_edge):
+            elif (distance <= self.sensor_range) and (self.right_edge < angle <= self.left_edge):
                 sum_dist = max(distance**2, min_observation_dist**2)
                 POI_count += (poi.V/sum_dist)
-            
+
         return POI_count
