@@ -7,7 +7,7 @@ import copy
 import random
 import itertools
 import timeit
-from matplotlib import pyplot
+# from matplotlib import pyplot
 
 locationOfFiles = os.getcwd() + '/classes'  # add location of class files to PYTHONPATH
 print 'File loc: ', locationOfFiles
@@ -28,12 +28,17 @@ def initNNs(lenOfPool, numAgents):
     # Cannot even just createNN() inside the append.
     # Whats up?
     # Kory Kraft 11/26/2014 
+    # print 'in init nns'
     # nnList = []
     # for agent in range(numAgents):
     #     agentsNNList = []
     #     for i in range(lenOfPool):
     #         agentsNNList.append(createNN())
     #     nnList.append(agentsNNList)
+
+    # for agent in nnList:
+    #     for nn in agent:
+    #         nn.printWeights()        
     # return nnList
 
     nnList = []
@@ -43,6 +48,7 @@ def initNNs(lenOfPool, numAgents):
             nn = createNN()
             nn.name = i
             agentsNNList.append(copy.deepcopy(nn))
+            nn.printWeights()
         nnList.append(copy.deepcopy(agentsNNList) )
     return nnList
 
@@ -129,7 +135,7 @@ def updateNNS(nns, egreedy):
         # Divide out the agent's nns in the the high performers and low performers
         topHalfNNs, lowHalfNNs = selectPerformers(agentNNs, egreedy)
         # mutate the top performers and replace the lowHalfNN's with these mutate weights
-        mutateNNs(topHalfNNs, lowHalfNNs)
+        mutateNNs(topHalfNNs, lowHalfNNs, egreedy)
 
 
 def selectPerformers(nns, egreedy):
@@ -161,7 +167,7 @@ def selectPerformers(nns, egreedy):
     return topHalf, lowHalf
 
 
-def mutateNNs(topHalf, lowHalf):
+def mutateNNs(topHalf, lowHalf, egreedy):
     ''' Each nn in the low half is replaced by a mutated version of the nn in the topHalf. 
         Leaves the low nn in the same memory address (for the sake of the larger nns matrix.
         Instead, does a deep copy of the weights in the mutated nn.
@@ -170,7 +176,7 @@ def mutateNNs(topHalf, lowHalf):
         '''
 
     for low, top in zip(lowHalf, topHalf):
-        low.weights = top.mutateWeights(.1).weights
+        low.weights = top.mutateWeights(egreedy).weights
         low.value = sys.float_info.min
 
 def calcDX(output, maxDist, noise):
@@ -191,6 +197,7 @@ def calcDX(output, maxDist, noise):
 def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewardType, moveRandomly=False, plotPlease=False):
     # reset world
     # init/place rovs
+    # agents need to be reset...but pois need to stay in same location....
     world.reset(headings)  # randomize POI locations and reset rover locations
 
     # print 'Reward type: ', rewardType
@@ -198,18 +205,28 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewa
     for t in range(timesteps):
         actionList = []
         for rov, nn in itertools.izip(world.rovers, team):
+            # temp remove rover from world rovers so it doesn't see itself.
+            tempRov = rov
+            world.rovers.remove(rov)
+            
             if moveRandomly:
                 dx = random.uniform(-maxDist, maxDist)  # pick random actions
                 dy = random.uniform(-maxDist, maxDist)
             else:
                 # Do a prediction with the rovs associated nn from the team
-                o1, o2 = nn.fasterPredict(rov.getNNInputs(world.POIs, minDist, world.rovers)) 
+                nnInputs = rov.getNNInputs(world.POIs, minDist, world.rovers)
+                print nnInputs
+                o1, o2 = nn.fasterPredict(nnInputs) 
                 dx = calcDX(o1, maxDist, mvtNoise)  # use the neural network's actions
                 dy = calcDX(o2, maxDist, mvtNoise)
             
             # put action in action list so that all rovers take action simultaneously
             action = (dx, dy)
             actionList.append(action)
+
+            # put rover back in world list...
+            world.rovers.append(tempRov)
+
         
         # Take actions all at the same time
         for rov, action in itertools.izip(world.rovers, actionList):
@@ -237,7 +254,7 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewa
 
     return rewards['GLOBAL']
 
-def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plotPlease = False):
+def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plotPlease = False, pois = 100, ts = 15):
     ''' Returns reward list for the system at each episode. '''
     # Evo Training
     # 
@@ -256,8 +273,8 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plo
     lenOfPool = lengthOfPool # Num of nn's for each agent 
     numAgents = roverSettings.numAgents # Num of agents in the system
     moveRandomly = roverSettings.moveRandomly
-    numPoi = 100
-    timesteps = 15
+    numPoi = pois
+    timesteps = ts
     maxDist = 10 # maximum distance the agent can move in one timestep
     minDist = 5 # minimum distance 
     mvtNoise = .1 # the noise added to each actions outcome
@@ -268,11 +285,12 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plo
     # the same for each agent through the runs and epochs
     #  so that the corresponding agent and nn pool will reflect the 
     #   same initial values/assumptions
-    agentInitHeadings = [random.randint(0,359) for x in range(numAgents)] 
+    # agentInitHeadings = [random.randint(0,359) for x in range(numAgents)] 
+    agentInitHeadings = [0 for x in range(numAgents)] 
     
     # Hyperparamters for training
     egreedy = .2 # number of weights to mutate starting out, this is decreased over time 
-    egreedyDecreaseRate = .9 # rate at which egreedy selection is decreased
+    egreedyDecreaseRate = .975 # rate at which egreedy selection is decreased
 
     # World parameters
     world_bounds = Bounds2D((0, 115), (0, 100))  # world borders
@@ -314,7 +332,14 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plo
         #   and mutate and replace low performers
         # print 'For episode: ', i
         # printNNS(nns)
-        updateNNS(nns, egreedy * egreedyDecreaseRate)
+
+        # if plot last is turned on...and if we are above a certain range of episodes.
+        if plotLast & (i > (.9 * episodes)): 
+            reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings, rewardType, moveRandomly, plotPlease=True)
+
+        # mutate the nns, decreasing egreedy each time.
+        egreedy = egreedy * egreedyDecreaseRate
+        updateNNS(nns, egreedy)
 
     # outputing results
     # Find out which nns for each agent was the best
@@ -328,15 +353,12 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plo
     #     # For that agent, print out the weights
     #     print 'Best NN Weights:'
     #     bestNN.printWeights()
-    # if plotLast:
-    #     reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings, rewardType, moveRandomly, plotPlease=True)
-
-
+   
     
     return rewards_list
 
 
-def getResults():
+def getResults(saveRewards):
     ''' Runs the rover domain setup using the different sensor types:
 
                 Sensor range: 3 types ()
@@ -360,8 +382,8 @@ def getResults():
 
     import timeit
     start_time = timeit.default_timer()
-    numStatRuns = 1
-    epochs = 25
+    numStatRuns = 15
+    epochs = 2
 
     # runs all four reward types with 30 agents for 200 episodes
     # runBaseline()
@@ -412,14 +434,6 @@ def getResults():
     sensorNoise50.sensorNoiseInt = 50
     sensorNoise50.type = 'SN_50'
 
-    # baseSettings.rewardType = 'GLOBAL'
-    # baseSettings.moveRandomly = True
-    # settings = [baseSettings]
-
-    #settings = [sensorRangeUnlimitedSettings, sensorRangeLimitedSettings, sensorRangeMediumSettings]
-    # settings = [sensorFOV360, sensorFOV270, sensorFOV90]
-    # settings = [sensorNoiseNone, sensorNoise10, sensorNoise50]
-
     baseGlobalSettings = copy.deepcopy(baseSettings)
     baseGlobalSettings.type = 'GLOBAL'
     baseGlobalSettings.rewardType = 'GLOBAL'
@@ -437,18 +451,24 @@ def getResults():
     baseRandomSettings.rewardType = 'GLOBAL'
     baseRandomSettings.moveRandomly = True
 
-    #settings = [baseGlobalSettings, baseLocalSettings, baseDifferenceSettings, baseRandomSettings]
-    settings = [baseRandomSettings]
+    # settings = [sensorRangeUnlimitedSettings, sensorRangeLimitedSettings, sensorRangeMediumSettings]
+    # settings = [sensorFOV360, sensorFOV270, sensorFOV90]
+    # settings = [sensorNoiseNone, sensorNoise10, sensorNoise50]
+    # settings = [baseGlobalSettings, baseLocalSettings, baseDifferenceSettings, baseRandomSettings]
+    # settings = [baseLocalSettings]
+    settings = [baseDifferenceSettings]
     
     for i in range(numStatRuns):
-        for numAgents in [30]:
+        for numAgents in [2]:
             for x in settings:
                 x.numAgents = numAgents
-                rewardList = main(x, epochs)
+                # main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plotPlease = False, pois = 100, ts = 15):
+                rewardList = main(x, epochs, lengthOfPool = 40, plotPlease = 'last', pois = 1, ts = 15)
                 fname = os.getcwd() + '/results/{0}/{1}agents/{2}statRun-RT-{3}_Eps-{4}.results'.format(x.type, numAgents, i, x.rewardType, epochs)
                 print 
                 print fname
-                saveReward(fname, rewardList)    
+                if saveRewards:
+                    saveReward(fname, rewardList)    
 
 
     elapsed_time = timeit.default_timer() - start_time
@@ -521,8 +541,10 @@ def printTeamRewards(team):
 
 
 if __name__ == "__main__":
-
-    getResults()
+    # !!!!!!!!!!!!!! 
+    #  Currently poi placed in lower lefthand corner!
+    # !!!!!!!!!!!!!!
+    getResults(saveRewards = False)
     # visualizeDomain()
     
 #     start_time = timeit.default_timer()

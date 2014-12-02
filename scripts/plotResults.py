@@ -7,25 +7,42 @@
 import os
 from matplotlib import pyplot, rc
 import itertools
+import sys
 
 
-# def figureItOut(x_lists, y_lists, axis_bounds):
-#     # colors = 'kbrg'
-#     # shapes = ['', '*', 'o', 's']
-#     # lines = [':', '-', '-', '-']
-#     # labels = ['Random Actions', 
-#     #           'Learning with 360$^\circ$ Sensor FoV', 
-#     #           'Learning with 270$^\circ$ Sensor FoV', 
-#     #           'Learning with 900$^\circ$ Sensor FoV']
-#     # for x, y, color, shape, line, label in itertools.izip(x_lists, y_lists, colors, shapes, lines, labels):
-#     #     pyplot.plot(x, y,color+line+shape, label=label, markersize=8)
-#     # pyplot.axis(axis_bounds)
-#     # pyplot.xlabel('Number of Rovers')
-#     # pyplot.ylabel('System Reward Per Rover after Learning')
-#     # pyplot.title('Effect of Sensor Field-of-View on Learned Performance')
-#     # pyplot.xticks([1, 2, 3], [3, 10, 100])  # make the evenly-spaced ticks refer to unevenly-spaced values
-#     # pyplot.legend(loc='upper right')
-#     pyplot.show()
+def figureItOut(x_lists, y_lists, axis_bounds):
+    colors = 'kbrg'
+    shapes = ['', '*', 'o', 's']
+    lines = [':', '-', '-', '-']
+    labels = ['Random Actions', 
+              'Learning with 360$^\circ$ Sensor FoV', 
+              'Learning with 270$^\circ$ Sensor FoV', 
+              'Learning with 900$^\circ$ Sensor FoV']
+    for x, y, color, shape, line, label in itertools.izip(x_lists, y_lists, colors, shapes, lines, labels):
+        pyplot.plot(x, y,color+line+shape, label=label, markersize=8)
+    pyplot.axis(axis_bounds)
+    pyplot.xlabel('Number of Rovers')
+    pyplot.ylabel('System Reward Per Rover after Learning')
+    pyplot.title('Effect of Sensor Field-of-View on Learned Performance')
+    pyplot.xticks([1, 2, 3], [3, 10, 100])  # make the evenly-spaced ticks refer to unevenly-spaced values
+    pyplot.legend(loc='upper right')
+    pyplot.show()
+
+# tweaks to show sys rewards for 30 agents....
+def figureItOutUpdated(x_lists, title_lists, axis_bounds, main_title = 'System Rewards'):
+    colors = 'kbrg'
+    shapes = ['', '*', 'o', 's']
+    lines = [':', '-', '-', '-']
+    labels = title_lists
+    for x, color, shape, line, label in itertools.izip(x_lists, colors, shapes, lines, labels):
+        pyplot.plot(x,color+line+shape, label=label, markersize=8)
+    # pyplot.axis(axis_bounds)
+    pyplot.xlabel('Number of Episodes')
+    pyplot.ylabel('System Reward Per Rover after Learning')
+    pyplot.title(main_title)
+    # pyplot.xticks([1, 2, 3], [3, 10, 100])  # make the evenly-spaced ticks refer to unevenly-spaced values
+    pyplot.legend(loc='upper right')
+    pyplot.show()
 
 def plotRewards(rewards, directory):
 #     # 
@@ -81,10 +98,10 @@ def statRunsDirAvg(directory):
     averageRewardList = getAverage(rewardList)
 
     # # save the list :)
-    # saveReward(directory, averageRewardList)
+    saveReward(directory, averageRewardList)
 
     # plot list
-    plotRewards(averageRewardList, directory)    
+    # plotRewards(averageRewardList, directory)    
 
 
 def getAverage(allRewardsList):
@@ -119,7 +136,7 @@ def saveReward(fname, rewardList):
         f.close()
 
 def averageStatRuns():
-    directory = '/nfs/attic/smartw/users/kraftko/Fall2014/ME538MultiAgent/TermProj/multiple-explorers/savedResults/'
+    directory = '/nfs/attic/smartw/users/kraftko/Fall2014/ME538MultiAgent/TermProj/multiple-explorers/presentResults/'
     # for directory in os.listdir(os.getcwd + '/results/'):
     for direct in os.listdir(directory):
         newDirect = directory + str(direct) + '/'
@@ -134,12 +151,45 @@ def averageStatRuns():
         except:
             pass
 
-def plotTypes():
-    pass
+def plotGroup(fileNames, titleNames, mainTitle):
+    directory = '/nfs/attic/smartw/users/kraftko/Fall2014/ME538MultiAgent/TermProj/multiple-explorers/presentResults/'
+
+    # get rewards for each file
+    rewardListTotal = []
+    for fName in fileNames:
+        fPath = directory + fName
+        rewardList = readInRewards(fPath)
+        rewardListTotal.append(rewardList)
+        print 'Got rewards for: ', fPath
+
+    # plot the rewards
+    axisBounds = [0,100, 10000,20000]
+    # def figureItOutUpdated(x_lists, title_lists, axis_bounds, main_title = 'System Rewards'):
+    figureItOutUpdated(rewardListTotal, titleNames, axisBounds, mainTitle)
+
+
 
 if __name__ == '__main__':
-    averageStatRuns()
-    plotTypes()
+    # averageStatRuns()
+    
+    fileNames = []
+    for i in range(1, len(sys.argv)):
+        if sys.argv[i] == '-AVG':
+            print 'Averaging each run type..'
+            averageStatRuns()
+            sys.exit(0)
+        else:
+            fileNames.append(sys.argv[i])
+
+    titleNames = []
+    # print len(fileNames)
+    for fName in fileNames:
+        tName = raw_input('Title for ' + fName + ' ...   ')
+        titleNames.append(tName)
+
+    mainTitle = raw_input('Main title?...  ')
+
+    plotGroup(fileNames, titleNames, mainTitle)
 
     
 

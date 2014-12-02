@@ -22,7 +22,8 @@ class Rover():
         self.heading = 0 # in degrees
         self.sensor_range = sensor_range
         self.sensor_noise = sensor_noise
-        self.heading = heading        
+        # self.heading = heading 
+        self.heading = 180       
         self.num_sensors = num_sensors
         self.fov = 90 * num_sensors # in degrees
         self.POI_table = [1000] * num_POI # initialize arbitrarily large compared to world
@@ -76,7 +77,8 @@ class Rover():
         # update orientation/sensor boundaries
         if dx == 0:  # don't divide by zero!
             dx = sys.float_info.min
-        new_heading = math.atan(dy/dx) * 180. / math.pi
+        # new_heading = math.atan2(dy/dx) * 180. / math.pi
+        new_heading = 180
         
         for i in xrange(self.num_sensors):
             self.POI_sensors[i].updateFieldOfView(self.sensor_regions[i], new_heading)

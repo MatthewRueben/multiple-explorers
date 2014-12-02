@@ -29,7 +29,7 @@ class World():
         self.POIs = []
         for poi_index in range(N_poi):
             # V_choice = random.uniform(V_bounds[0], V_bounds[1])
-            V_choice = 5.0 # somewhat arbitrary choice for poi...
+            V_choice = 450.0 # somewhat arbitrary choice for poi...
             poi = POI(V_choice, d_min=5.0)  # assign POI value & minimum observation distance
             self.POIs.append(poi)
 

@@ -20,18 +20,18 @@ import copy
 import random
 import sys
 
-class NeuralNetwork():
+class NeuralNetwork:
 	''' Creates a NN for a single layer FF NN 
 		The activation function is the same for all the nodes
 	'''
-	def __init__(self, input, hiddenLayer, output, weights = {}, verbose = False):
+	def __init__(self, inputNodes, hiddenLayer, output, weights = {}, verbose = False):
 		''' Expecting:
 				The numpber of input nodes
 				The numer of hidden layer nodes
 				The number of output nodes
 
 		'''
-		self.numInputNodes = input
+		self.numInputNodes = inputNodes
 		self.numHiddenLayerNodes = hiddenLayer
 		self.numOutputLayerNodes = output
 		self.weights = weights
@@ -126,7 +126,7 @@ class NeuralNetwork():
 		''' Creates a dictionary of weights between the input nodes + bias and hidden nodes as well as the 
 				hidden nodes + bias and the output nodes.
 			The keys are the the form of 'firstNodeName , secondNodeName'; (e.g. Input-5, Hidden-0)
-			The weights are all initialized to random float between 0 and 1.
+			The weights are all initialized to random float between -1 and 1.
 		'''
 		if (self.weights == None):
 			self.weights = {}
@@ -138,13 +138,20 @@ class NeuralNetwork():
 					break # don't connect any inputs to the hidden bias....
 				key = nodeI + ', ' + nodeH
 				# print 'Key: ' + key
-				self.weights[key] = random.random()
+				# self.weights[key] = random.random()
+				if random.random() > .5:
+					self.weights[key] = - random.random() / 5.0
+				else:
+					self.weights[key] = random.random() / 5.0
 
 		# add weights between the hidden nodes and output nodes
 		for nodeH in self.hiddenNodes:
 			for nodeO in self.outputNodes:
 				key = nodeH + ', ' + nodeO
-				self.weights[key] = random.random()
+				if random.random() > .5:
+					self.weights[key] = - random.random() / 5.0
+				else:
+					self.weights[key] = random.random() / 5.0
 
 		# print 'total weights: ', len(self.weights)
 
@@ -377,7 +384,7 @@ class NeuralNetwork():
 		# make a deep copy of the NN.
 		mutatedNN = copy.deepcopy(self)
 		# take a random sample of mutateRate of the keys
-		keysToMutate = random.sample(self.weights.keys(), int(len(self.weights)*mutateRate) + 1)
+		keysToMutate = random.sample(self.weights.keys(), int(len(self.weights)*mutateRate))
 		for key in keysToMutate:
 			mutatedNN.weights[key] = self.weights[key] + random.gauss(0,1)
 

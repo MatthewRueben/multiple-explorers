@@ -14,8 +14,8 @@ class Bounds2D():
         x_choice = random.uniform(self.x_lower, self.x_upper)
         y_choice = random.uniform(self.y_lower, self.y_upper)
         # total hack below for testing purposes, puts them all in a corner
-        # x_choice = self.x_lower
-        # y_choice = self.y_lower
+        # x_choice = 0.0  #self.x_lower
+        # y_choice = 60.0 #self.y_upper - self.y_lower
         return (x_choice, y_choice)
 
     def get_center(self):
