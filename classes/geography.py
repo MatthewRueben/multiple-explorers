@@ -14,6 +14,23 @@ class Bounds2D():
         x_choice = random.uniform(self.x_lower, self.x_upper)
         y_choice = random.uniform(self.y_lower, self.y_upper)
         # total hack below for testing purposes, puts them all in a corner
+        # choice = random.random()
+        # if choice < .25:
+        #     # top middle
+        #     x_choice = 50.
+        #     y_choice = 100.
+        # elif choice < .5:
+        #     # bottom middle
+        #     x_choice = 50.
+        #     y_choice = 0.0
+        # elif choice < .75:
+        #     # left middle
+        #     x_choice = 0.0
+        #     y_choice = 60.0
+        # else:
+        #     # right middle
+        #     x_choice = 100
+        #     y_choice = 60
         # x_choice = 0.0  #self.x_lower
         # y_choice = 60.0 #self.y_upper - self.y_lower
         return (x_choice, y_choice)

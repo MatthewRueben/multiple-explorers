@@ -27,10 +27,13 @@ class World():
 
         # Init POIs
         self.POIs = []
+        total_val = 450.0
+        leftover_val = 450.0
         for poi_index in range(N_poi):
             # V_choice = random.uniform(V_bounds[0], V_bounds[1])
-            V_choice = 450.0 # somewhat arbitrary choice for poi...
-            poi = POI(V_choice, d_min=5.0)  # assign POI value & minimum observation distance
+            poi_value = random.randint(0, leftover_val)
+            leftover_val -= poi_value 
+            poi = POI(poi_value, d_min=5.0)  # assign POI value & minimum observation distance
             self.POIs.append(poi)
 
         # Init rovers
