@@ -42,6 +42,7 @@ class NeuralNetwork:
 
 		# for error checking
 		self.verbose = verbose
+		self.weightMutations = {}
 
 	def supplyInputs(self, inputs):
 		''' At this point, I am expecting a list for the inputs
@@ -264,6 +265,8 @@ class NeuralNetwork:
 				For our specific rover domain lets have them in the order of 4 poi vals and 4 rov num vals.
 				Our output will be 2 vals, dx and dy
 		'''
+		# print inputs
+
 		# for each of the hidden nodes, calculate their output using the initial inputs and weights
 		hiddenNodeOutput = []
 		for i in range(self.numHiddenLayerNodes):
@@ -388,10 +391,20 @@ class NeuralNetwork:
 		for key in keysToMutate:
 			mutatedNN.weights[key] = self.weights[key] + random.gauss(0,0.5)
 
+			# For debugging purposes... keep track of how many times an individual weight was mutated
+			try:
+				self.weightMutations[key] += 1
+			except:
+				self.weightMutations[key] = 1
+
 		# the new value should be the minimum possible, since we haven't tested it out yet
 		mutatedNN.value = sys.float_info.min
 
 		return mutatedNN
+
+	def printMutationRates(self):
+		for key in self.weightMutations.keys():
+			print 'Key: {0}   mutated {1} times.'.format(key, self.weightMutations[key])
 
 
 def main():

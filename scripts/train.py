@@ -48,7 +48,6 @@ def initNNs(lenOfPool, numAgents):
             nn = createNN()
             nn.name = i
             agentsNNList.append(copy.deepcopy(nn))
-            nn.printWeights()
         nnList.append(copy.deepcopy(agentsNNList) )
     return nnList
 
@@ -215,7 +214,7 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewa
             else:
                 # Do a prediction with the rovs associated nn from the team
                 nnInputs = rov.getNNInputs(world.POIs, minDist, world.rovers)
-                print nnInputs
+                # print nnInputs
                 o1, o2 = nn.fasterPredict(nnInputs) 
                 dx = calcDX(o1, maxDist, mvtNoise)  # use the neural network's actions
                 dy = calcDX(o2, maxDist, mvtNoise)
@@ -289,8 +288,8 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plo
     agentInitHeadings = [0 for x in range(numAgents)] 
     
     # Hyperparamters for training
-    egreedy = .2 # number of weights to mutate starting out, this is decreased over time 
-    egreedyDecreaseRate = .975 # rate at which egreedy selection is decreased
+    egreedy = .3 # number of weights to mutate starting out, this is decreased over time 
+    egreedyDecreaseRate = .999 # rate at which egreedy selection is decreased
 
     # World parameters
     world_bounds = Bounds2D((0, 115), (0, 100))  # world borders
@@ -334,8 +333,26 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plo
         # printNNS(nns)
 
         # if plot last is turned on...and if we are above a certain range of episodes.
-        if plotLast & (i > (.9 * episodes)): 
+        # Select best team to plot...
+        maxTeam = None
+        maxTeamScore = 0
+        for team in teams:
+            teamScore = 0
+            for agent in team:
+                teamScore += agent.value 
+            if teamScore > maxTeamScore:
+                maxTeam = team
+                maxTeamScore = teamScore
+        # plot best team for max last 15 episodes
+        if plotLast & (i > (episodes - 15)): 
             reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings, rewardType, moveRandomly, plotPlease=True)
+
+        # For debugging purposes...print mutation rates...
+        # if i == (episodes - 1):
+        #     for team in teams:
+        #         for agent in team:
+        #             print 'printing ', agent.name , '  rewards...'
+        #             agent.printMutationRates()
 
         # mutate the nns, decreasing egreedy each time.
         egreedy = egreedy * egreedyDecreaseRate
@@ -382,8 +399,8 @@ def getResults(saveRewards):
 
     import timeit
     start_time = timeit.default_timer()
-    numStatRuns = 15
-    epochs = 2
+    numStatRuns = 5
+    epochs = 700
 
     # runs all four reward types with 30 agents for 200 episodes
     # runBaseline()
@@ -454,16 +471,16 @@ def getResults(saveRewards):
     # settings = [sensorRangeUnlimitedSettings, sensorRangeLimitedSettings, sensorRangeMediumSettings]
     # settings = [sensorFOV360, sensorFOV270, sensorFOV90]
     # settings = [sensorNoiseNone, sensorNoise10, sensorNoise50]
-    # settings = [baseGlobalSettings, baseLocalSettings, baseDifferenceSettings, baseRandomSettings]
+    settings = [baseGlobalSettings, baseLocalSettings, baseDifferenceSettings, baseRandomSettings]
     # settings = [baseLocalSettings]
-    settings = [baseDifferenceSettings]
+    # settings = [baseGlobalSettings]
     
     for i in range(numStatRuns):
         for numAgents in [2]:
             for x in settings:
                 x.numAgents = numAgents
                 # main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plotPlease = False, pois = 100, ts = 15):
-                rewardList = main(x, epochs, lengthOfPool = 40, plotPlease = 'last', pois = 1, ts = 15)
+                rewardList = main(x, epochs, lengthOfPool = 40, plotPlease = False, pois = 10, ts = 15)
                 fname = os.getcwd() + '/results/{0}/{1}agents/{2}statRun-RT-{3}_Eps-{4}.results'.format(x.type, numAgents, i, x.rewardType, epochs)
                 print 
                 print fname
@@ -544,7 +561,7 @@ if __name__ == "__main__":
     # !!!!!!!!!!!!!! 
     #  Currently poi placed in lower lefthand corner!
     # !!!!!!!!!!!!!!
-    getResults(saveRewards = False)
+    getResults(saveRewards = True)
     # visualizeDomain()
     
 #     start_time = timeit.default_timer()

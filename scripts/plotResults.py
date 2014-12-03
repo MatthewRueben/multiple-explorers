@@ -135,8 +135,8 @@ def saveReward(fname, rewardList):
         
         f.close()
 
-def averageStatRuns():
-    directory = '/nfs/attic/smartw/users/kraftko/Fall2014/ME538MultiAgent/TermProj/multiple-explorers/presentResults/'
+def averageStatRuns(directory):
+    
     # for directory in os.listdir(os.getcwd + '/results/'):
     for direct in os.listdir(directory):
         newDirect = directory + str(direct) + '/'
@@ -152,7 +152,7 @@ def averageStatRuns():
             pass
 
 def plotGroup(fileNames, titleNames, mainTitle):
-    directory = '/nfs/attic/smartw/users/kraftko/Fall2014/ME538MultiAgent/TermProj/multiple-explorers/presentResults/'
+    directory = '/nfs/attic/smartw/users/kraftko/Fall2014/ME538MultiAgent/TermProj/multiple-explorers/results/'
 
     # get rewards for each file
     rewardListTotal = []
@@ -175,9 +175,22 @@ if __name__ == '__main__':
     fileNames = []
     for i in range(1, len(sys.argv)):
         if sys.argv[i] == '-AVG':
-            print 'Averaging each run type..'
-            averageStatRuns()
-            sys.exit(0)
+            try:
+                if sys.argv[i+1] == '-D':
+                    # Average just in one directory only
+                    try:
+                        statRunsDirAvg(sys.argv[i+2])
+                    except:
+                        print 'Cant avg files.'
+                    sys.exit(0)
+                else:
+                    print 'Averaging each run type..'
+                    directory = '/nfs/attic/smartw/users/kraftko/Fall2014/ME538MultiAgent/TermProj/multiple-explorers/results/'
+                    averageStatRuns(directory)
+                    sys.exit(0)
+            except:
+                print 'failed averaging all'
+                sys.exit(0)       
         else:
             fileNames.append(sys.argv[i])
 
