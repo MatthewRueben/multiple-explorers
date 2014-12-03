@@ -386,7 +386,7 @@ class NeuralNetwork:
 		# take a random sample of mutateRate of the keys
 		keysToMutate = random.sample(self.weights.keys(), int(len(self.weights)*mutateRate))
 		for key in keysToMutate:
-			mutatedNN.weights[key] = self.weights[key] + random.gauss(0,1)
+			mutatedNN.weights[key] = self.weights[key] + random.gauss(0,0.5)
 
 		# the new value should be the minimum possible, since we haven't tested it out yet
 		mutatedNN.value = sys.float_info.min
