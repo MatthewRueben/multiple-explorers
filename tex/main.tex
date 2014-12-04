@@ -186,8 +186,16 @@ intended movement to simulate real-world errors.
 The global reward presented by Tumer and Agogino (2008) is based on
 the closest observation of each POI by any rover:
   
+\[
+G= \sum_j  \frac{V_j}{min_i \: \delta(L_j, L_i)}
+\]
+
 The distance function is the square of the Euclidean norm up to a
 minimum distance d2:
+
+\[
+\delta  (x,y) = max \big\{||x - y||^2, d^2 \big\}    
+\]
 
 The difference reward would be more learnable for an individual rover,
 but requires each rover to calculate the hypothetical global reward if
@@ -197,6 +205,10 @@ rover in question and any rovers within its sensor range. If a rover
 is the closest rover that it knows of to a given POI, it is credited
 with the reward for that POI:
 
+\[
+D_i(PO) = \sum_j  \frac{V_j}{min_{i' \in O^\rho_i} \: \delta(L_j, L_{i'})} - \sum_j  \frac{V_j}{min_{i' \in O^\rho_i,  \neq i} \: \delta(L_j, L_{i'})}
+\]
+
 The authors showed this to be a highly factored, learnable, and
 practical credit assignment structure.
 
@@ -205,7 +217,15 @@ Each rover has two types of sensors. The first type returns an
 aggregate score that represents how many high-value POIs are near the
 rover:
 
+\[
+s_{1,q,i} =  \sum_{J \in I_q}  \frac{V_j}{\delta (L_j, L_i)} 
+\]
+
 The second sensor type returns a similar aggregate for other rovers:
+
+\[
+s_{2,q,i} =  \sum_{i' \in N_q}  \frac{V_j}{\delta (L_{i'}, L_i)}  
+\]
 
 Each rover’s surroundings are divided into four quadrants and two
 sensors -- one POI sensor and one rover sensor -- look out on each
@@ -218,6 +238,13 @@ State information was mapped to action choices using a perceptron with
 were sigmoidal and each output value was scaled based on a maximum
 movement allowance per step (d is maximum movement per time step and
 o1, o2 are the perceptron outputs):
+
+\[
+dx = 2d(o_1-0.5)
+\]
+\[
+dy = 2d(o_2-0.5)
+\]
 
 An evolutionary algorithm was used with simulated annealing to find
 neural networks that yield good performance. This is called “direct
