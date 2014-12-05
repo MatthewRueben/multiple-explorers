@@ -14,6 +14,7 @@
 \usepackage{cite}
 \usepackage{mathtools} % For math
 \usepackage{hyperref}
+%\usepackage{enumitem}
 \renewcommand{\deg}{\ensuremath{^{\circ}}\xspace}  % why doesn't this work???
 
 \providecommand{\e}[1]{\ensuremath{\times 10^{#1}}}
@@ -282,6 +283,55 @@ homogeneous agents.  System performance was then plotted for each
 sensor attribute at each scale in comparison with the baseline sensor
 performance.
 
+
+\section{Interactions between Domain and Learned Policy}
+\subsection{Controller Sensitivity to State Information}
+Very early in our implementation efforts, we saw that the learned policies of the rovers could be described in terms of two aspects:
+\begin{description}
+\item[\emph{Sensitivity or Reactivity}] \hfill \\
+The way the rover learns to respond to changes in sensor (state) information with changes in direction (i.e., action). If it learns to do this, then we say that the rover is \emph{sensitive} to changes in its state information, or that it \emph{reacts} strongly to such changes. This behavior is most directly influenced by the neural network weights that mediate the connections between inputs and the single hidden layer. These input weights determine for each input (here, POI and rover sensors) how much influence, if any, it will have on the action output of the neuro-controller. 
+\item[\emph{Direction Bias}] \hfill \\
+If these input weights make the inputs too large or too small, they will leave the range within which the sigmoidal activation functions of the hidden nodes are sensitive (i.e., about -5 to 5). In this case, changes in the input values (i.e., POI and rover sensor information) will cause only negligible changes to the hidden layer outputs, and the weights between the hidden layer and the output nodes will control the system. This causes behavior that is learned, but insensitive to sensor information; for our problem setup, this means a straight-line trajectory. The rover can only here learn the angle and speed of that trajectory. Assuming the speed is sufficient to reach the border of the map, the angle becomes very important for ensuring that the rovers spread out to cover all the POIs. 
+\end{description}
+
+Sensitivity can be estimated by how much an agent changes direction throughout its trajectory, especially as large sensor changes occur (e.g., passing by a rover or high-valued POI). A comparison of learned rover behavior that is sensitive and insensitive is shown in Figure \ref{fig:sensitivity}. Both systems have learned and indeed converged on their demonstrated behavior. 
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.3\textwidth]{ATRIAS.jpg}
+    \caption{Visualization of learned rover behavior over one episode. The reward was DIFFERENCE/GLOBAL/LOCAL. LEFT: rovers learned straight-line paths that ignore changing sensor information. This is sub-optimal (IS IT??? Doesn't matter to me, just say which it is for whatever we plot) for this domain. RIGHT: a different domain (DESCRIBE IT!) encouraged learned sensitivity to changing sensor information. This is apparent because the rovers change directions as the episode progresses. The direction changes are effective at observing more POIs more closely. }
+    \label{fig:sensitivity}
+\end{figure}
+
+
+\subsection{Easy and Hard Domains}
+We will now discuss the extent to which a domain can encourage or discourage learned sensitivity. 
+
+The first consideration is whether sensor information is even necessary for earning the optimal system reward. In other words, can the rovers fully observe every POI by taking well-distributed, straight-line paths? We can calculate this. The critical parameter is the angular separation between paths; if there are enough rovers and a small enough POI region, the space between paths will be so small that no POI could possibly \emph{not} be fully observed (Figure \ref{fig:triviality}). For our domain, the POIs are bounded within a 70x70 square region with a minimum observation distance of 5; for these parameters, 22 or more rovers could obtain the maximum system reward with straight-line paths. This explains why 30 agents caused us problems -- SPECIFICS.
+
+This raises the question of what domain characteristics most encourage the rovers to learn to use their sensors. CHECK THIS AGAINST REAL RESULTS. HERE ARE MY GUESSES:
+\begin{itemize}
+\item Non-Trivial Domain, as defined above. If evenly-spaced, straight-line paths can't optimally observe all the POIs, then rovers will need to learn to serpentine to cover more space or loop back for another pass after an initial charge through the POI region. Since our setup does not include time as an input, serpentine or zigzag behavior is impossible without changing outputs from the POI and rover sensors. A clearer example of this is when the rover learns to turn around if it overshoots the POI region; this requires sensitivity to a sensor reading that means zero POIs are ahead and many POIs are behind. 
+\item Varying Sensor Signals (Figure \ref{fig:signal-contrast}). The rovers need to experience a wide variety of sensor signals in order to learn how to respond to them. It's possible for a domain to be non-trivial as defined above but still present a rover with unchanging POI sensor signals (rover sensors will depend on agent policies, not the domain, at least directly). For example, a domain with very low minimum POI observation distances might require lots of maneuvering to optimally explore, but a very uniform distribution of these POIs would make sensor signals relatively uniform as well. Placing POIs in clusters or varying their relative values would make the POI sensor signals more sensitive to where the rover is located and to which direction it's facing. 
+\item Attending to Sensors is well-correlated with Improved Reward. For learning to occur, these changing sensor signals must be usable by the rover to increase its assigned rewards. This has been done for us with apparent success by the sensor characteristics prescribed in \cite{agogino2008analyzing}.
+
+
+%\item Moving POIs. If the rovers must perform well for a wide variety of POI positions and not just a static layout, they must vary their actions between episodes, or perhaps even between time steps.  This requires attention to sensor information in order to differentiate between different POI positions. Caveat: in a trivial domain, e.g., with too many rovers for the area to be covered, it doesn't matter how much the POIs move -- sensor information still isn't useful. Here is an example of POI movement that helps teach the rovers to react to sensor information: a single POI is randomly placed at one of the four corners of the map. 
+\end{itemize}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.3\textwidth]{ATRIAS.jpg}
+    \caption{Analysis of a trivial domain for our problem. Rovers are assumed to learn evenly-spaced, straight-line paths. Relevant parameters are the number of rovers, the size of the region containing POIs, and the minimum observation distance for the POIs. }
+    \label{fig:triviality}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.3\textwidth]{ATRIAS.jpg}
+    \caption{Examples of POI distributions with different signal-to-noise ratios in terms of the POI sensors. LEFT: a uniform POI distribution yields a low SNR. A weighted-value (MIDDLE) or clustered (RIGHT) POI distribution yields a high SNR. }
+    \label{fig:signal-contrast}
+\end{figure}
 
 
 \bibliographystyle{IEEEtran}
