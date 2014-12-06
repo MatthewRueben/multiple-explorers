@@ -27,7 +27,7 @@
 
 \title{\LARGE \bf 
 O Rover Where Art Thou?\\
-Multi-Robot Exploration with Limited Sensor Field-of-View
+Multi-Robot Exploration with Limited Sensor Capabilities
 }
 
 \author{Kory Kraft$^{1}$, Austin Nicolai$^{2}$, and Matthew Rueben$^{3}$% <-this % stops a space
@@ -49,7 +49,7 @@ Multi-Robot Exploration with Limited Sensor Field-of-View
 \begin{abstract}
 Sensor input plays a vital role in robotics.
 We analyze the impact of 3 important sensor characteristics, sensor range,
-field of view, and sensor noise utilizing 3 common reward structures in the 
+field-of-view, and sensor noise utilizing 3 common reward structures in the 
 exploration domain. Domain triviality in relation to sensor settings is discussed.
 Our important contributions are twofold: we show that the 
 difference reward is robust to sensor changes, whereas 
@@ -79,11 +79,11 @@ accomplishments, robots are increasingly being used with other robots,
 adding significance to multiagent systems (MAS) studies.
 
 Previous MAS research, however, often fails to fully consider the effect of
-sensor limitations upon the learning algorithm within given domains. In many realistic cases, sensors fall drastically short of being able to see the entire search space at once. Many lower-cost robots are now using the Microsoft Kinect because it offers RGB-D sensing for fewer than 100 dollars. Albeit, the Kinect is constrained by a 0.8 - 4.0m distance range and 57$^{\circ}$ horizontal and 43$^{\circ}$ vertical field of view. On top of all this, there is ever present sensor noise; a constant source of frustration for sensor precision and accuracy.
+sensor limitations upon the learning algorithm within given domains. In many realistic cases, sensors fall drastically short of being able to see the entire search space at once. Many lower-cost robots are now using the Microsoft Kinect because it offers RGB-D sensing for fewer than 100 dollars. Albeit, the Kinect is constrained by a 0.8 - 4.0m distance range and 57$^{\circ}$ horizontal and 43$^{\circ}$ vertical field-of-view. On top of all this, there is ever present sensor noise; a constant source of frustration for sensor precision and accuracy.
 
 As always, decreasing hardware costs do not mean infinite hardware resources.
 Implementers must be able to informatively decide on the cost-benefit 
-between a greater number of worse performing sensors and a greater array of lower performing sensors. Moreover, cost-benefit analysis needs to be done on a level that includes sensor impact on  agent performance within a given domain. Specifically, we will show the trade-offs between using varying quality sensors and the overall system performance by modeling robots with different sensor ranges, fields of view, and noise characteristics in the rover domain utilizing three common reward structures. This will help future implementers conduct more accurate cost-benefit analyses in order to make wiser decisions when building and deploying robots in the real world.
+between a greater number of worse performing sensors and a greater array of lower performing sensors. Moreover, cost-benefit analysis needs to be done on a level that includes sensor impact on  agent performance within a given domain. Specifically, we will show the trade-offs between using varying quality sensors and the overall system performance by modeling robots with different sensor ranges, fields-of-view, and noise characteristics in the rover domain utilizing three common reward structures. This will help future implementers conduct more accurate cost-benefit analyses in order to make wiser decisions when building and deploying robots in the real world.
 
 
 \section{Related Work}
@@ -217,7 +217,7 @@ The system described thus far provides the basis for our study of sensor limitat
 study regarding sensor impact the impact of domain on learning is detailed below.
 
 \subsection{Rover Heading}
-The heading of the rovers is important in our implementation because, for some cases described below, we will restrict the sensor fields of view. Imagine if each rover only had a single Microsoft Kinect sensor, pointing forward. We want the rovers to be able to control where this sensor is pointing. 
+The heading of the rovers is important in our implementation because, for some cases described below, we will restrict the sensor fields-of-view. Imagine if each rover only had a single Microsoft Kinect sensor, pointing forward. We want the rovers to be able to control where this sensor is pointing. 
 
 Each rover begins the episode with a random heading between 0$^{\circ}$ and 360$^{\circ}$. This heading is updated at each time step after the rover moves. The new heading points in the same direction as the rover's chosen movement vector. We chose this protocol because it resembles the way a differential-drive robot would turn towards its destination before driving there. 
 
@@ -236,7 +236,7 @@ vertical axis.
 Each sensor limitation was applied independently at three different
 magnitudes for each reward structure.  Thus, 9 sensor tweaks were applied to
 the local, global, and difference rewards. The baseline sensor combination was chosen after \cite{agogino2008analyzing} as having
-unlimited sensor range, zero noise, and a 360° field of view. Sensor
+unlimited sensor range, zero noise, and a 360° field-of-view. Sensor
 range was tested at 2 world units (half the distance the rover can see), 8 world units (twice the distance 
 the rover can see), and unlimited world
 units. Sensor noise was modeled as a unique normal distribution for
@@ -254,12 +254,12 @@ sensor attribute and reward structure.
 Very early in our implementation efforts, we saw that the learned policies of the rovers could be described in terms of two aspects:
 
 \begin{enumerate}
-\item \emph{Sensitivity or Reactivity.} The way the rover learns to respond to changes in sensor (state) information with changes in direction (i.e., action). If it learns to do this, then we say that the rover is \emph{sensitive} to changes in its state information, or that it \emph{reacts} strongly to such changes. This behavior is most directly influenced by the neural network weights that mediate the connections between inputs and the single hidden layer. These input weights determine for each input (here, a POI or rover sensor) how much influence, if any, it will have on the action output of the neuro-controller. 
+\item \emph{Sensitivity or Reactivity.} The neural networks are constructed such that a rover can learn to respond to changes in sensor (state) information by changing its direction (i.e., action). If it learns to do this, then we say that the rover is \emph{sensitive} to changes in its state information, or that it \emph{reacts} strongly to such changes. This behavior is most directly influenced by the neural network weights that mediate the connections between inputs and the single hidden layer. These input weights determine for each input (here, a POI or rover sensor) how much influence, if any, it will have on the action output of the neuro-controller. 
 
 \item \emph{Direction Bias.} If these input weights make the inputs too large or too small, they will leave the range within which the sigmoidal activation functions of the hidden nodes are sensitive (i.e., about -5 to 5). In this case, changes in the input values (i.e., POI and rover sensor information) will cause only negligible changes to the hidden layer outputs, and the weights between the hidden layer and the output nodes will control the system. This causes behavior that is learned, but insensitive to sensor information; for our problem setup, this means a straight-line trajectory. The rover can only here learn the angle and speed of that trajectory. Assuming the speed is sufficient to reach the border of the map, the angle becomes very important for ensuring that the rovers spread out to cover all the POIs. 
 \end{enumerate}
 
-Sensitivity can be estimated by how much an agent changes direction throughout its trajectory, especially as large sensor changes occur (e.g., passing by a rover or high-valued POI). A comparison of learned rover behavior that is sensitive and insensitive is shown in Figure \ref{fig:sensitivity}. Both systems have learned and indeed converged on their demonstrated behavior. 
+Sensitivity can be estimated by how much an agent changes direction throughout its trajectory, especially as large sensor changes occur (e.g., passing by a rover or high-valued POI). A comparison of learned rover behavior that is sensitive and insensitive is shown in Figure \ref{fig:sensitivity}. All rovers in that scenario have learned and indeed converged on their demonstrated behavior. 
 
 \begin{figure}[h!]
     \centering
@@ -309,7 +309,7 @@ Two non-trivial domains that demonstrate these principles are shown in Figure \r
 Before considering any of the sensor limitations, it is important to consider a baseline. Figure \ref{fig:baseline} provides a comparison between the different reward structures considered in this paper. From this figure, it can be seen that while the difference reward learns faster than the global reward, both converge to essentially the maximum possible system reward of 40. The local reward can be seen to improve at first, but then decrease to significantly lower than both the difference and global rewards. This is because as the agents learn with the local reward, many learn to greedily move towards the high valued POI at the expense of the system reward, resulting in unfactored behavior.
 
 \subsection{Sensor Limitations Comparison}
-In comparing the different sensor limitations, several conclusions can be drawn. Figure \ref{fig:sensor-range} below shows the effect of limited sensor range, Figure \ref{fig:sensor-fov} shows the effect of limited FOV, and FIgure \ref{fig:sensor-noise} shows the effect of sensor noise. From these figures, it can be seen that the difference reward is the most resilient to sensor limitations; no matter the sensor limitations imposed, the difference reward learns quickly. In general, the more limited the sensor characteristics, the longer it takes the global reward to converge. Additionally, the local reward is the most perturbed by the sensor limitations.
+In comparing the different sensor limitations, several conclusions can be drawn. Figure \ref{fig:sensor-range} below shows the effect of limited sensor range, Figure \ref{fig:sensor-fov} shows the effect of limited fields-of-view, and FIgure \ref{fig:sensor-noise} shows the effect of sensor noise. From these figures, it can be seen that the difference reward is the most resilient to sensor limitations; no matter the sensor limitations imposed, the difference reward learns quickly. In general, the more limited the sensor characteristics, the longer it takes the global reward to converge. Additionally, the local reward is the most perturbed by the sensor limitations.
 
 Specifically, the limited sensor range exhibited the most influence on the learning curves. Most noticeable is the effect on the local reward. This can be seen in [FIGURE NUM] In general, the lower the sensor range, the sooner (in terms of episode) and more drastically the performance begins to decrease. One possible explanation is that the more limited the sensor range is, the more likely the agent (when using the local reward) is to find one of the high valued POIs and hover near it. Unless the agent accidentally moves in such a way to view new POIs and/or rovers, it will not want to leave its current location.
 
@@ -358,16 +358,16 @@ Specifically, the limited sensor range exhibited the most influence on the learn
 The analysis of both our domain and results presents several avenues for further research.
 
 \subsection{Additional Domain Complexity}
-The difficulties presented by our original, trivial, domain yield interesting possibilities for future work. Our analysis suggests that specific domain characteristics may have a large impact in system performance. Engineering more complex domains may allow us to observe interesting trade-offs between sensor characteristics and the system reward. Some possible domain changes may include movement restrictions and vision occlusion (e.g. impassable terrain or a wall). Another possibility would be allowing agents to temporarily increase their sensor capabilities, similar to obtaining a better vantage point from a hill. There may exist domains in which limiting one sensor characteristic impacts performance less than limiting another (e.g. limiting sensor range over FOV).
+The difficulties presented by our original, trivial, domain yield interesting possibilities for future work. Our analysis suggests that specific domain characteristics may have a large impact in system performance. Engineering more complex domains may allow us to observe interesting trade-offs between sensor characteristics and the system reward. Some possible domain changes may include movement restrictions and vision occlusion (e.g. impassable terrain or a wall). Another possibility would be allowing agents to temporarily increase their sensor capabilities, similar to obtaining a better vantage point from a hill. There may exist domains in which limiting one sensor characteristic impacts performance less than limiting another (e.g. limiting sensor range over field-of-view).
 
 Additionally, changing the reward structure allows us to change the nature of our domain. Presenting the agents with more complex reward structures can influence their cooperation and learned policies. With more complex behavior required of the agents, the performance trade-offs between limited sensor characteristics may become more evident. One possible way to increase the reward structure complexity is to require simultaneous POI observation in order to obtain a reward. Another possibility is to explore the issue of temporal credit assignment. If agents are able to better understand which of their actions most contributed to their reward, they are better able to adjust their policy.
 
 \subsection{Sensor Restriction Combinations}
-An additional avenue for future work involves exploring additional sensor characteristic combinations. While our current work only dealt with varying one sensor characteristic at a time, this would more closely model real world sensors. In reality, sensors have physical limitations on all characteristics. This work could allow for performance vs. cost comparisons (e.g. perhaps a 10 dollar sensor with 90$^{\circ}$ FOV and 5 meter sensing range performs only 5 percent worse than a 500 dollar sensor with 90$^{\circ}$ FOV and 30 meter sensing range).
+An additional avenue for future work involves exploring additional sensor characteristic combinations. While our current work only dealt with varying one sensor characteristic at a time, this would more closely model real world sensors. In reality, sensors have physical limitations on all characteristics. This work could allow for performance vs. cost comparisons (e.g. perhaps a 10 dollar sensor with 90$^{\circ}$ field-of-view and 5 meter sensing range performs only 5 percent worse than a 500 dollar sensor with 90$^{\circ}$ field-of-view and 30 meter sensing range).
 
 
 \subsection{Heterogeneous Agents}
-Exploring the performance of different sensor characteristic combinations naturally leads to the question of how a multi-agent system performs when agents in the system have different sensing capabilities. This is an interesting problem because it allows for the simulation of cost constrained systems (e.g. should agents be equipped with several cheaper, specialized sensors or less powerful, but equivalent sensors) as well as analyzing the impact of agent failure (e.g. sensor malfunctions restricting FOV or actuator failures preventing agent movement). The presence of heterogeneous agents leads to many interesting questions including: Can equivalent system performance be obtained if some agents have diminished capabilities? If so, at what point does performance begin to drastically diminish? Will agents with different capabilities learn to perform tasks more suited to them (e.g. agents with long range sensors learning to bypass nearby POIs in favor of more distant POIs)?
+Exploring the performance of different sensor characteristic combinations naturally leads to the question of how a multi-agent system performs when agents in the system have different sensing capabilities. This is an interesting problem because it allows for the simulation of cost constrained systems (e.g. should agents be equipped with several cheaper, specialized sensors or less powerful, but equivalent sensors) as well as analyzing the impact of agent failure (e.g. sensor malfunctions restricting field-of-view or actuator failures preventing agent movement). The presence of heterogeneous agents leads to many interesting questions including: Can equivalent system performance be obtained if some agents have diminished capabilities? If so, at what point does performance begin to drastically diminish? Will agents with different capabilities learn to perform tasks more suited to them (e.g. agents with long range sensors learning to bypass nearby POIs in favor of more distant POIs)?
 
 \bibliographystyle{IEEEtran}
 \bibliography{main}
