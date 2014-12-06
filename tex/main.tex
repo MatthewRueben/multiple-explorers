@@ -76,14 +76,44 @@ between a greater number of worse performing sensors and a greater array of lowe
 
 
 \section{Related Work}
+\subsection{Exploration Domain}
+In the exploration domain, agents must discover all areas of an
+initially unknown map. One method tackles the search of complicated
+areas via cellular decomposition and systematic coverage \cite{choset2001coverage}. Another
+method examines the effect of limited knowledge on an agent. It
+examines how well different algorithms utilize agents, as well as how
+the number of rooms and room size effects the explorability of a space
+\cite{ferranti2007brick}. Lastly, one method coordinates exhaustive exploration of a space
+by intelligently assigning destinations to different agents \cite{burgard2005coordinated}.
+
 \subsection{Credit Assignment}
-A second unique aspect of a multi-agent system is the problem of credit assignment. Agent to agent coordination involves individual agents working together on a common task or goal.  Since one agent’s behaviors might affect other agents, however, the learning process becomes hard. Chalkiadakis and Boutilier \cite{chalkiadakis2003coordination} develop a way to weigh the costs and benefits of taking non-greedy actions during
-reinforcement learning based on the value of the new information that might be gained. They also give the agents some limited ability to reason about how their actions influence others. Another question is, what does each agent know about the other agents? This is the
-information by which they can coordinate at all. Gmytrasiewicz and Durfee \cite{gmytrasiewicz2000rational} expand the typical state space of each agent by adding knowledge about other agents’ knowledge, which is recursive by nature. They develop a framework whereby this representation is usable, however, and present their findings as a move towards coordinated robot actions. Finally, Burgard et al. \cite{burgard2005coordinated} address coordination in an exploration scenario, which for them boils down to intelligently placing goal locations (or waypoints, by extension) for
+A second unique aspect of a multi-agent system is the problem of
+credit assignment. Agent to agent coordination involves individual
+agents working together on a common task or goal. Since one agent’s
+behaviors might affect other agents, however, the learning process
+becomes hard. Chalkiadakis and Boutilier \cite{chalkiadakis2003coordination} develop a way to weigh
+the costs and benefits of taking non-greedy actions during
+reinforcement learning based on the value of the new information that
+might be gained. They also give the agents some limited ability to
+reason about how their actions influence others. Another question is,
+what does each agent know about the other agents? This is the
+information by which they can coordinate at all. Gmytrasiewicz and
+Durfee \cite{gmytrasiewicz2000rational} expand the typical state space of each agent by adding
+knowledge about other agents’ knowledge, which is recursive by
+nature. They develop a framework whereby this representation is
+usable, however, and present their findings as a move towards
+coordinated robot actions. Finally, Burgard et al. \cite{burgard2005coordinated} address
+coordination in an exploration scenario, which for them boils down to
+intelligently placing goal locations (or waypoints, by extension) for
 each agent.
 
-\subsection{Exploration Domain}
-In the exploration domain, agents must discover all areas of an initially unknown map. One method tackles the search of complicated areas via cellular decomposition and systematic coverage \cite{choset2001coverage}. Another method examines the effect of limited knowledge on an agent. It examines how well different algorithms utilize agents, as well as how the number of rooms and room size effects the explorability of a space \cite{ferranti2007brick}. Lastly, one method coordinates exhaustive exploration of a space by intelligently assigning destinations to different agents \cite{burgard2005coordinated}.
+\subsection{Reward Structure}
+The structural credit assignment problem is defined as the difficulty that arises in properly assigning credit 
+to a specific agent in a pool of agents.  While this problem has been extensively studied, three overarching reward 
+structures have been developed: the full system reward, the local reward, and the difference reward.  The full system reward, 
+also known as the global reward, assigns the full system reward to each agent in the system.  The local reward assigns the a reward
+to each agent using only the information that is local to the agent. The difference reward is calculated directly or approximated for each agent by artifically removing the agent from a system and replacing the agents action(s) with another action (which may or may not be legal within the system) and comparing it with the global reward when the agent was in the system. The difference reward has been shown to be both factored and learnable by definition. It has also been shown to be the best reward structure to use in
+domains where it is practically computable.
 
 \subsection{Sensor Limitations}
 A limited sensor range causes two potential problems for agents:
