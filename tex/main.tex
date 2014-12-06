@@ -77,6 +77,10 @@ between a greater number of worse performing sensors and a greater array of lowe
 
 
 \section{Related Work}
+<<<<<<< HEAD
+
+=======
+>>>>>>> 23c1547c966657f5f761a026e0c66b073d634bce
 \subsection{Exploration Domain}
 In the exploration domain, agents must discover all areas of an
 initially unknown map. One method tackles the search of complicated
@@ -114,7 +118,9 @@ to a specific agent in a pool of agents.  While this problem has been extensivel
 structures have been developed: the full system reward, the local reward, and the difference reward.  The full system reward, 
 also known as the global reward, assigns the full system reward to each agent in the system.  The local reward assigns the a reward
 to each agent using only the information that is local to the agent. The difference reward is calculated directly or approximated for each agent by artifically removing the agent from a system and replacing the agents action(s) with another action (which may or may not be legal within the system) and comparing it with the global reward when the agent was in the system. The difference reward has been shown to be both factored and learnable by definition. It has also been shown to be the best reward structure to use in
-domains where it is practically computable.
+domains where it is practically computable. To our knowledge, there has not been extensive 
+research demonstrating the advantages or disadvantages of each of these reward structures in 
+the face of various sensor limitations.
 
 \subsection{Sensor Limitations}
 A limited sensor range causes two potential problems for agents:
@@ -132,13 +138,11 @@ Noisy sensors are a reality for robots. Lower-cost sensors, like the Microsoft K
 This work is a direct extension of that described by Tumer and Agogino
 (2008, \cite{agogino2008analyzing}). Therein, the goal of the rovers is to observe the more
 important points of interest (POIs) at close range in order to earn a
-large reward. We use their dynamic domain rather than their static
-domain, so the POI values and locations are chosen randomly at the
-beginning of each learning episode. For each learning episode, the
-rovers begin in a tight cluster at the center of the map. The episode
+large overall system reward. We use the static POI domain, meaning the POI values and locations are chosen randomly at the
+beginning of a training session, and then do not vary for each learning episode. The POIs are placed randomly using one random distribution. The sum POI value is 1000 resulting in a maximum POI value of 40.  Each POI is assigned a value such that one POI takes on half of POI sum value.  That is one POI is assigned a value of 500 and the remaining POIs are randomly assigned a value summing up to 500.  This ensures that the domain is non-trivial and that a random-walk is not always optimum.  For each learning episode, the rovers begin in a tight cluster at the center of the map. The episode
 ends after 15 time steps and rewards are assigned. Each rover can move
 continuously in two dimensions, and 10 percent noise is added to the
-intended movement to simulate real-world errors.
+intended movement to simulate real-world errors.  10 rovers are used in the world.
 
 \subsection{Reward Structure}
 The global reward presented by Tumer and Agogino (2008) is based on
@@ -188,7 +192,7 @@ variables.
 State information was mapped to action choices using a perceptron with
 8 inputs, 10 hidden nodes, and 2 outputs. The activation functions
 were sigmoidal and each output value was scaled based on a maximum
-movement allowance per step (d is maximum movement per time step and
+movement (4 world units) allowance per step (d is maximum movement per time step and
 o1, o2 are the perceptron outputs):
 
 \[
@@ -199,12 +203,20 @@ dy = 2d(o_2-0.5)
 \]
 
 An evolutionary algorithm was used with simulated annealing to find
-neural networks that yield good performance. This is called “direct
+neural networks that yielded good performance. This is called “direct
 policy search” because we use an evolutionary algorithm to search for
 a good policy directly, i.e., without maintaining state-action value
-estimates as in approaches like Q-learning. The system described thus
-far provides the basis for our study of sensor limitations. Our novel
-study regarding sensor impact is detailed below.
+estimates as in approaches like Q-learning. The neural network was initialized with randomly
+valued weights between \[\pm\]0.5.  A pool of 40 neural networks was assigned for each agent.  40 random
+teams were then created using a unique agent and a previously unselected neural network associated with that agent.
+A fitness was assigned to the neural network following the episode based on the reward structure in use at 
+the time.  An e-greedy selection process was used to pick the best half of the neural network performers for each agent.  An 
+e-greedy approach was used to switch one of the better performers (excluding the highest performer) with a lower performer in 
+order to further exploration.  The neural networks were mutated by adding a random Gaussian noise with a mean of 0 and a standard deviation of 1 to a given weight, for a percentage of all weights that decreased during training time.
+The agents were trained for 75 episodes each.
+
+The system described thus far provides the basis for our study of sensor limitations. Our novel
+study regarding sensor impact the impact of domain on learning is detailed below.
 
 \subsection{Rover Heading}
 The heading of the rovers is important in our implementation because, for some cases described below, we will restrict the sensor fields of view. Imagine if each rover only had a single Microsoft Kinect sensor, pointing forward. We want the rovers to be able to control where this sensor is pointing. 
@@ -224,18 +236,18 @@ ignored and sensor field-of-view angle was only measured about the
 vertical axis.
 
 Each sensor limitation was applied independently at three different
-magnitudes.  Thus, we had 9 test cases total plus the 1 baseline
-case. The baseline sensor combination was chosen after \cite{agogino2008analyzing} as having
+magnitudes for each reward structure.  Thus, 9 sensor tweaks were applied to
+the local, global, and difference rewards. The baseline sensor combination was chosen after \cite{agogino2008analyzing} as having
 unlimited sensor range, zero noise, and a 360° field of view. Sensor
-range was tested at 1 world unit, 3 world units, and unlimited world
+range was tested at 2 world units (half the distance the rover can see), 8 world units (twice the distance 
+the rover can see), and unlimited world
 units. Sensor noise was modeled as a unique normal distribution for
 each sensed object with standard deviations at 0\%, 10\%, and 30\% of the
 object’s true range. Sensor viewing angles were tested at 90$^{\circ}$, 270$^{\circ}$,
 and 360$^{\circ}$.
 
-100 statistical system runs were executed for 1000 episodes for each
-sensor combination at three separate scales: 10, 50, and 100
-homogeneous agents.  System performance was then plotted for each
+Statistical system runs were executed for 75 episodes for each
+sensor combination for 10 homogeneous agents.  System performance was then plotted for each
 sensor attribute at each scale in comparison with the baseline sensor
 performance.
 
