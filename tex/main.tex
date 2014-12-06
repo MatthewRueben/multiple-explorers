@@ -7,6 +7,7 @@
 
 \overrideIEEEmargins                                      % Needed to meet printer requirements.
 
+\usepackage{prg-stuff}
 
 %\usepackage{ijcai09}  % style
 \usepackage{times}    % font
@@ -77,10 +78,6 @@ between a greater number of worse performing sensors and a greater array of lowe
 
 
 \section{Related Work}
-<<<<<<< HEAD
-
-=======
->>>>>>> 23c1547c966657f5f761a026e0c66b073d634bce
 \subsection{Exploration Domain}
 In the exploration domain, agents must discover all areas of an
 initially unknown map. One method tackles the search of complicated
@@ -207,7 +204,7 @@ neural networks that yielded good performance. This is called “direct
 policy search” because we use an evolutionary algorithm to search for
 a good policy directly, i.e., without maintaining state-action value
 estimates as in approaches like Q-learning. The neural network was initialized with randomly
-valued weights between \[\pm\]0.5.  A pool of 40 neural networks was assigned for each agent.  40 random
+valued weights between \(\pm\)0.5.  A pool of 40 neural networks was assigned for each agent.  40 random
 teams were then created using a unique agent and a previously unselected neural network associated with that agent.
 A fitness was assigned to the neural network following the episode based on the reward structure in use at 
 the time.  An e-greedy selection process was used to pick the best half of the neural network performers for each agent.  An 
@@ -308,27 +305,44 @@ Two non-trivial domains that demonstrate these principles are shown in Figure \r
 \end{figure}
 
 \section{Results}
+\ref{fig:baseline}
+\ref{fig:sensor-range}
+\ref{fig:sensor-fov}
+\ref{fig:sensor-noise}
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.45\textwidth]{SF_LocalReward.png}
-    \caption{}
-    \label{fig:}
+    \includegraphics[width=0.45\textwidth]{SN0.png}
+    \caption{Baseline}
+    \label{fig:baseline}
 \end{figure}
 
-\begin{figure}[h!]
+\begin{figure*}
     \centering
-    \includegraphics[width=0.45\textwidth]{SN_LocalReward.png}
-    \caption{ }
-    \label{fig:}
-\end{figure}
+    \includegraphics[width=0.3\textwidth]{SRUnlim.png}
+    \includegraphics[width=0.3\textwidth]{SRMed.png}
+    \includegraphics[width=0.3\textwidth]{SRL.png}
+    \caption{Sensor range}
+    \label{fig:sensor-range}
+\end{figure*}
 
-\begin{figure}[h!]
+\begin{figure*}
     \centering
-    \includegraphics[width=0.45\textwidth]{SR_LocalReward.png}
-    \caption{}
-    \label{fig:}
-\end{figure}
+    \includegraphics[width=0.3\textwidth]{SF360.png}
+    \includegraphics[width=0.3\textwidth]{SF270.png}
+    \includegraphics[width=0.3\textwidth]{SF90.png}
+    \caption{Sensor field of view.}
+    \label{fig:sensor-fov}
+\end{figure*}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=0.3\textwidth]{SN0.png}
+    \includegraphics[width=0.3\textwidth]{SN10.png}
+    \includegraphics[width=0.3\textwidth]{SN50.png}
+    \caption{Sensor noise}
+    \label{fig:sensor-noise}
+\end{figure*}
 
 \section{Future Work}
 The analysis of both our domain and results presents several avenues for further research.
