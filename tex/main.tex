@@ -167,7 +167,8 @@ involve sending the agents to some goal location or formation, not
 exploring an area, and no machine learning techniques are used.
 
 \subsection{Noise}
-Blah blah blah?
+**TODO update citations**
+Noisy sensors are a reality for robots. Lower-cost sensors, like the Microsoft Kinect, have the potential to significantly drive down costs for using robots for exploration. However, lower-cost sensors also bring with them higher noise characteristics. Specifically the Microsoft Kinect has been shown to have a random error in the depth axis ranging from a few millimeters to 4 cm in a non-uniform distribution \cite{blah} [1][2]. Techniques have been developed to overcome the various types of sensor noise, both by modifying sensor output and modifying learning techniques, but these still leave sensor information imperfect \cite{blah} [2][3]. Before spending more time and resources trying to overcome the sensors with added or improved hardware or software,it is important to understand how sensor noise actually impacts rover performance within a given domain.
 
 
 \section{Methods}
@@ -332,6 +333,21 @@ This raises the question of what domain characteristics most encourage the rover
     \caption{Examples of POI distributions with different signal-to-noise ratios in terms of the POI sensors. LEFT: a uniform POI distribution yields a low SNR. A weighted-value (MIDDLE) or clustered (RIGHT) POI distribution yields a high SNR. }
     \label{fig:signal-contrast}
 \end{figure}
+
+\section{Future Work}
+The analysis of both our domain and results presents several avenues for further research.
+
+\subsection{Additional Domain Complexity}
+The difficulties presented by our original, trivial, domain yield interesting possibilities for future work. Our analysis suggests that specific domain characteristics may have a large impact in system performance. Engineering more complex domains may allow us to observe interesting trade-offs between sensor characteristics and the system reward. Some possible domain changes may include movement restrictions and vision occlusion (e.g. impassable terrain or a wall). Another possibility would be allowing agents to temporarily increase their sensor capabilities, similar to obtaining a better vantage point from a hill. There may exist domains in which limiting one sensor characteristic impacts performance less than limiting another (e.g. limiting sensor range over FOV).
+
+Additionally, changing the reward structure allows us to change the nature of our domain. Presenting the agents with more complex reward structures can influence their cooperation and learned policies. With more complex behavior required of the agents, the performance trade-offs between limited sensor characteristics may become more evident. One possible way to increase the reward structure complexity is to require simultaneous POI observation in order to obtain a reward. Another possibility is to explore the issue of temporal credit assignment. If agents are able to better understand which of their actions most contributed to their reward, they are better able to adjust their policy.
+
+\subsection{Sensor Restriction Combinations}
+An additional avenue for future work involves exploring additional sensor characteristic combinations. While our current work only dealt with varying one sensor characteristic at a time, this would more closely model real world sensors. In reality, sensors have physical limitations on all characteristics. This work could allow for performance vs. cost comparisons (e.g. perhaps a 10 dollar sensor with 90$^{\circ}$ FOV and 5 meter sensing range performs only 5 percent worse than a 500 dollar sensor with 90$^{\circ}$ FOV and 30 meter sensing range).
+
+
+\subsection{Heterogeneous Agents}
+Exploring the performance of different sensor characteristic combinations naturally leads to the question of how a multi-agent system performs when agents in the system have different sensing capabilities. This is an interesting problem because it allows for the simulation of cost constrained systems (e.g. should agents be equipped with several cheaper, specialized sensors or less powerful, but equivalent sensors) as well as analyzing the impact of agent failure (e.g. sensor malfunctions restricting FOV or actuator failures preventing agent movement). The presence of heterogeneous agents leads to many interesting questions including: Can equivalent system performance be obtained if some agents have diminished capabilities? If so, at what point does performance begin to drastically diminish? Will agents with different capabilities learn to perform tasks more suited to them (e.g. agents with long range sensors learning to bypass nearby POIs in favor of more distant POIs)?
 
 
 \bibliographystyle{IEEEtran}
