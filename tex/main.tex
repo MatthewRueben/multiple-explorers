@@ -74,7 +74,7 @@ A number of inroads have been made into harnessing the power and
 advantages of robots in the exploration domain. NASA continues to use
 the rover Curiosity to explore Mars. Several companies have built
 mobile robots to explore and decontaminate the the Fukushima Daiichi
-nuclear power station after the 2011 meltdown CITE THE URL. Added to these
+nuclear power station after the 2011 meltdown \cite{nuclear_robots}. Added to these
 accomplishments, robots are increasingly being used with other robots, 
 adding significance to multiagent systems (MAS) studies.
 
@@ -135,7 +135,6 @@ coordination. Dimarogonas et al. \cite{dimarogonas2007decentralized} and Do \cit
 navigation functions) that include some potential or proximity function between each pair of agents that can see each other. The ant colony problem presented by Gordon et al. \cite{gordon2004gathering} examines the case where the sensors have limited range and no distance information, i.e., only output the direction to sensed entities. All of these approaches involve sending the agents to some goal location or formation, not exploring an area, and no machine learning techniques are used. One approach that used reinforcement learning examined reward-shaping in a noisy domain involving competitive robotic “foraging”. It was shown that intelligent reward-shaping and algorithms were able to overcome the noise present and achieve good performance \cite{mataric1997reinforcement}.
 
 \subsection{Noise}
-**TODO update citations**
 Noisy sensors are a reality for robots. Lower-cost sensors, like the Microsoft Kinect, have the potential to significantly drive down costs for using robots for exploration. However, lower-cost sensors also bring with them higher noise characteristics. Specifically the Microsoft Kinect has been shown to have a random error in the depth axis ranging from a few mm to 4 cm in a non-uniform distribution \cite{khoshelham2012accuracy,nguyen2012modeling}. Techniques have been developed to overcome the various types of sensor noise, both by modifying sensor output and modifying learning techniques, but these still leave sensor information imperfect \cite{nguyen2012modeling,hu2010distributed}. Before spending more time and resources trying to overcome the sensors with added or improved hardware or software, it is important to understand how sensor noise actually impacts rover performance within a given domain.
 
 
@@ -271,8 +270,8 @@ Sensitivity can be estimated by how much an agent changes direction throughout i
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.3\textwidth]{ATRIAS.jpg}
-    \caption{Visualization of learned rover behavior over one episode. The reward was DIFFERENCE/GLOBAL/LOCAL. LEFT: rovers learned straight-line paths that ignore changing sensor information. This is sub-optimal (IS IT??? Doesn't matter to me, just say which it is for whatever we plot) for this domain. RIGHT: a different domain (DESCRIBE IT!) encouraged learned sensitivity to changing sensor information. This is apparent because the rovers change directions as the episode progresses. The direction changes are effective at observing more POIs more closely. }
+    \includegraphics[width=0.45\textwidth]{GlobalMvt75Eps100POIsBaselineSensor.png}
+    \caption{Visualization of one episode using a learned rover policy. The reward was global. Two rovers in the bottom-left corner learned straight-line paths that ignore changing sensor information. This is sub-optimal for this domain, as the rover moving most directly left could do better by looping back upwards. In the top-right corner, the unbalanced POI values encouraged learned sensitivity to changing sensor information. This is apparent because the rovers change directions as the episode progresses. The direction changes are effective at observing more POIs more closely. }
     \label{fig:sensitivity}
 \end{figure}
 
@@ -313,53 +312,54 @@ Two non-trivial domains that demonstrate these principles are shown in Figure \r
 \end{figure}
 
 \section{Results}
-\ref{fig:baseline}
-\ref{fig:sensor-range}
-\ref{fig:sensor-fov}
-\ref{fig:sensor-noise}
+\subsection{Reward Structure Comparison}
+Before considering any of the sensor limitations, it is important to consider a baseline. Figure \ref{fig:baseline} provides a comparison between the different reward structures considered in this paper. From this figure, it can be seen that while the difference reward learns faster than the global reward, both converge to essentially the maximum possible system reward of 40. The local reward can be seen to improve at first, but then decrease to significantly lower than both the difference and global rewards. This is because as the agents learn with the local reward, many learn to greedily move towards the high valued POI at the expense of the system reward, resulting in unfactored behavior.
+
+\subsection{Sensor Limitations Comparison}
+In comparing the different sensor limitations, several conclusions can be drawn. Figure \ref{fig:sensor-range} below shows the effect of limited sensor range, Figure \ref{fig:sensor-fov} shows the effect of limited FOV, and FIgure \ref{fig:sensor-noise} shows the effect of sensor noise. From these figures, it can be seen that the difference reward is the most resilient to sensor limitations; no matter the sensor limitations imposed, the difference reward learns quickly. In general, the more limited the sensor characteristics, the longer it takes the global reward to converge. Additionally, the local reward is the most perturbed by the sensor limitations.
+
+Specifically, the limited sensor range exhibited the most influence on the learning curves. Most noticeable is the effect on the local reward. This can be seen in [FIGURE NUM] In general, the lower the sensor range, the sooner (in terms of episode) and more drastically the performance begins to decrease. One possible explanation is that the more limited the sensor range is, the more likely the agent (when using the local reward) is to find one of the high valued POIs and hover near it. Unless the agent accidentally moves in such a way to view new POIs and/or rovers, it will not want to leave its current location.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.45\textwidth]{SN0.png}
-    \caption{Baseline}
+    \includegraphics[width=0.45\textwidth]{baseline.png}
+    \caption{Comparison of learning curves for three reward structures over 75 episodes. Sensors were unrestricted, i.e., had unlimited sensor range, 360$^{/circ}$ field-of-view, and zero sensor noise. All three curves are compared to the average reward for randomly-initialized, untrained neural networks. }
     \label{fig:baseline}
 \end{figure}
 
 \begin{figure*}
     \centering
-    \includegraphics[width=0.3\textwidth]{SRUnlim.png}
-    \includegraphics[width=0.3\textwidth]{SRMed.png}
-    \includegraphics[width=0.3\textwidth]{SRL.png}
-    \caption{Sensor range}
+    \includegraphics[width=0.3\textwidth]{SR_U.png}
+    \includegraphics[width=0.3\textwidth]{SR_M.png}
+    \includegraphics[width=0.3\textwidth]{SR_L.png}
+    \caption{Comparison of learning curves for three different sensor ranges over 75 episodes. Sensor ranges were unlimited (left), 8 world units (center) and 2 world units (right). }
     \label{fig:sensor-range}
 \end{figure*}
 
 \begin{figure*}
     \centering
-    \includegraphics[width=0.3\textwidth]{SF360.png}
-    \includegraphics[width=0.3\textwidth]{SF270.png}
-    \includegraphics[width=0.3\textwidth]{SF90.png}
-    \caption{Sensor field of view.}
+    \includegraphics[width=0.3\textwidth]{SF_360.png}
+    \includegraphics[width=0.3\textwidth]{SF_270.png}
+    \includegraphics[width=0.3\textwidth]{SF_90.png}
+    \caption{Comparison of learning curves for three different sensor fields-of-view over 75 episodes. The chosen fields-of-view were 360$^{/circ}$ (left), 270$^{/circ}$ (center) and 90$^{/circ}$ (right). }
     \label{fig:sensor-fov}
 \end{figure*}
 
 \begin{figure*}
     \centering
-    \includegraphics[width=0.3\textwidth]{SN0.png}
-    \includegraphics[width=0.3\textwidth]{SN10.png}
-    \includegraphics[width=0.3\textwidth]{SN50.png}
-    \caption{Sensor noise}
+    \includegraphics[width=0.3\textwidth]{SN_0.png}
+    \includegraphics[width=0.3\textwidth]{SN_10.png}
+    \includegraphics[width=0.3\textwidth]{SN_50.png}
+    \caption{Comparison of learning curves for three different sensor noise magnitudes over 75 episodes. The chosen noise levels were 0\% (left), 10\% (center) and 50\% (right). }
     \label{fig:sensor-noise}
 \end{figure*}
 
-\begin{figure*}
+\begin{figure}
     \centering
-    \includegraphics[width=0.3\textwidth]{SR_LocalReward.png}
-    \includegraphics[width=0.3\textwidth]{SF_LocalReward.png}
-    \includegraphics[width=0.3\textwidth]{SN_LocalReward.png}
-    \caption{Comparison of local reward results}
+    \includegraphics[width=0.45\textwidth]{SR_LocalReward.png}
+    \caption{Direct comparison of learning curves using the local reward only for three different sensor ranges over 75 episodes. Sensor ranges were unlimited, 8 world units, and 2 world units. }
     \label{fig:local-reward-comparison}
-\end{figure*}
+\end{figure}
 
 \section{Future Work}
 The analysis of both our domain and results presents several avenues for further research.
