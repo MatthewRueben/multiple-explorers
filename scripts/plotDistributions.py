@@ -49,7 +49,7 @@ def main(distro='GO_RANDO!'):
         V_picks = [V_pick/V_sum*V_cap for V_pick in V_picks]  # normalize to 1000 total points
         for i, V_pick in zip(range(N_corner), V_picks):  # one-tenth the POIs
             poi = POI(V=V_pick, d_min=5)
-            if V_pick > V_cap/2: 
+            if V_pick > max(V_picks)*3/4:  # the larger halfish of the POIs
                 poi.place_randomly(corner_bounds)
             else:
                 poi.place_randomly(corner_bounds2)
