@@ -89,7 +89,7 @@ the number of rooms and room size effects the explorability of a space
 by intelligently assigning destinations to different agents \cite{burgard2005coordinated}.
 
 \subsection{Credit Assignment}
-A second unique aspect of a multi-agent system is the problem of
+An important and particulary difficult aspect multi-agent systems is the problem of
 credit assignment. Agent to agent coordination involves individual
 agents working together on a common task or goal. Since one agent’s
 behaviors might affect other agents, however, the learning process
@@ -117,7 +117,7 @@ also known as the global reward, assigns the full system reward to each agent in
 to each agent using only the information that is local to the agent. The difference reward is calculated directly or approximated for each agent by artifically removing the agent from a system and replacing the agents action(s) with another action (which may or may not be legal within the system) and comparing it with the global reward when the agent was in the system. The difference reward has been shown to be both factored and learnable by definition. It has also been shown to be the best reward structure to use in
 domains where it is practically computable. To our knowledge, there has not been extensive 
 research demonstrating the advantages or disadvantages of each of these reward structures in 
-the face of various sensor limitations.
+the face of various sensor limitations. ******Add citations, book, Kagans 10s of papers on the subject
 
 \subsection{Sensor Limitations}
 A limited sensor range causes two potential problems for agents:
@@ -139,7 +139,7 @@ large overall system reward. We use the static POI domain, meaning the POI value
 beginning of a training session, and then do not vary for each learning episode. The POIs are placed randomly using one random distribution. The sum POI value is 1000 resulting in a maximum POI value of 40.  Each POI is assigned a value such that one POI takes on half of POI sum value.  That is one POI is assigned a value of 500 and the remaining POIs are randomly assigned a value summing up to 500.  This ensures that the domain is non-trivial and that a random-walk is not always optimum.  For each learning episode, the rovers begin in a tight cluster at the center of the map. The episode
 ends after 15 time steps and rewards are assigned. Each rover can move
 continuously in two dimensions, and 10 percent noise is added to the
-intended movement to simulate real-world errors.  10 rovers are used in the world.
+intended movement to simulate real-world errors.
 
 \subsection{Reward Structure}
 The global reward presented by Tumer and Agogino (2008) is based on
@@ -244,9 +244,8 @@ object’s true range. Sensor viewing angles were tested at 90$^{\circ}$, 270$^{
 and 360$^{\circ}$.
 
 Statistical system runs were executed for 75 episodes for each
-sensor combination for 10 homogeneous agents.  System performance was then plotted for each
-sensor attribute at each scale in comparison with the baseline sensor
-performance.
+sensor/reward structure setup for 10 homogeneous agents.  Overall system reward was then plotted for each
+sensor attribute and reward structure.
 
 
 \section{Interactions between Domain and Learned Policy}
