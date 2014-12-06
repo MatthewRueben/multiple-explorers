@@ -22,8 +22,8 @@ class Rover():
         self.heading = 0 # in degrees
         self.sensor_range = sensor_range
         self.sensor_noise = sensor_noise
-        # self.heading = heading 
-        self.heading = 180       
+        self.heading = heading 
+        # self.heading = 90       
         self.num_sensors = num_sensors
         self.fov = 90 * num_sensors # in degrees
         self.POI_table = [1000] * num_POI # initialize arbitrarily large compared to world
@@ -57,11 +57,11 @@ class Rover():
     def takeAction(self, dx, dy):
         # movement noise built into function input
         
-        # find components of dx
+        # # find components of dx
         dx_x = math.sin(90 - self.heading) * dx
         dx_y = math.cos(90 - self.heading) * dx
         
-        # find components of dy
+        # # find components of dy
         dy_x = math.sin(self.heading) * dy
         dy_y = math.cos(self.heading) * dy
             
@@ -71,18 +71,23 @@ class Rover():
         
         self.location.y += dx_y
         self.location.y += dy_y
-
+        # print 'Rover location before in ta ', self.location
+        # self.location.y += dy 
+        # self.location.x += dx
         self.save_location()  # save it!
+        # print 'Rover location after in ta ', self.location
     
         # update orientation/sensor boundaries
         if dx == 0:  # don't divide by zero!
             dx = sys.float_info.min
-        # new_heading = math.atan2(dy/dx) * 180. / math.pi
-        new_heading = 180
+        new_heading = math.atan2(self.location.y, self.location.x) * 180. / math.pi
+        # new_heading = 90
         
         for i in xrange(self.num_sensors):
             self.POI_sensors[i].updateFieldOfView(self.sensor_regions[i], new_heading)
+            self.POI_sensors[i].updateLocation(self.location)
             self.rover_sensors[i].updateFieldOfView(self.sensor_regions[i], new_heading)
+            self.rover_sensors[i].updateLocation(self.location)
 
     
     def updatePoiTable(self, POI_list):

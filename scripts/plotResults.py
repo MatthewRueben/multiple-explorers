@@ -12,7 +12,8 @@ import sys
 
 def figureItOut(x_lists, y_lists, axis_bounds):
     colors = 'kbrg'
-    shapes = ['', '*', 'o', 's']
+    # shapes = ['', '*', 'o', 's']
+    shapes = shapes = ['', '', '', '']
     lines = [':', '-', '-', '-']
     labels = ['Random Actions', 
               'Learning with 360$^\circ$ Sensor FoV', 
@@ -30,12 +31,18 @@ def figureItOut(x_lists, y_lists, axis_bounds):
 
 # tweaks to show sys rewards for 30 agents....
 def figureItOutUpdated(x_lists, title_lists, axis_bounds, main_title = 'System Rewards'):
-    colors = 'kbrg'
-    shapes = ['', '*', 'o', 's']
-    lines = [':', '-', '-', '-']
+    colors = 'ybmg'
+    shapes = ['o', '*', 's', '']
+    # shapes = shapes = ['', '', '', '']
+    lines = ['-', '-', '-', ':']
     labels = title_lists
     for x, color, shape, line, label in itertools.izip(x_lists, colors, shapes, lines, labels):
         pyplot.plot(x,color+line+shape, label=label, markersize=8)
+    xmin = 0
+    xmax = 75
+    ymin = 10
+    ymax = 50
+    pyplot.axis([xmin, xmax, ymin, ymax])
     # pyplot.axis(axis_bounds)
     pyplot.xlabel('Number of Episodes')
     pyplot.ylabel('System Reward Per Rover after Learning')
@@ -69,6 +76,7 @@ def plotRewards(rewards, directory):
 #     # figureItOut(x_lists, y_lists, axis_bounds)
 
 def readInRewards(fname):
+    print fname
     rewards = []
     with open(fname, 'r') as f:
         for line in f:
@@ -85,14 +93,18 @@ def statRunsDirAvg(directory):
     # Get each reward list from the directory
     rewardList = []
     for fname in os.listdir(directory):
-        fnamePath = directory + '/' + fname
-        print 'Filepath: ', fnamePath
-        try:
-            rewards = readInRewards(fnamePath)
-            print 'Got rewards'
-            rewardList.append(rewards)
-        except:
-            print "Cant get rewards..."
+        fnamePath = directory + '/' + str(fname)
+        print
+        print 'Filepath in statRunsDirAvg:    ', fnamePath
+        print
+        for actualName in os.listdir(fnamePath):
+            realFileName = str(fnamePath) + '/' + str(actualName)
+            try:
+                rewards = readInRewards(realFileName)
+                print 'Got rewards'
+                rewardList.append(rewards)
+            except:
+                print "Cant get rewards..."
         
     # # average each list accross each row
     averageRewardList = getAverage(rewardList)
@@ -139,20 +151,32 @@ def averageStatRuns(directory):
     
     # for directory in os.listdir(os.getcwd + '/results/'):
     for direct in os.listdir(directory):
-        newDirect = directory + str(direct) + '/'
-        print newDirect
-        print
-        try:
-            for subDir in os.listdir(str(newDirect)):
-                filePath = '{0}/{1}/{2}'.format(directory, direct, subDir)
-                # print '   SubDir: ', subDir
-                # print  '     filepath: ', filePath
-                statRunsDirAvg(filePath)
-        except:
-            pass
+        if 'AVG' in str(direct):
+            break
+        else:
+            newDirect = directory + str(direct) + '/'
+            print '\nIn ASR for, ', newDirect
+            print 
+            try:
+                if 'AVG' in str(direct):
+                    break
+                else:       
+                    print '\n  Trying to get more directs in asr'             
+                    for subDir in os.listdir(newDirect):
+                        print '        ', subDir
+                        print '            from direct: ', newDirect
+                        # filePath = '{0}/{1}/{2}'.format(directory, direct, subDir)
+                        filePath = str(newDirect) + str(subDir)
+                        print '   New file path in asr, ', filePath
+                        # print
+                        # print '   SubDir: ', subDir
+                        # print  '     filepath: ', filePath
+                        statRunsDirAvg(filePath)
+            except:
+                pass
 
 def plotGroup(fileNames, titleNames, mainTitle):
-    directory = '/nfs/attic/smartw/users/kraftko/Fall2014/ME538MultiAgent/TermProj/multiple-explorers/results/'
+    directory = '/nfs/attic/smartw/users/kraftko/Fall2014/ME538MultiAgent/TermProj/multiple-explorers/FinalRunsWITHHC/'
 
     # get rewards for each file
     rewardListTotal = []
@@ -169,27 +193,35 @@ def plotGroup(fileNames, titleNames, mainTitle):
 
 
 
+ 
+
+
 if __name__ == '__main__':
     # averageStatRuns()
     
+    # This works below...
     fileNames = []
     for i in range(1, len(sys.argv)):
         if sys.argv[i] == '-AVG':
             try:
                 if sys.argv[i+1] == '-D':
+                    print 'in single directory'
                     # Average just in one directory only
                     try:
                         statRunsDirAvg(sys.argv[i+2])
                     except:
                         print 'Cant avg files.'
-                    sys.exit(0)
-                else:
-                    print 'Averaging each run type..'
-                    directory = '/nfs/attic/smartw/users/kraftko/Fall2014/ME538MultiAgent/TermProj/multiple-explorers/results/'
-                    averageStatRuns(directory)
-                    sys.exit(0)
+                        sys.exit(0)                
             except:
-                print 'failed averaging all'
+                try:
+                    print 'Averaging each run type..'
+                    directory = '/nfs/attic/smartw/users/kraftko/Fall2014/ME538MultiAgent/TermProj/multiple-explorers/FinalRunsWITHHC/'
+                    for subDir in os.listdir(directory):
+                        subDirPath = directory + str(subDir) + '/'
+                        averageStatRuns(directory)
+                    
+                except:
+                    print 'failed averaging all'
                 sys.exit(0)       
         else:
             fileNames.append(sys.argv[i])

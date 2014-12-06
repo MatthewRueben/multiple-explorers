@@ -54,7 +54,11 @@ class POI():
 
     def place_randomly(self, bounds):
         x, y  = bounds.random_within_bounds()
+        # print 'POI location, ', x, y
         self.location = Location(x, y)
+
+    def place_location(self, location):
+        self.location = location
 
     def __str__(self):
         return 'POI: Value: ' + str(self.V) + ', ' + str(self.location)
