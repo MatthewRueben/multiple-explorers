@@ -580,6 +580,35 @@ def printTeamRewards(team):
         print '  NN name: ', nn.name
         i += 1
 
+import numpy
+from matplotlib import pyplot 
+
+def nnSensitivityTest(nn, maxDist):
+    # Create test input values
+    pyplot.ioff()
+    numInputs = 8
+    defaultInputs = [0]*numInputs  # all inputs but one start at zero
+    for inputIndex in range(numInputs):
+        if inputIndex < 4:  # for POI sensors
+            inputBounds = [0, 2, 0.01]
+        else:  # for rover sensors
+            inputBounds = [0, 0.01, 0.0001]
+        variedInputs = [x for x in numpy.arange(*inputBounds)]
+        dxList = []
+        dyList = []
+        for inputPick in variedInputs:
+            allInputs = [el if ind != inputIndex else inputPick for ind, el in enumerate(defaultInputs)]
+            (o1, o2) = nn.fasterPredict(allInputs)
+            dx = calcDX(o1, maxDist, noise=0)  # use the neural network's actions
+            dy = calcDX(o2, maxDist, noise=0)
+            dxList.append(dx)
+            dyList.append(dy)
+        pyplot.plot(variedInputs, dxList, 'b.-')
+        pyplot.plot(variedInputs, dyList, 'r.-')
+        pyplot.show()
+        
+    
+
 
 if __name__ == "__main__":
     # !!!!!!!!!!!!!! 
