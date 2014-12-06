@@ -82,8 +82,10 @@ Previous MAS research, however, often fails to fully consider the effect of
 sensor limitations upon the learning algorithm within given domains. In many realistic cases, sensors fall drastically short of being able to see the entire search space at once. Many lower-cost robots are now using the Microsoft Kinect because it offers RGB-D sensing for fewer than 100 dollars. Albeit, the Kinect is constrained by a 0.8 - 4.0m distance range and 57$^{\circ}$ horizontal and 43$^{\circ}$ vertical field-of-view. On top of all this, there is ever present sensor noise; a constant source of frustration for sensor precision and accuracy.
 
 As always, decreasing hardware costs do not mean infinite hardware resources.
-Implementers must be able to informatively decide on the cost-benefit 
-between a greater number of worse performing sensors and a greater array of lower performing sensors. Moreover, cost-benefit analysis needs to be done on a level that includes sensor impact on  agent performance within a given domain. Specifically, we will show the trade-offs between using varying quality sensors and the overall system performance by modeling robots with different sensor ranges, fields-of-view, and noise characteristics in the rover domain utilizing three common reward structures. This will help future implementers conduct more accurate cost-benefit analyses in order to make wiser decisions when building and deploying robots in the real world.
+Implementers must be able to make informed decisions on the cost-benefit tradeoff 
+between fewer, higher-performing sensors and additional lower-performing sensors. Moreover, cost-benefit analysis needs to be done on a level that includes sensor impact on  agent performance within a given domain. Specifically, we will show the trade-offs between using varying quality sensors and the overall system performance by modeling robots with different sensor ranges, fields-of-view, and noise characteristics in the rover domain utilizing three common reward structures. Our analysis necessitated some preliminary work that forms a second major contribution; namely, the creation of a novel construct, the POI sensitivity gradient, that allows
+quick mapping and vizualisation of the regions of the world which
+contain the most useful sensor input.  Our work will help future implementers conduct more accurate cost-benefit analyses in order to make wiser decisions when building and deploying robots in the real world.
 
 
 \section{Related Work}
