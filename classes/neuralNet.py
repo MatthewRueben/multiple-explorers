@@ -389,7 +389,7 @@ class NeuralNetwork:
 		# take a random sample of mutateRate of the keys
 		keysToMutate = random.sample(self.weights.keys(), int(len(self.weights)*mutateRate))
 		for key in keysToMutate:
-			mutatedNN.weights[key] = self.weights[key] + random.gauss(0,.5)
+			mutatedNN.weights[key] = self.weights[key] + random.gauss(0,0.5)
 
 			# For debugging purposes... keep track of how many times an individual weight was mutated
 			try:

@@ -55,6 +55,7 @@ CATKIN_IGNORE
 *.aux
 *.blg
 *.bbl
+*.out
 
 # Other stuff Matt doesn't commit
 *.pickle
