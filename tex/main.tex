@@ -189,7 +189,7 @@ quadrant. Eight total sensors therefore yield eight continuous state
 variables.
 
 \subsection{Action Selection and Learning}
-State information was mapped to action choices using a perceptron with
+State information was mapped to action choices using a neural network with
 8 inputs, 10 hidden nodes, and 2 outputs. The activation functions
 were sigmoidal and each output value was scaled based on a maximum
 movement (4 world units) allowance per step (d is maximum movement per time step and
@@ -205,14 +205,14 @@ dy = 2d(o_2-0.5)
 An evolutionary algorithm was used with simulated annealing to find
 neural networks that yielded good performance. This is called “direct
 policy search” because we use an evolutionary algorithm to search for
-a good policy directly, i.e., without maintaining state-action value
+a good policy directly, i.e. we do not maintain state-action value
 estimates as in approaches like Q-learning. The neural network was initialized with randomly
 valued weights between \(\pm\)0.5.  A pool of 40 neural networks was assigned for each agent.  40 random
 teams were then created using a unique agent and a previously unselected neural network associated with that agent.
 A fitness was assigned to the neural network following the episode based on the reward structure in use at 
-the time.  An e-greedy selection process was used to pick the best half of the neural network performers for each agent.  An 
-e-greedy approach was used to switch one of the better performers (excluding the highest performer) with a lower performer in 
-order to further exploration.  The neural networks were mutated by adding a random Gaussian noise with a mean of 0 and a standard deviation of 1 to a given weight, for a percentage of all weights that decreased during training time.
+the time.  An epsilon-greedy selection process was used to pick the best half of the neural network performers for each agent.  An 
+epsilon-greedy approach was used to switch one of the better performers (excluding the highest performer) with a lower performer in 
+order to further exploration.  The neural networks were mutated by adding a random Gaussian noise with a mean of 0 and a standard deviation of .5 to a given weight, for a percentage of all weights that decreased during training time.
 The agents were trained for 75 episodes each.
 
 The system described thus far provides the basis for our study of sensor limitations. Our novel
@@ -237,13 +237,11 @@ vertical axis.
 
 Each sensor limitation was applied independently at three different
 magnitudes for each reward structure.  Thus, 9 sensor tweaks were applied to
-the local, global, and difference rewards. The baseline sensor combination was chosen after \cite{agogino2008analyzing} as having
-unlimited sensor range, zero noise, and a 360° field-of-view. Sensor
+the local, global, and difference rewards. The baseline sensor combination was chosen after \cite{agogino2008analyzing} as having unlimited sensor range, zero noise, and a 360° field-of-view. Sensor
 range was tested at 2 world units (half the distance the rover can see), 8 world units (twice the distance 
-the rover can see), and unlimited world
-units. Sensor noise was modeled as a unique normal distribution for
+the rover can see), and unlimited world units. Sensor noise was modeled as a unique normal distribution for
 each sensed object with standard deviations at 0\%, 10\%, and 30\% of the
-object’s true range. Sensor viewing angles were tested at 90$^{\circ}$, 270$^{\circ}$,
+object’s true range. Rover viewing angles were tested at 90$^{\circ}$, 270$^{\circ}$,
 and 360$^{\circ}$.
 
 Statistical system runs were executed for 75 episodes for each
@@ -258,7 +256,7 @@ Very early in our implementation efforts, we saw that the learned policies of th
 \begin{enumerate}
 \item \emph{Sensitivity or Reactivity.} The neural networks are constructed such that a rover can learn to respond to changes in sensor (state) information by changing its direction (i.e., action). If it learns to do this, then we say that the rover is \emph{sensitive} to changes in its state information, or that it \emph{reacts} strongly to such changes. This behavior is most directly influenced by the neural network weights that mediate the connections between inputs and the single hidden layer. These input weights determine for each input (here, a POI or rover sensor) how much influence, if any, it will have on the action output of the neuro-controller. 
 
-\item \emph{Direction Bias.} If these input weights make the inputs too large or too small, they will leave the range within which the sigmoidal activation functions of the hidden nodes are sensitive (i.e., about -5 to 5). In this case, changes in the input values (i.e., POI and rover sensor information) will cause only negligible changes to the hidden layer outputs, and the weights between the hidden layer and the output nodes will control the system. This causes behavior that is learned, but insensitive to sensor information; for our problem setup, this means a straight-line trajectory. The rover can only here learn the angle and speed of that trajectory. Assuming the speed is sufficient to reach the border of the map, the angle becomes very important for ensuring that the rovers spread out to cover all the POIs. 
+\item \emph{Direction Bias.} If these input weights make the inputs too large or too small, they will leave the range within which the sigmoidal activation functions of the hidden nodes are sensitive (i.e., about -5 to 5). In this case, changes in the input values (i.e., POI and rover sensor information) will cause only negligible changes to the hidden layer outputs, and the weights between the hidden layer and the output nodes will control the system. This causes behavior that is learned, but insensitive to sensor information; for our problem setup, this means a straight-line trajectory. In our domain, the rover can only here learn the angle and speed of that trajectory. Assuming the speed is sufficient to reach the border of the map, the angle becomes very important for ensuring that the rovers spread out to cover all the POIs. 
 \end{enumerate}
 
 Sensitivity can be estimated by how much an agent changes direction throughout its trajectory, especially as large sensor changes occur (e.g., passing by a rover or high-valued POI). A comparison of learned rover behavior that is sensitive and insensitive is shown in Figure \ref{fig:sensitivity}. All rovers in that scenario have learned and indeed converged on their demonstrated behavior. 
