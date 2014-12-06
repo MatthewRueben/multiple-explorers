@@ -123,7 +123,7 @@ navigation functions) that include some potential or proximity function between 
 
 \subsection{Noise}
 **TODO update citations**
-Noisy sensors are a reality for robots. Lower-cost sensors, like the Microsoft Kinect, have the potential to significantly drive down costs for using robots for exploration. However, lower-cost sensors also bring with them higher noise characteristics. Specifically the Microsoft Kinect has been shown to have a random error in the depth axis ranging from a few millimeters to 4 cm in a non-uniform distribution \cite{blah} [1][2]. Techniques have been developed to overcome the various types of sensor noise, both by modifying sensor output and modifying learning techniques, but these still leave sensor information imperfect \cite{blah} [2][3]. Before spending more time and resources trying to overcome the sensors with added or improved hardware or software,it is important to understand how sensor noise actually impacts rover performance within a given domain.
+Noisy sensors are a reality for robots. Lower-cost sensors, like the Microsoft Kinect, have the potential to significantly drive down costs for using robots for exploration. However, lower-cost sensors also bring with them higher noise characteristics. Specifically the Microsoft Kinect has been shown to have a random error in the depth axis ranging from a few millimeters to 4 cm in a non-uniform distribution \cite{khoshelham2012accuracy,nguyen2012modeling}. Techniques have been developed to overcome the various types of sensor noise, both by modifying sensor output and modifying learning techniques, but these still leave sensor information imperfect \cite{nguyen2012modeling,hu2010distributed}. Before spending more time and resources trying to overcome the sensors with added or improved hardware or software,it is important to understand how sensor noise actually impacts rover performance within a given domain.
 
 
 \section{Methods}
@@ -277,14 +277,14 @@ This raises the question of what domain characteristics most encourage the rover
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.3\textwidth]{ATRIAS.jpg}
-    \caption{Analysis of a trivial domain for our problem. Rovers are assumed to learn evenly-spaced, straight-line paths. Relevant parameters are the number of rovers, the size of the region containing POIs, and the minimum observation distance for the POIs. }
+    \includegraphics[width=0.45\textwidth]{triviality.png}
+    \caption{Definition of a trivial domain for our problem. Rovers are assumed to learn evenly-spaced, straight-line paths. Relevant parameters are the number of rovers, the size of the region containing POIs, and the minimum observation distance for the POIs. In a trivial domain, every POI will necessarily be maximally observed. }
     \label{fig:triviality}
 \end{figure}
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.3\textwidth]{ATRIAS.jpg}
+    \includegraphics[width=0.45\textwidth]{ATRIAS.jpg}
     \caption{Examples of POI distributions with different signal-to-noise ratios in terms of the POI sensors. LEFT: a uniform POI distribution yields a low SNR. A weighted-value (MIDDLE) or clustered (RIGHT) POI distribution yields a high SNR. }
     \label{fig:signal-contrast}
 \end{figure}

@@ -40,7 +40,8 @@ class World():
         self.POIs.append(bigPOI)
         for poi_index in range(N_poi-1):
             # V_choice = random.uniform(V_bounds[0], V_bounds[1])
-            poi_value = random.randint(0, leftover_val)
+            #poi_value = random.randint(0, leftover_val)
+            poi_value = 450.0  # <---- HACK!
             leftover_val -= poi_value 
             poi = POI(poi_value, d_min=5.0)  # assign POI value & minimum observation distance
             # poi = POI(45.0, d_min=5.0)
