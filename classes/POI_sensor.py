@@ -22,14 +22,15 @@ class POI_Sensor(Sensor):
         for poi in POI_list:
             # determine the distance to the rover            
             distance = self.location - poi.location
+            # print 'Distance in poi count ', distance
             
             # add sensor noise to the distance
             random_noise = randint(-self.sensor_noise, self.sensor_noise)
             distance = distance * (1. + random_noise/100.)
             
             # determine the angle to the rover
-            dx = self.location.x - poi.location.x
-            dy = self.location.y - poi.location.y
+            dx = poi.location.x - self.location.x
+            dy = poi.location.y - self.location.y
             if dx == 0:
                 dx = sys.float_info.min
             angle = math.atan2(dy, dx)

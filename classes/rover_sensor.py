@@ -30,8 +30,8 @@ class Rover_Sensor(Sensor):
             distance = distance * (1. + random_noise/100.)
             
             # determine the angle to the rover
-            dx = self.location.x - rover.location.x
-            dy = self.location.y - rover.location.y
+            dx = rover.location.x - self.location.x
+            dy = rover.location.y - self.location.y
             if dx == 0:  # exception for rovers that are on top of each other (or identical)
                 dx = sys.float_info.min
             angle = math.atan2(dy, dx)
@@ -77,7 +77,7 @@ class Rover_Sensor(Sensor):
             dy = self.location.y - rover.location.y
             if dx == 0:
                 dx = sys.float_info.min
-            angle = math.atan(dy/dx)
+            angle = math.atan2(dy, dx)
             angle = angle * 180. / math.pi # convert to degrees
             
             # ensure angle in range [0, 360]
