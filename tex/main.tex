@@ -123,7 +123,7 @@ the face of various sensor limitations. ******Add citations, book, Kagans 10s of
 A limited sensor range causes two potential problems for agents:
 collision with each other and sub-optimal behavior due to lack of
 coordination. Dimarogonas et al. \cite{dimarogonas2007decentralized} and Do \cite{do2007bounded} present planning approaches to collision avoidance with limited sensor range. To plan agent motion, both approaches use potential fields (also called
-navigation functions) that include some potential or proximity function between each pair of agents that can see each other. The ant colony problem presented by Gordon et al. \cite{gordon2004gathering} examines the case where the sensors have limited range and no distance information, i.e., only output the direction to sensed entities. All of these approaches involve sending the agents to some goal location or formation, not exploring an area, and no machine learning techniques are used. One approach that used reinforcement learning examined reward-shaping in a noisy domain involving competitive robotic “foraging”. It was shown that intelligent reward-shaping and algorithm were able to overcome the noise present and achieve good performance\cite{mataric1997reinforcement}.
+navigation functions) that include some potential or proximity function between each pair of agents that can see each other. The ant colony problem presented by Gordon et al. \cite{gordon2004gathering} examines the case where the sensors have limited range and no distance information, i.e., only output the direction to sensed entities. All of these approaches involve sending the agents to some goal location or formation, not exploring an area, and no machine learning techniques are used. One approach that used reinforcement learning examined reward-shaping in a noisy domain involving competitive robotic “foraging”. It was shown that intelligent reward-shaping and algorithm were able to overcome the noise present and achieve good performance \cite{mataric1997reinforcement}.
 
 \subsection{Noise}
 **TODO update citations**
@@ -341,6 +341,15 @@ Two non-trivial domains that demonstrate these principles are shown in Figure \r
     \includegraphics[width=0.3\textwidth]{SN50.png}
     \caption{Sensor noise}
     \label{fig:sensor-noise}
+\end{figure*}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=0.3\textwidth]{SR_LocalReward.png}
+    \includegraphics[width=0.3\textwidth]{SF_LocalReward.png}
+    \includegraphics[width=0.3\textwidth]{SN_LocalReward.png}
+    \caption{Comparison of local reward results}
+    \label{fig:local-reward-comparison}
 \end{figure*}
 
 \section{Future Work}
