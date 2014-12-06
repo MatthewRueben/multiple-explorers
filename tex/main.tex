@@ -76,14 +76,14 @@ the rover Curiosity to explore Mars. Several companies have built
 mobile robots to explore and decontaminate the the Fukushima Daiichi
 nuclear power station after the 2011 meltdown CITE THE URL. Added to these
 accomplishments, robots are increasingly being used with other robots, 
-adding significance to multiagent systems (MAS) robot studies.
+adding significance to multiagent systems (MAS) studies.
 
-Previous MAS research however, often fails to fully consider the effect of
-sensor limitations upon the learning algorithm with given domains. In many realistic cases, sensors fall drastically short of being able to see the entire search space at once. Many lower-cost robots are now using the Microsoft Kinect because it offers RGB-D sensing for fewer than 100 dollars. Albeit, the Kinect is constrained by a 0.8 - 4.0m distance range and 57$^{\circ}$ horizontal and 43$^{\circ}$ vertical field of view. On top of all this, there is ever present sensor noise; a constant source of frustration for sensor precision and accuracy.
+Previous MAS research, however, often fails to fully consider the effect of
+sensor limitations upon the learning algorithm within given domains. In many realistic cases, sensors fall drastically short of being able to see the entire search space at once. Many lower-cost robots are now using the Microsoft Kinect because it offers RGB-D sensing for fewer than 100 dollars. Albeit, the Kinect is constrained by a 0.8 - 4.0m distance range and 57$^{\circ}$ horizontal and 43$^{\circ}$ vertical field of view. On top of all this, there is ever present sensor noise; a constant source of frustration for sensor precision and accuracy.
 
-As always, decreasing hardware costs does not mean infinite hardware resources.
+As always, decreasing hardware costs do not mean infinite hardware resources.
 Implementers must be able to informatively decide on the cost-benefit 
-between a greater number of worse performing sensors and a greater array of lower performing sensors. Moreover, cost-benefit analsis needs to be done on a level that includes sensor impact on  agent performance within a given domain. Specifically, we will show the trade-offs between using varying quality sensors and the overall system performance by modeling robots with different sensor ranges, fields of view, and noise characteristics in the rover domain utilizing three common reward structures. This will help future implementers conduct more accurate cost-benefit analyses in order to make wiser decisions when building and deploying robots in the real world.
+between a greater number of worse performing sensors and a greater array of lower performing sensors. Moreover, cost-benefit analysis needs to be done on a level that includes sensor impact on  agent performance within a given domain. Specifically, we will show the trade-offs between using varying quality sensors and the overall system performance by modeling robots with different sensor ranges, fields of view, and noise characteristics in the rover domain utilizing three common reward structures. This will help future implementers conduct more accurate cost-benefit analyses in order to make wiser decisions when building and deploying robots in the real world.
 
 
 \section{Related Work}
@@ -98,7 +98,7 @@ the number of rooms and room size effects the explorability of a space
 by intelligently assigning destinations to different agents \cite{burgard2005coordinated}.
 
 \subsection{Credit Assignment}
-An important and particulary difficult aspect multi-agent systems is the problem of
+An important and particulary difficult aspect of MAS is the problem of
 credit assignment. Agent to agent coordination involves individual
 agents working together on a common task or goal. Since one agent’s
 behaviors might affect other agents, however, the learning process
@@ -122,9 +122,9 @@ each agent.
 The structural credit assignment problem is defined as the difficulty that arises in properly assigning credit 
 to a specific agent in a pool of agents.  While this problem has been extensively studied, three overarching reward 
 structures have been developed: the full system reward, the local reward, and the difference reward.  The full system reward, 
-also known as the global reward, assigns the full system reward to each agent in the system.  The local reward assigns the a reward
-to each agent using only the information that is local to the agent. The difference reward is calculated directly or approximated for each agent by artifically removing the agent from a system and replacing the agents action(s) with another action (which may or may not be legal within the system) and comparing it with the global reward when the agent was in the system. The difference reward has been shown to be both factored and learnable by definition. It has also been shown to be the best reward structure to use in
-domains where it is practically computable. To our knowledge, there has not been extensive 
+also known as the global reward, assigns the full system reward to each agent in the system.  The local reward assigns a reward
+to each agent using only information local to the agent. The difference reward is calculated directly or approximated for each agent by artifically removing the agent from a system and replacing the agent's action(s) with another action (which may or may not be legal within the system) and comparing it with the global reward when the agent was in the system. The difference reward has been shown to be both factored and learnable by definition. It has also been shown to be the best reward structure to use in
+domains where it is computationally tractable. To our knowledge, there has not been extensive 
 research demonstrating the advantages or disadvantages of each of these reward structures in 
 the face of various sensor limitations. ******Add citations, book, Kagans 10s of papers on the subject
 
