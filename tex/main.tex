@@ -65,89 +65,31 @@ the rover Curiosity to explore Mars. Several companies have built
 mobile robots to explore and decontaminate the the Fukushima Daiichi
 nuclear power station after the 2011 meltdown CITE THE URL. Added to these
 accomplishments, robots are increasingly being used with other robots, 
-adding significance to multiagent systems(MAS) robot studies.
+adding significance to multiagent systems (MAS) robot studies.
 
 Previous MAS research however, often fails to fully consider the effect of
-sensor limitations upon the learning algorithm with given domains. In many realistic cases, 
-sensors fall drastically short of being able to see the entire search space at once. Many lower-cost
-robots are now using the Microsoft Kinect because it offers RGB-D
-sensing for fewer than 100. Albeit, the Kinect is constrained by a 0.8 - 4.0m distance range 
-and 57° horizontal and 43° vertical field of view.  
-Stacked upon limited sensor range and field of view is ever present sensor noise, a constant
-source of frustration for sensor precision and accuracy.
+sensor limitations upon the learning algorithm with given domains. In many realistic cases, sensors fall drastically short of being able to see the entire search space at once. Many lower-cost robots are now using the Microsoft Kinect because it offers RGB-D sensing for fewer than 100 dollars. Albeit, the Kinect is constrained by a 0.8 - 4.0m distance range and 57$^{\circ}$ horizontal and 43$^{\circ}$ vertical field of view. On top of all this, there is ever present sensor noise; a constant source of frustration for sensor precision and accuracy.
 
 As always, decreasing hardware costs does not mean infinite hardware resources.
 Implementers must be able to informatively decide on the cost-benefit 
-between a greater number of worse performing sensors and a greater array of lower performing 
-sensors. Moreover, cost-benefit analsis needs to be done on a level that includes sensor impact on
- agent performance within a given domain. Specifically, we will show the trade-offs between using varying 
- quality sensors and the overall system performance by modeling robots with different sensor ranges, fields of view, 
- and noise characteristics in the rover domain utilizing three common reward structures. 
- This will help future implementers conduct more accurate cost-benefit analyses in order to make wiser decisions when
-building and deploying robots in the real world.
+between a greater number of worse performing sensors and a greater array of lower performing sensors. Moreover, cost-benefit analsis needs to be done on a level that includes sensor impact on  agent performance within a given domain. Specifically, we will show the trade-offs between using varying quality sensors and the overall system performance by modeling robots with different sensor ranges, fields of view, and noise characteristics in the rover domain utilizing three common reward structures. This will help future implementers conduct more accurate cost-benefit analyses in order to make wiser decisions when building and deploying robots in the real world.
 
 
 \section{Related Work}
-\subsection{Continuous Rover Domain}
-Blah blah blah?
-
-\subsection{Congestion}
-One unique aspect of a multi-agent system is the congestion
-problem. In the domain of search and retrieval tasks, it was shown
-that increasing the number of agents present, up to a saturation
-point, increases the overall system performance and speed. However, at
-some point, additional agents provide no extra benefit due to
-congestion of the experimental space \cite{rybski1998performance}. The challenge of
-reward-shaping has been examined in a noisy domain involving
-competitive robotic “foraging”. It was shown that intelligent
-reward-shaping and algorithm use was required to overcome the distinct
-challenges presented by the dynamic environment and achieve good
-performance \cite{mataric1997reinforcement}.
-
 \subsection{Credit Assignment}
-A second unique aspect of a multi-agent system is the problem of
-credit assignment. Agent to agent coordination involves individual
-agents working together on a common task or goal.  Since one agent’s
-behaviors might affect other agents, however, the learning process
-becomes hard. Chalkiadakis and Boutilier \cite{chalkiadakis2003coordination} develop a way to weigh
-the costs and benefits of taking non-greedy actions during
-reinforcement learning based on the value of the new information that
-might be gained. They also give the agents some limited ability to
-reason about how their actions influence others. Another question is,
-what does each agent know about the other agents? This is the
-information by which they can coordinate at all. Gmytrasiewicz and
-Durfee \cite{gmytrasiewicz2000rational} expand the typical state space of each agent by adding
-knowledge about other agents’ knowledge, which is recursive by
-nature. They develop a framework whereby this representation is
-usable, however, and present their findings as a move towards
-coordinated robot actions. Finally, Burgard et al. \cite{burgard2005coordinated} address
-coordination in an exploration scenario, which for them boils down to
-intelligently placing goal locations (or waypoints, by extension) for
+A second unique aspect of a multi-agent system is the problem of credit assignment. Agent to agent coordination involves individual agents working together on a common task or goal.  Since one agent’s behaviors might affect other agents, however, the learning process becomes hard. Chalkiadakis and Boutilier \cite{chalkiadakis2003coordination} develop a way to weigh the costs and benefits of taking non-greedy actions during
+reinforcement learning based on the value of the new information that might be gained. They also give the agents some limited ability to reason about how their actions influence others. Another question is, what does each agent know about the other agents? This is the
+information by which they can coordinate at all. Gmytrasiewicz and Durfee \cite{gmytrasiewicz2000rational} expand the typical state space of each agent by adding knowledge about other agents’ knowledge, which is recursive by nature. They develop a framework whereby this representation is usable, however, and present their findings as a move towards coordinated robot actions. Finally, Burgard et al. \cite{burgard2005coordinated} address coordination in an exploration scenario, which for them boils down to intelligently placing goal locations (or waypoints, by extension) for
 each agent.
 
 \subsection{Exploration Domain}
-In the exploration domain, agents must discover all areas of an
-initially unknown map. One method tackles the search of complicated
-areas via cellular decomposition and systematic coverage \cite{choset2001coverage}. Another
-method examines the effect of limited knowledge on an agent. It
-examines how well different algorithms utilize agents, as well as how
-the number of rooms and room size effects the explorability of a space
-\cite{ferranti2007brick}. Lastly, one method coordinates exhaustive exploration of a space
-by intelligently assigning destinations to different agents \cite{burgard2005coordinated}.
+In the exploration domain, agents must discover all areas of an initially unknown map. One method tackles the search of complicated areas via cellular decomposition and systematic coverage \cite{choset2001coverage}. Another method examines the effect of limited knowledge on an agent. It examines how well different algorithms utilize agents, as well as how the number of rooms and room size effects the explorability of a space \cite{ferranti2007brick}. Lastly, one method coordinates exhaustive exploration of a space by intelligently assigning destinations to different agents \cite{burgard2005coordinated}.
 
 \subsection{Sensor Limitations}
 A limited sensor range causes two potential problems for agents:
 collision with each other and sub-optimal behavior due to lack of
-coordination. Dimarogonas et al. \cite{dimarogonas2007decentralized} and Do \cite{do2007bounded} present planning
-approaches to collision avoidance with limited sensor range. To plan
-agent motion, both approaches use potential fields (also called
-navigation functions) that include some potential or proximity
-function between each pair of agents that can see each other. The ant
-colony problem presented by Gordon et al. \cite{gordon2004gathering} examines the case where
-the sensors have limited range and no distance information, i.e., only
-output the direction to sensed entities. All of these approaches
-involve sending the agents to some goal location or formation, not
-exploring an area, and no machine learning techniques are used.
+coordination. Dimarogonas et al. \cite{dimarogonas2007decentralized} and Do \cite{do2007bounded} present planning approaches to collision avoidance with limited sensor range. To plan agent motion, both approaches use potential fields (also called
+navigation functions) that include some potential or proximity function between each pair of agents that can see each other. The ant colony problem presented by Gordon et al. \cite{gordon2004gathering} examines the case where the sensors have limited range and no distance information, i.e., only output the direction to sensed entities. All of these approaches involve sending the agents to some goal location or formation, not exploring an area, and no machine learning techniques are used. One approach that used reinforcement learning examined reward-shaping in a noisy domain involving competitive robotic “foraging”. It was shown that intelligent reward-shaping and algorithm were able to overcome the noise present and achieve good performance\cite{mataric1997reinforcement}.
 
 \subsection{Noise}
 **TODO update citations**
