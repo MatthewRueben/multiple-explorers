@@ -132,11 +132,11 @@ the face of various sensor limitations. ******Add citations, book, Kagans 10s of
 A limited sensor range causes two potential problems for agents:
 collision with each other and sub-optimal behavior due to lack of
 coordination. Dimarogonas et al. \cite{dimarogonas2007decentralized} and Do \cite{do2007bounded} present planning approaches to collision avoidance with limited sensor range. To plan agent motion, both approaches use potential fields (also called
-navigation functions) that include some potential or proximity function between each pair of agents that can see each other. The ant colony problem presented by Gordon et al. \cite{gordon2004gathering} examines the case where the sensors have limited range and no distance information, i.e., only output the direction to sensed entities. All of these approaches involve sending the agents to some goal location or formation, not exploring an area, and no machine learning techniques are used. One approach that used reinforcement learning examined reward-shaping in a noisy domain involving competitive robotic “foraging”. It was shown that intelligent reward-shaping and algorithm were able to overcome the noise present and achieve good performance \cite{mataric1997reinforcement}.
+navigation functions) that include some potential or proximity function between each pair of agents that can see each other. The ant colony problem presented by Gordon et al. \cite{gordon2004gathering} examines the case where the sensors have limited range and no distance information, i.e., only output the direction to sensed entities. All of these approaches involve sending the agents to some goal location or formation, not exploring an area, and no machine learning techniques are used. One approach that used reinforcement learning examined reward-shaping in a noisy domain involving competitive robotic “foraging”. It was shown that intelligent reward-shaping and algorithms were able to overcome the noise present and achieve good performance \cite{mataric1997reinforcement}.
 
 \subsection{Noise}
 **TODO update citations**
-Noisy sensors are a reality for robots. Lower-cost sensors, like the Microsoft Kinect, have the potential to significantly drive down costs for using robots for exploration. However, lower-cost sensors also bring with them higher noise characteristics. Specifically the Microsoft Kinect has been shown to have a random error in the depth axis ranging from a few millimeters to 4 cm in a non-uniform distribution \cite{khoshelham2012accuracy,nguyen2012modeling}. Techniques have been developed to overcome the various types of sensor noise, both by modifying sensor output and modifying learning techniques, but these still leave sensor information imperfect \cite{nguyen2012modeling,hu2010distributed}. Before spending more time and resources trying to overcome the sensors with added or improved hardware or software,it is important to understand how sensor noise actually impacts rover performance within a given domain.
+Noisy sensors are a reality for robots. Lower-cost sensors, like the Microsoft Kinect, have the potential to significantly drive down costs for using robots for exploration. However, lower-cost sensors also bring with them higher noise characteristics. Specifically the Microsoft Kinect has been shown to have a random error in the depth axis ranging from a few mm to 4 cm in a non-uniform distribution \cite{khoshelham2012accuracy,nguyen2012modeling}. Techniques have been developed to overcome the various types of sensor noise, both by modifying sensor output and modifying learning techniques, but these still leave sensor information imperfect \cite{nguyen2012modeling,hu2010distributed}. Before spending more time and resources trying to overcome the sensors with added or improved hardware or software, it is important to understand how sensor noise actually impacts rover performance within a given domain.
 
 
 \section{Methods}
@@ -145,7 +145,7 @@ This work is a direct extension of that described by Tumer and Agogino
 (2008, \cite{agogino2008analyzing}). Therein, the goal of the rovers is to observe the more
 important points of interest (POIs) at close range in order to earn a
 large overall system reward. We use the static POI domain, meaning the POI values and locations are chosen randomly at the
-beginning of a training session, and then do not vary for each learning episode. The POIs are placed randomly using one random distribution. The sum POI value is 1000 resulting in a maximum POI value of 40.  Each POI is assigned a value such that one POI takes on half of POI sum value.  That is one POI is assigned a value of 500 and the remaining POIs are randomly assigned a value summing up to 500.  This ensures that the domain is non-trivial and that a random-walk is not always optimum.  For each learning episode, the rovers begin in a tight cluster at the center of the map. The episode
+beginning of a training session, and then do not vary for the duration of the episode. The POIs are placed randomly using a single random distribution. The sum POI value is 1000, resulting in a maximum system reward of 40.  Each POI is assigned in the following manner: one POI is valued at half of the POI sum value, 500.  The remaining POIs are randomly assigned a value summing up to 500.  This ensures that the domain is non-trivial and that a random-walk is not always optimum.  For each learning episode, the rovers begin in at the same location on the map, each with a random heading. The episode
 ends after 15 time steps and rewards are assigned. Each rover can move
 continuously in two dimensions, and 10 percent noise is added to the
 intended movement to simulate real-world errors.
@@ -159,7 +159,7 @@ G= \sum_j  \frac{V_j}{min_i \: \delta(L_j, L_i)}
 \]
 
 The distance function is the square of the Euclidean norm up to a
-minimum distance d2:
+minimum distance \(d^2\):
 
 \[
 \delta  (x,y) = max \big\{||x - y||^2, d^2 \big\}    
@@ -176,7 +176,7 @@ D_i=G(z)-G(z_{-i})
 
 \subsection{State Information}
 Each rover has two types of sensors. The first type returns an
-aggregate score that represents how many high-value POIs are near the
+aggregate score that represents the POI values near the
 rover:
 
 \[
