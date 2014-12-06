@@ -27,13 +27,23 @@ class World():
 
         # Init POIs
         self.POIs = []
-        total_val = 450.0
-        leftover_val = 450.0
-        for poi_index in range(N_poi):
+        total_val = N_poi * 10
+        halfVal = total_val / 2.0
+        leftover_val = halfVal
+        # hack to make one large valued, and the others no more than half its value
+        # poiValueList = [float(random.randint(0, halfVal)) for x in range(N_poi-1)]
+        # for poiValue in poiValueList:
+        #     self.POIs.append(POI(poiValue, d_min=5.0))
+        # self.POIs.append(POI(total_val, d_min=5.0))
+        # print poiValueList
+        bigPOI = POI(halfVal, d_min=5.0)
+        self.POIs.append(bigPOI)
+        for poi_index in range(N_poi-1):
             # V_choice = random.uniform(V_bounds[0], V_bounds[1])
             poi_value = random.randint(0, leftover_val)
             leftover_val -= poi_value 
             poi = POI(poi_value, d_min=5.0)  # assign POI value & minimum observation distance
+            # poi = POI(45.0, d_min=5.0)
             self.POIs.append(poi)
 
         # Init rovers
@@ -50,15 +60,59 @@ class World():
                           num_POI=100)
             self.rovers.append(rover)
         
-    def reset(self, headings):
-        for poi in self.POIs:
-            poi.place_randomly(self.poi_bounds)  # assign POI location
+    def resetWithClusters(self, headings):
+        ''' Resets with the clusters either against the left wall, right wall, top wall, or bottom wall. '''
+        clusterLocations = self.buildClusterLocations(self.poi_bounds, len(self.POIs))
+        for poi, clusterLoc in itertools.izip(self.POIs, clusterLocations):
+            # poi.place_randomly(self.poi_bounds)  # assign POI location
+            poi.place_location(clusterLoc)
         for rover, heading in itertools.izip(self.rovers, headings):
             # reset agents to be center of world
             rover.reset(self.rover_start.x,
                         self.rover_start.y,
                         heading)
 
+    def buildClusterLocations(self, bounds, numPois):
+        quad = random.random()
+        clusterList = [float(random.randint(0, 60)) for x in range(numPois)]
+        clusterLocations = []
+        # if quad < .25:
+        #     # up wall
+        #     y = 100.0
+        #     for cluster in clusterList:
+        #         clusterLocations.append(copy.deepcopy(Location(cluster, y)))
+        # elif quad < .5:
+        #     # bottom wall
+        #     y = 0
+        #     for cluster in clusterList:
+        #         clusterLocations.append(copy.deepcopy(Location(cluster, y)))
+        # elif quad < .75:
+        #     # left wall
+        #     x = 0
+        #     for cluster in clusterList:
+        #         clusterLocations.append(copy.deepcopy(Location(x, cluster)))
+            
+        # else:
+            # right wall
+        x = 50
+        for cluster in clusterList:
+            clusterLocations.append(copy.deepcopy(Location(x, cluster)))
+
+        return clusterLocations
+
+
+    def reset(self, headings):
+        # for poi in self.POIs:
+        #     poi.place_randomly(self.poi_bounds)
+        for rover, heading in itertools.izip(self.rovers, headings):
+            # reset agents to be center of world
+            rover.reset(self.rover_start.x,
+                        self.rover_start.y,
+                        heading)
+
+    def initPOILocs(self):
+        for poi in self.POIs:
+            poi.place_randomly(self.poi_bounds)
             
     def get_rewards(self):
         rewards = {'POI': [],
@@ -210,8 +264,8 @@ class World():
             pyplot.plot(trajectory_x[-1], trajectory_y[-1], 'ro')
 
             for poi_index, poi in enumerate(self.POIs):
-                pyplot.plot(poi.location.x, poi.location.y, 'k*')
-
+                #pyplot.plot(poi.location.x, poi.location.y, 'k*')
+         
                 # Check if a rover has been within the minimum observation distance of this POI
                 delta_min, rover_closest = self.find_closest(poi_index)
                 if delta_min < 1.05 * (poi.d_min ** 2):  # if within 5% of min. obs. distance (since an == relation might fail due to float math)
@@ -219,8 +273,14 @@ class World():
                 else: 
                     color_choice = '0.5'  # lightish gray
 
-                circle1 = pyplot.Circle((poi.location.x, poi.location.y), 5, color=color_choice, fill=False)
+                # Draw inside circle of POI -- bigger is better
+                radius = poi.V / 450.0 * 4
+                circle1 = pyplot.Circle((poi.location.x, poi.location.y), radius, color=color_choice, fill=True)
                 fig.gca().add_artist(circle1)
+
+                # Draw outside circle of POI at minimum observation distance
+                circle2 = pyplot.Circle((poi.location.x, poi.location.y), 5, color=color_choice, fill=False)
+                fig.gca().add_artist(circle2)
 
         pyplot.draw()
         fig.savefig('Learned01Step' + str(step) + '.png')

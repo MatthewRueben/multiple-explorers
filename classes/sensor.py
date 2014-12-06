@@ -35,6 +35,10 @@ class Sensor(object):
         self.sensor_range = sensor_range
         self.sensor_noise = sensor_noise
         
+    def updateLocation(self, new_location):
+        self.location.x = new_location.x
+        self.location.y = new_location.y
+
     def updateFieldOfView(self, sector, rover_heading):
         # define quadrant edges in terms of degrees
         global_heading = rover_heading + self.regions[sector]

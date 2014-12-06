@@ -86,23 +86,6 @@ exploration task. This will help future implementers conduct more
 accurate cost-benefit analyses in order to make wiser decisions when
 building and deploying robotics in the real world.
 
-Here's a sample figure: Figure~\ref{fig:ATRIAS}. Here's a sample
-citation \cite{nuclear_robots}.
-
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.3\textwidth]{ATRIAS.jpg}
-    \caption{A sample figure, this being the sample caption for the sample figure.}
-    \label{fig:ATRIAS}
-\end{figure}
-
-Here's a sample equation:
-\begin{align*}
-    m\ddot{x} &= F_x
-\\  m(\ddot{y}+g) &= F_y
-\\  I\ddot{\theta}_T &= X_{vpp}(F_x cos(\theta_T+\theta_{vpp})-F_y sin(\theta_T+\theta_{vpp}))
-\end{align*}
-
 
 \section{Related Work}
 \subsection{Continuous Rover Domain}
@@ -348,6 +331,31 @@ An additional avenue for future work involves exploring additional sensor charac
 
 \subsection{Heterogeneous Agents}
 Exploring the performance of different sensor characteristic combinations naturally leads to the question of how a multi-agent system performs when agents in the system have different sensing capabilities. This is an interesting problem because it allows for the simulation of cost constrained systems (e.g. should agents be equipped with several cheaper, specialized sensors or less powerful, but equivalent sensors) as well as analyzing the impact of agent failure (e.g. sensor malfunctions restricting FOV or actuator failures preventing agent movement). The presence of heterogeneous agents leads to many interesting questions including: Can equivalent system performance be obtained if some agents have diminished capabilities? If so, at what point does performance begin to drastically diminish? Will agents with different capabilities learn to perform tasks more suited to them (e.g. agents with long range sensors learning to bypass nearby POIs in favor of more distant POIs)?
+
+
+\section{Results}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.45\textwidth]{SF_LocalReward.png}
+    \caption{}
+    \label{fig:}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.45\textwidth]{SN_LocalReward.png}
+    \caption{ }
+    \label{fig:}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.45\textwidth]{SR_LocalReward.png}
+    \caption{}
+    \label{fig:}
+\end{figure}
+
 
 
 \bibliographystyle{IEEEtran}

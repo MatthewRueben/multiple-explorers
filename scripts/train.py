@@ -7,7 +7,7 @@ import copy
 import random
 import itertools
 import timeit
-# from matplotlib import pyplot
+from matplotlib import pyplot
 
 locationOfFiles = os.getcwd() + '/classes'  # add location of class files to PYTHONPATH
 print 'File loc: ', locationOfFiles
@@ -198,15 +198,28 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewa
     # init/place rovs
     # agents need to be reset...but pois need to stay in same location....
     world.reset(headings)  # randomize POI locations and reset rover locations
+    # world.resetWithClusters(headings)
+    # print
+    # print 'inside do episode... '
+    # print type(team)
+    # print 'Length of team: ', len(team)
+    # for nn in team:
+    #     print 'Name: ', nn.name
 
     # print 'Reward type: ', rewardType
 
     for t in range(timesteps):
+        # print 'Timestep: ', t
+        # print 'Team length: ', len(team)
+        # print 'Team '
         actionList = []
         for rov, nn in itertools.izip(world.rovers, team):
             # temp remove rover from world rovers so it doesn't see itself.
+            rovIndex = world.rovers.index(rov)
             tempRov = rov
-            world.rovers.remove(rov)
+            world.rovers.remove(rov) 
+            # tempCopyRovers = copy.deepcopy(world.rovers)
+            # print 'nn name: ', nn.name
             
             if moveRandomly:
                 dx = random.uniform(-maxDist, maxDist)  # pick random actions
@@ -218,19 +231,26 @@ def doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, headings, rewa
                 o1, o2 = nn.fasterPredict(nnInputs) 
                 dx = calcDX(o1, maxDist, mvtNoise)  # use the neural network's actions
                 dy = calcDX(o2, maxDist, mvtNoise)
+                # print
+                # print 'inputs: ', nnInputs
+                # # print 'Rand dx,dy: ({0},{1})'.format(random.uniform(-maxDist, maxDist), random.uniform(-maxDist, maxDist))
+                # print 'Calc dx,dy: ({0},{1})'.format(dx, dy)
+                # print
             
             # put action in action list so that all rovers take action simultaneously
             action = (dx, dy)
             actionList.append(action)
 
-            # put rover back in world list...
-            world.rovers.append(tempRov)
+            # put rover back in world list at same location it came from
+            world.rovers.insert(rovIndex, tempRov) 
 
         
         # Take actions all at the same time
         for rov, action in itertools.izip(world.rovers, actionList):
+            # print 'Rov loc before action: ', rov.location
             rov.takeAction(action[0], action[1])
-
+            # print 'Rov loc after action: ', rov.location
+            # print 
         if plotPlease:
             world.plot_all()
 
@@ -274,7 +294,7 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plo
     moveRandomly = roverSettings.moveRandomly
     numPoi = pois
     timesteps = ts
-    maxDist = 10 # maximum distance the agent can move in one timestep
+    maxDist = 4 #was 10, then 5 # maximum distance the agent can move in one timestep
     minDist = 5 # minimum distance 
     mvtNoise = .1 # the noise added to each actions outcome
 
@@ -289,7 +309,7 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plo
     
     # Hyperparamters for training
     egreedy = .3 # number of weights to mutate starting out, this is decreased over time 
-    egreedyDecreaseRate = .999 # rate at which egreedy selection is decreased
+    egreedyDecreaseRate = .9999 # rate at which egreedy selection is decreased
 
     # World parameters
     world_bounds = Bounds2D((0, 115), (0, 100))  # world borders
@@ -298,10 +318,10 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plo
     poi_bounds = Bounds2D((world_center.x-poi_ranges[0]/2, world_center.x+poi_ranges[0]/2), 
                           (world_center.y-poi_ranges[1]/2, world_center.y+poi_ranges[1]/2))  # bounds of where POIs can go
 
-    
+        
     # self, world_bounds, N_poi, poi_bounds, roverSettings, rover_start, rovHeadings
     world = World(world_bounds, numPoi, poi_bounds, roverSettings, rover_start=world_center, rovHeadings=agentInitHeadings)  # make a world
-
+    world.initPOILocs() # only for testing...
     # Create orientations for the agents outside so they will all be consist for agent i
     rewards_list = []
 
@@ -312,13 +332,12 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plo
         plotLast = False
 
     for i in range(episodes): # random definition of convergence
-        print 'Perfoming epidsode {0} for {1} agents...'.format(i, numAgents)
         # create random team of agent brains for the game
         teams = createTeams(nns, lenOfPool)
-
         team_rewards = []
         for team in teams:         
             # do the episode
+            print 'Doing episode {0} of {1} for reward:{2} with {3} agents'.format(i, episodes, rewardType, numAgents)
             reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings, rewardType, moveRandomly, plotPlease)
             team_rewards.append(reward)
             # printTeamRewards(team)
@@ -344,7 +363,7 @@ def main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plo
                 maxTeam = team
                 maxTeamScore = teamScore
         # plot best team for max last 15 episodes
-        if plotLast & (i > (episodes - 15)): 
+        if plotLast & (i == episodes - 1): #((i > (episodes - 2)) or (i == 0)): 
             reward = doEpisode(world, team, timesteps, maxDist, minDist, mvtNoise, agentInitHeadings, rewardType, moveRandomly, plotPlease=True)
 
         # For debugging purposes...print mutation rates...
@@ -399,8 +418,8 @@ def getResults(saveRewards):
 
     import timeit
     start_time = timeit.default_timer()
-    numStatRuns = 5
-    epochs = 700
+    numStatRuns = 200
+    epochs = 75
 
     # runs all four reward types with 30 agents for 200 episodes
     # runBaseline()
@@ -419,11 +438,11 @@ def getResults(saveRewards):
     sensorRangeUnlimitedSettings.type = 'SR_Unlimited'
 
     sensorRangeLimitedSettings = copy.deepcopy(baseSettings)
-    sensorRangeLimitedSettings.sensorRange = 10 # roughtly 10 percent of world dist
+    sensorRangeLimitedSettings.sensorRange = 2 # roughtly 10 percent of world dist
     sensorRangeLimitedSettings.type = 'SR_Limited'
     
     sensorRangeMediumSettings = copy.deepcopy(baseSettings)
-    sensorRangeMediumSettings.sensorRange = 60 # over half the world dist
+    sensorRangeMediumSettings.sensorRange = 8 # over half the world dist
     sensorRangeMediumSettings.type = 'SR_Medium'
 
     # tweaking sensor fov
@@ -468,24 +487,29 @@ def getResults(saveRewards):
     baseRandomSettings.rewardType = 'GLOBAL'
     baseRandomSettings.moveRandomly = True
 
+    sensorRangeMediumSettings.rewardType = 'LOCAL'
+    sensorRangeUnlimitedSettings.rewardType = 'LOCAL'
+    sensorRangeLimitedSettings.rewardType = 'LOCAL'
     # settings = [sensorRangeUnlimitedSettings, sensorRangeLimitedSettings, sensorRangeMediumSettings]
     # settings = [sensorFOV360, sensorFOV270, sensorFOV90]
-    # settings = [sensorNoiseNone, sensorNoise10, sensorNoise50]
-    settings = [baseGlobalSettings, baseLocalSettings, baseDifferenceSettings, baseRandomSettings]
+    settings = [sensorNoiseNone, sensorNoise10, sensorNoise50]
+    # settings = [baseGlobalSettings, baseLocalSettings, baseDifferenceSettings]
     # settings = [baseLocalSettings]
-    # settings = [baseGlobalSettings]
+    #settings = [baseRandomSettings]
     
     for i in range(numStatRuns):
-        for numAgents in [2]:
+        for numAgents in [10]:
             for x in settings:
-                x.numAgents = numAgents
-                # main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plotPlease = False, pois = 100, ts = 15):
-                rewardList = main(x, epochs, lengthOfPool = 40, plotPlease = False, pois = 10, ts = 15)
-                fname = os.getcwd() + '/results/{0}/{1}agents/{2}statRun-RT-{3}_Eps-{4}.results'.format(x.type, numAgents, i, x.rewardType, epochs)
-                print 
-                print fname
-                if saveRewards:
-                    saveReward(fname, rewardList)    
+                for rType in ['DIFFERENCE', 'LOCAL', 'GLOBAL', 'DIFFERENCE']:
+                    x.numAgents = numAgents
+                    x.rewardType = rType
+                    # main(roverSettings = RoverSettings(), episodes = 200, lengthOfPool = 40, plotPlease = False, pois = 100, ts = 15):
+                    rewardList = main(x, epochs, lengthOfPool = 40, plotPlease = 'last', pois = 500, ts = 15)
+                    fname = os.getcwd() + '/FinalRunsWillCompHC/{0}/{1}/{2}agents/{3}statRun-RT-{4}_Eps-{5}.results'.format(x.type, rType, numAgents, i, x.rewardType, epochs)
+                    print 
+                    print fname
+                    if saveRewards:
+                        saveReward(fname, rewardList)    
 
 
     elapsed_time = timeit.default_timer() - start_time
@@ -526,7 +550,7 @@ def runBaseline():
 def visualizeDomain():
     """ Run the simplest case with random policy; visualize the domain to see how it looks. """
     print 'in visualizeDomain'
-    plotSettings = RoverSettings(rewardType = 'GLOBAL',
+    plotSettings = RoverSettings(rewardType = 'DIFFERENCE',
                                  moveRandomly = False,
                                  numAgents = 30,
                                  sensorRange = 10000, # essentially inf for our world size :)
@@ -563,6 +587,11 @@ if __name__ == "__main__":
     # !!!!!!!!!!!!!!
     getResults(saveRewards = True)
     # visualizeDomain()
+
+    # save random list
+    # randList = [16.7551851852 for x in xrange(75)]
+    # saveReward(os.getcwd() + '/randNNAVG', randList)
+
     
 #     start_time = timeit.default_timer()
 # #   main(rewardType='DIFFERENCE', moveRandomly=True)  # random!
