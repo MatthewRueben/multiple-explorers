@@ -12,6 +12,7 @@
 \usepackage{times}    % font
 \usepackage{graphicx} % inserting images
 \usepackage{cite}
+%\usepackage{amsmath}
 \usepackage{mathtools} % For math
 \usepackage{hyperref}
 %\usepackage{enumitem}
@@ -154,20 +155,14 @@ minimum distance d2:
 \delta  (x,y) = max \big\{||x - y||^2, d^2 \big\}    
 \]
 
-The difference reward would be more learnable for an individual rover,
-but requires each rover to calculate the hypothetical global reward if
-that rover were removed from the system. For this work, we use the
-partial observation difference reward, which only accounts for the
-rover in question and any rovers within its sensor range. If a rover
-is the closest rover that it knows of to a given POI, it is credited
-with the reward for that POI:
+The local reward is perfectly learnable for each rover because it only accounts for that rover's actions. If we sacrifice a bit of computation speed, we can have a reward structure that is both well-factored and learnable in the difference reward.
 
 \[
-D_i(PO) = \sum_j  \frac{V_j}{min_{i' \in O^\rho_i} \: \delta(L_j, L_{i'})} - \sum_j  \frac{V_j}{min_{i' \in O^\rho_i,  \neq i} \: \delta(L_j, L_{i'})}
+P_i=G(z_{-i})
 \]
-
-The authors showed this to be a highly factored, learnable, and
-practical credit assignment structure.
+\[
+D_i=G(z)-G(z_{-i})
+\]
 
 \subsection{State Information}
 Each rover has two types of sensors. The first type returns an
@@ -210,6 +205,11 @@ a good policy directly, i.e., without maintaining state-action value
 estimates as in approaches like Q-learning. The system described thus
 far provides the basis for our study of sensor limitations. Our novel
 study regarding sensor impact is detailed below.
+
+\subsection{Rover Heading}
+The heading of the rovers is important in our implementation because, for some cases described below, we will restrict the sensor fields of view. Imagine if each rover only had a single Microsoft Kinect sensor, pointing forward. We want the rovers to be able to control where this sensor is pointing. 
+
+Each rover begins the episode with a random heading between 0$^{\circ}$ and 360$^{\circ}$. This heading is updated at each time step after the rover moves. The new heading points in the same direction as the rover's chosen movement vector. We chose this protocol because it resembles the way a differential-drive robot would turn towards its destination before driving there. 
 
 \subsection{Sensor Evaluation}
 Sensor impact upon learning was evaluated by comparing the baseline
@@ -326,7 +326,7 @@ An additional avenue for future work involves exploring additional sensor charac
 
 \subsection{Heterogeneous Agents}
 Exploring the performance of different sensor characteristic combinations naturally leads to the question of how a multi-agent system performs when agents in the system have different sensing capabilities. This is an interesting problem because it allows for the simulation of cost constrained systems (e.g. should agents be equipped with several cheaper, specialized sensors or less powerful, but equivalent sensors) as well as analyzing the impact of agent failure (e.g. sensor malfunctions restricting FOV or actuator failures preventing agent movement). The presence of heterogeneous agents leads to many interesting questions including: Can equivalent system performance be obtained if some agents have diminished capabilities? If so, at what point does performance begin to drastically diminish? Will agents with different capabilities learn to perform tasks more suited to them (e.g. agents with long range sensors learning to bypass nearby POIs in favor of more distant POIs)?
-
+\[\pm\]
 \bibliographystyle{IEEEtran}
 \bibliography{main}
 
