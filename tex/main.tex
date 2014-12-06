@@ -64,7 +64,7 @@ contain the most useful sensor input.
 The decreasing costs and increasing capabilities of computer hardware and software make
 robots an increasingly attractive alternative to human labor. More specifically, robots have 
 been targeted for use in the exploration domain, both in single agent and 
-multiagent systems.  Robots have the potential to
+multi-agent systems.  Robots have the potential to
 handle certain extreme environments better than their human
 counterparts.  They can cover large swaths of territory more
 efficiently, or conversely fit in very tight spaces without disturbing
@@ -76,7 +76,7 @@ the rover Curiosity to explore Mars. Several companies have built
 mobile robots to explore and decontaminate the the Fukushima Daiichi
 nuclear power station after the 2011 meltdown \cite{nuclear_robots}. Added to these
 accomplishments, robots are increasingly being used with other robots, 
-adding significance to multiagent systems (MAS) studies.
+adding significance to multi-agent systems (MAS) studies.
 
 Previous MAS research, however, often fails to fully consider the effect of
 sensor limitations upon the learning algorithm within given domains. In many realistic cases, sensors fall drastically short of being able to see the entire search space at once. Many lower-cost robots are now using the Microsoft Kinect because it offers RGB-D sensing for fewer than 100 dollars. Albeit, the Kinect is constrained by a 0.8 - 4.0m distance range and 57$^{\circ}$ horizontal and 43$^{\circ}$ vertical field-of-view. On top of all this, there is ever present sensor noise; a constant source of frustration for sensor precision and accuracy.
@@ -363,11 +363,11 @@ The difficulties presented by our original, trivial, domain yield interesting po
 Additionally, changing the reward structure allows us to change the nature of our domain. Presenting the agents with more complex reward structures can influence their cooperation and learned policies. With more complex behavior required of the agents, the performance trade-offs between limited sensor characteristics may become more evident. One possible way to increase the reward structure complexity is to require simultaneous POI observation in order to obtain a reward. Another possibility is to explore the issue of temporal credit assignment. If agents are able to better understand which of their actions most contributed to their reward, they are better able to adjust their policy.
 
 \subsection{Sensor Restriction Combinations}
-An additional avenue for future work involves exploring additional sensor characteristic combinations. While our current work only dealt with varying one sensor characteristic at a time, this would more closely model real world sensors. In reality, sensors have physical limitations on all characteristics. This work could allow for performance vs. cost comparisons (e.g. perhaps a 10 dollar sensor with 90$^{\circ}$ field-of-view and 5 meter sensing range performs only 5 percent worse than a 500 dollar sensor with 90$^{\circ}$ field-of-view and 30 meter sensing range).
+An additional avenue for future work involves exploring additional sensor characteristic combinations. While our current work only dealt with varying one sensor characteristic at a time, this would more closely model real world sensors. In reality, sensors have physical limitations on all characteristics. This work could allow for performance vs. cost comparisons (e.g. perhaps a \$10 sensor with 90$^{\circ}$ field-of-view and 5m sensing range performs only 5 percent worse than a \$500 sensor with 90$^{\circ}$ field-of-view and 30m sensing range).
 
 
 \subsection{Heterogeneous Agents}
-Exploring the performance of different sensor characteristic combinations naturally leads to the question of how a multi-agent system performs when agents in the system have different sensing capabilities. This is an interesting problem because it allows for the simulation of cost constrained systems (e.g. should agents be equipped with several cheaper, specialized sensors or less powerful, but equivalent sensors) as well as analyzing the impact of agent failure (e.g. sensor malfunctions restricting field-of-view or actuator failures preventing agent movement). The presence of heterogeneous agents leads to many interesting questions including: Can equivalent system performance be obtained if some agents have diminished capabilities? If so, at what point does performance begin to drastically diminish? Will agents with different capabilities learn to perform tasks more suited to them (e.g. agents with long range sensors learning to bypass nearby POIs in favor of more distant POIs)?
+Exploring the performance of different sensor characteristic combinations naturally leads to the question of how a MAS performs when agents in the system have different sensing capabilities. This is an interesting problem because it allows for the simulation of cost constrained systems (e.g. should agents be equipped with several cheaper, specialized sensors or less powerful, but equivalent sensors) as well as analyzing the impact of agent failure (e.g. sensor malfunctions restricting field-of-view or actuator failures preventing agent movement). The presence of heterogeneous agents leads to many interesting questions including: Can how does system performance change if some agents have diminished capabilities? In particular, at what point does performance begin to drastically diminish? Will agents with different capabilities learn to perform tasks more suited to them (e.g. agents with long range sensors learning to bypass nearby POIs in favor of more distant POIs)? If 'yes' to this final question, more heterogeneous, cost-effective systems may be possible even now.
 
 \bibliographystyle{IEEEtran}
 \bibliography{main}
