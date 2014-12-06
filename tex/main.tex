@@ -45,46 +45,46 @@ Multi-Robot Exploration with Limited Sensor Field-of-View
 \pagestyle{empty}
 
 \begin{abstract}
-We should write one.
+Contribution!
 \end{abstract}
 
 
 \section{Introduction}
-Robots have been targeted for use in the exploration domain, both in
-single agent and multiagent systems.  Robots have the potential to
+The decreasing costs and increasing capabilities of computer hardware and software make
+robots an increasingly attractive alternative to human labor. More specifically, robots have 
+been targeted for use in the exploration domain, both in single agent and 
+multiagent systems.  Robots have the potential to
 handle certain extreme environments better than their human
-counterparts, and in some cases cover large swaths of territory more
+counterparts.  They can cover large swaths of territory more
 efficiently, or conversely fit in very tight spaces without disturbing
-the surrounding environment (e.g. snake robots). Furthermore, the
-decreasing cost and increasing capability of computer hardware makes
-robots an attractive alternative to human labor.
+the surrounding environment (e.g. snake robots). 
 
 A number of inroads have been made into harnessing the power and
-advantages of robots in the exploration domain.  NASA continues to use
-the rover Curiosity to explore Mars.  Several companies have built
+advantages of robots in the exploration domain. NASA continues to use
+the rover Curiosity to explore Mars. Several companies have built
 mobile robots to explore and decontaminate the the Fukushima Daiichi
 nuclear power station after the 2011 meltdown CITE THE URL. Added to these
-accomplishments, robots are increasingly being used in conjunction
-with one another, giving added significance to multiagent systems
-(MAS) studies.
+accomplishments, robots are increasingly being used with other robots, 
+adding significance to multiagent systems(MAS) robot studies.
 
-Previous MAS research however, often fails to consider the effect of
-sensor limitations upon the learning algorithm by (perhaps implicitly)
-assuming that the sensor range is large compared to the search space.
-In many realistic cases, however, the sensor falls quite short of
-being able to see the entire search space at once. Many lower-cost
+Previous MAS research however, often fails to fully consider the effect of
+sensor limitations upon the learning algorithm with given domains. In many realistic cases, 
+sensors fall drastically short of being able to see the entire search space at once. Many lower-cost
 robots are now using the Microsoft Kinect because it offers RGB-D
-sensing for fewer than 100, albeit with a 0.8 - 4.0m effective range
-and significant sensor noise.
+sensing for fewer than 100. Albeit, the Kinect is constrained by a 0.8 - 4.0m distance range 
+and 57° horizontal and 43° vertical field of view.  
+Stacked upon limited sensor range and field of view is ever present sensor noise, a constant
+source of frustration for sensor precision and accuracy.
 
-We will show the trade-offs between using more robots with
-limited-range sensors and using fewer robots with costlier
-sensors. This includes analyzing the effect of sensor range, noise,
-and field of view, as well as the number of robots and different
-multi-agent learning algorithms, on performance in an arbitrary
-exploration task. This will help future implementers conduct more
-accurate cost-benefit analyses in order to make wiser decisions when
-building and deploying robotics in the real world.
+As always, decreasing hardware costs does not mean infinite hardware resources.
+Implementers must be able to informatively decide on the cost-benefit 
+between a greater number of worse performing sensors and a greater array of lower performing 
+sensors. Moreover, cost-benefit analsis needs to be done on a level that includes sensor impact on
+ agent performance within a given domain. Specifically, we will show the trade-offs between using varying 
+ quality sensors and the overall system performance by modeling robots with different sensor ranges, fields of view, 
+ and noise characteristics in the rover domain utilizing three common reward structures. 
+ This will help future implementers conduct more accurate cost-benefit analyses in order to make wiser decisions when
+building and deploying robots in the real world.
 
 
 \section{Related Work}
